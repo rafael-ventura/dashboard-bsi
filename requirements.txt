@@ -15,7 +15,6 @@ dash-html-components==2.0.0
 dash-table==5.0.0
 dbus-python==1.2.16
 distro==1.4.0
-distro-info===0.23ubuntu1
 entrypoints==0.3
 Flask==2.1.2
 Flask-Compress==1.12
