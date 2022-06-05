@@ -1,0 +1,13 @@
+ID_PESSOA,NOME_PESSOA,SEXO,DT_NASCIMENTO,FORMA_INGRESSO,FORMA_EVASAO,COD_CURSO,NOME_UNIDADE,MATR_ALUNO,NUM_VERSAO,PERIODO_INGRESSO,DT_EVASAO,PERIODO_EVASAO,CPF_MASCARA
+1234,José Carlos Perez,M,02/09/1991,VE - Vestibular,CON - Curso concluído,210,Sistemas de Informação - Bacharelado - Turno Integral (V/N),20042210001,2005/2,2002/2°. semestre,14/09/2009,2009/2°. semestre,123.456.789-00
+2,José Carlos Perez,M,02/09/1991,VE - Vestibular,CON - Curso concluído,210,Sistemas de Informação - Bacharelado - Turno Integral (V/N),20042210001,2005/2,2002/2°. semestre,14/09/2009,2009/2°. semestre,123.456.789-00
+3,José Carlos Perez,M,02/09/1991,VE - Vestibular,CON - Curso concluído,210,Sistemas de Informação - Bacharelado - Turno Integral (V/N),20042210001,2005/2,2005/2°. semestre,14/09/2009,2009/2°. semestre,123.456.789-00
+4,José Carlos Perez,M,02/09/1991,VE - Vestibular,CON - Curso concluído,210,Sistemas de Informação - Bacharelado - Turno Integral (V/N),20042210001,2005/2,2006/2°. semestre,14/09/2009,2009/2°. semestre,123.456.789-00
+5,José Carlos Perez,M,02/09/1991,VE - Vestibular,CON - Curso concluído,210,Sistemas de Informação - Bacharelado - Turno Integral (V/N),20042210001,2005/2,2021/2°. Semestre,14/09/2009,2009/2°. semestre,123.456.789-00
+5,José Carlos Perez,M,02/09/1991,VE - Vestibular,CON - Curso concluído,210,Sistemas de Informação - Bacharelado - Turno Integral (V/N),20042210001,2005/2,2012/2°. semestre,14/09/2009,2009/2°. semestre,123.456.789-00
+6,José Carlos Perez,M,02/09/1991,VE - Vestibular,CON - Curso concluído,210,Sistemas de Informação - Bacharelado - Turno Integral (V/N),20042210001,2005/2,2013/2°. semestre,14/09/2009,2009/2°. semestre,123.456.789-00
+7,José Carlos Perez,M,02/09/1991,VE - Vestibular,CON - Curso concluído,210,Sistemas de Informação - Bacharelado - Turno Integral (V/N),20042210001,2005/2,2002/2°. semestre,14/09/2009,2009/2°. semestre,123.456.789-00
+8,José Carlos Perez,M,02/09/1991,VE - Vestibular,CON - Curso concluído,210,Sistemas de Informação - Bacharelado - Turno Integral (V/N),20042210001,2005/2,2002/2°. semestre,14/09/2009,2009/2°. semestre,123.456.789-00
+8,José Carlos Perez,M,02/09/1991,VE - Vestibular,CON - Curso concluído,210,Sistemas de Informação - Bacharelado - Turno Integral (V/N),20042210001,2005/2,2002/2°. semestre,14/09/2009,2009/2°. semestre,123.456.789-00
+9,José Carlos Perez,M,02/09/1991,VE - Vestibular,CON - Curso concluído,210,Sistemas de Informação - Bacharelado - Turno Integral (V/N),20042210001,2005/2,2002/2°. semestre,14/09/2009,2009/2°. semestre,123.456.789-00
+0,José Carlos Perez,M,02/09/1991,VE - Vestibular,CON - Curso concluído,210,Sistemas de Informação - Bacharelado - Turno Integral (V/N),20042210001,2005/2,2002/2°. semestre,14/09/2009,2009/2°. semestre,123.456.789-00

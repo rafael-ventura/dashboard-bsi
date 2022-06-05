@@ -1,0 +1,160 @@
+,ANO_INGRESSO,PERIODO_INGRESSO,FORMA_INGRESSO,ALUNOS
+0,2001,1,VE - Vestibular,4
+1,2001,2,VE - Vestibular,2
+2,2002,1,EN - ENEM,1
+3,2002,1,VE - Vestibular,4
+4,2002,2,VE - Vestibular,10
+5,2003,1,EN - ENEM,2
+6,2003,1,VE - Vestibular,30
+7,2003,2,VE - Vestibular,9
+8,2004,1,EN - ENEM,2
+9,2004,1,VE - Vestibular,13
+10,2004,2,TE - Transferência Externa - oriunda de outra instituição,1
+11,2004,2,VE - Vestibular,18
+12,2005,1,EN - ENEM,1
+13,2005,1,VE - Vestibular,15
+14,2005,2,EN - ENEM,2
+15,2005,2,VE - Vestibular,18
+16,2006,1,EN - ENEM,2
+17,2006,1,VE - Vestibular,20
+18,2006,2,EN - ENEM,1
+19,2006,2,VE - Vestibular,15
+20,2007,1,EN - ENEM,4
+21,2007,1,VE - Vestibular,18
+22,2007,2,VE - Vestibular,27
+23,2008,1,EN - ENEM,1
+24,2008,1,VE - Vestibular,29
+25,2008,2,EN - ENEM,5
+26,2008,2,TE - Transferência Externa - oriunda de outra instituição,1
+27,2008,2,VE - Vestibular,26
+28,2009,1,EN - ENEM,6
+29,2009,1,VE - Vestibular,30
+30,2009,2,VE - Vestibular,35
+31,2010,1,EN - ENEM,34
+32,2010,1,EO -Transferência Ex-Ofício,1
+33,2010,1,PG - Programa de Estudantes - Convênio (PEC-G),1
+34,2010,2,EN - ENEM,36
+35,2010,2,PD - Portador de Diploma de Nível Superior,7
+36,2011,1,AE - Mobilidade Adadêmica Externa - ANDIFES,1
+37,2011,1,EN - ENEM,42
+38,2011,1,PG - Programa de Estudantes - Convênio (PEC-G),1
+39,2011,2,AE - Mobilidade Acadêmica IAE/IESCE,1
+40,2011,2,EN - ENEM,39
+41,2012,1,EN - ENEM,35
+42,2012,2,AE - Aluno Especial - Disciplina Isolada,1
+43,2012,2,EN - ENEM,35
+44,2012,2,TC - Transferência Interna-Curso não relacionado ao anterior,1
+45,2013,1,AE - Aluno Especial - Disciplina Isolada,1
+46,2013,1,EO -Transferência Ex-Ofício,1
+47,2013,1,SISU Ampla Concorrencia,34
+48,2013,1,"SISU Escola Publica até 1,5 S.M.",2
+49,2013,1,"SISU Escola Publica até 1,5 S.M. Preto, Pardo, Indígena",1
+50,2013,1,"SISU Escola Publica, Indep de Renda: Preto, Pardo, Indígena",2
+51,2013,2,EO -Transferência Ex-Ofício,1
+52,2013,2,PD - Portador de Diploma de Nível Superior,1
+53,2013,2,SISU Ampla Concorrencia,32
+54,2013,2,"SISU Escola Publica até 1,5 S.M. Preto, Pardo, Indígena",2
+55,2013,2,"SISU Escola Publica, Indep de Renda: Preto, Pardo, Indígena",3
+56,2013,2,TE - Transferência Externa - oriunda de outra instituição,1
+57,2014,1,SISU Ampla Concorrencia,16
+58,2014,1,SISU Escola Publica - Indep. de Renda,4
+59,2014,1,"SISU Escola Publica até 1,5 S.M.",3
+60,2014,1,"SISU Escola Publica até 1,5 S.M. Preto, Pardo, Indígena",4
+61,2014,1,"SISU Escola Publica, Indep de Renda: Preto, Pardo, Indígena",5
+62,2014,2,SISU Ampla Concorrencia,16
+63,2014,2,SISU Escola Publica - Indep. de Renda,4
+64,2014,2,"SISU Escola Publica até 1,5 S.M.",3
+65,2014,2,"SISU Escola Publica até 1,5 S.M. Preto, Pardo, Indígena",5
+66,2014,2,"SISU Escola Publica, Indep de Renda: Preto, Pardo, Indígena",5
+67,2015,1,AE - Mobilidade Acadêmica IAE/IESCE,1
+68,2015,1,SISU Ampla Concorrencia,16
+69,2015,1,SISU Escola Publica - Indep. de Renda,4
+70,2015,1,"SISU Escola Publica até 1,5 S.M.",3
+71,2015,1,"SISU Escola Pública até 1,5 S.M Preto e Pardo",4
+72,2015,1,"SISU Escola Pública, Indep. de Renda : Preto e Pardo",4
+73,2015,1,"SISU Escola Pública, Indep. de Renda : Índio",1
+74,2015,2,SISU Ampla Concorrencia,18
+75,2015,2,SISU Escola Publica - Indep. de Renda,4
+76,2015,2,"SISU Escola Publica até 1,5 S.M.",4
+77,2015,2,"SISU Escola Pública até 1,5 S.M Preto e Pardo",4
+78,2015,2,"SISU Escola Pública até 1,5 S.M Índio",1
+79,2015,2,"SISU Escola Pública, Indep. de Renda : Preto e Pardo",4
+80,2015,2,"SISU Escola Pública, Indep. de Renda : Índio",1
+81,2016,1,AE - Mobilidade Acadêmica IAE/IESCE,1
+82,2016,1,AE - Mobilidade Adadêmica Externa - ANDIFES,1
+83,2016,1,SISU Ampla Concorrencia,18
+84,2016,1,SISU Escola Publica - Indep. de Renda,4
+85,2016,1,"SISU Escola Publica até 1,5 S.M.",3
+86,2016,1,"SISU Escola Publica, Indep de Renda: Preto, Pardo, Indígena",1
+87,2016,1,"SISU Escola Pública até 1,5 S.M Preto e Pardo",4
+88,2016,1,"SISU Escola Pública até 1,5 S.M Índio",1
+89,2016,1,"SISU Escola Pública, Indep. de Renda : Preto e Pardo",3
+90,2016,1,"SISU Escola Pública, Indep. de Renda : Índio",1
+91,2016,2,SISU Ampla Concorrencia,22
+92,2016,2,SISU Escola Publica - Indep. de Renda,4
+93,2016,2,"SISU Escola Publica até 1,5 S.M.",4
+94,2016,2,"SISU Escola Pública até 1,5 S.M Preto e Pardo",3
+95,2016,2,"SISU Escola Pública até 1,5 S.M Índio",1
+96,2016,2,"SISU Escola Pública, Indep. de Renda : Preto e Pardo",4
+97,2016,2,"SISU Escola Pública, Indep. de Renda : Índio",1
+98,2017,1,SISU Ampla Concorrencia,20
+99,2017,1,SISU Escola Publica - Indep. de Renda,6
+100,2017,1,"SISU Escola Publica até 1,5 S.M.",4
+101,2017,1,"SISU Escola Publica até 1,5 S.M. Preto, Pardo, Indígena",6
+102,2017,1,"SISU Escola Publica, Indep de Renda: Preto, Pardo, Indígena",5
+103,2017,2,SISU Ampla Concorrencia,19
+104,2017,2,SISU Escola Publica - Indep. de Renda,5
+105,2017,2,"SISU Escola Publica até 1,5 S.M.",4
+106,2017,2,"SISU Escola Publica até 1,5 S.M. Preto, Pardo, Indígena",6
+107,2017,2,"SISU Escola Publica, Indep de Renda: Preto, Pardo, Indígena",6
+108,2017,2,TE - Transferência Externa - oriunda de outra instituição,3
+109,2018,1,DJ - Decisão Judicial,1
+110,2018,1,EO -Transferência Ex-Ofício,1
+111,2018,1,SISU Ampla Concorrencia,19
+112,2018,1,SISU Escola Publica - Indep. de Renda,5
+113,2018,1,"SISU Escola Publica até 1,5 S.M.",4
+114,2018,1,"SISU Escola Publica até 1,5 S.M. Preto, Pardo, Indígena",5
+115,2018,1,"SISU Escola Publica, Indep de Renda: Preto, Pardo, Indígena",5
+116,2018,2,SISU Ampla Concorrencia,19
+117,2018,2,SISU Escola Publica - Indep. de Renda,4
+118,2018,2,"SISU Escola Publica até 1,5 S.M.",2
+119,2018,2,"SISU Escola Publica até 1,5 S.M. Preto, Pardo, Indígena",5
+120,2018,2,"SISU Escola Publica, Indep de Renda: Preto, Pardo, Indígena",3
+121,2018,2,TE - Transferência Externa - oriunda de outra instituição,1
+122,2019,1,AE - Aluno Especial - Disciplina Isolada,1
+123,2019,1,Pessoas com Deficiência,1
+124,2019,1,SISU Ampla Concorrencia,17
+125,2019,1,SISU Escola Publica - Indep. de Renda,5
+126,2019,1,"SISU Escola Publica até 1,5 S.M.",5
+127,2019,1,"SISU Escola Pública até 1,5 S.M Preto e Pardo",4
+128,2019,1,"SISU Escola Pública até 1,5 S.M Índio",1
+129,2019,1,"SISU Escola Pública, Indep. de Renda : Preto e Pardo",4
+130,2019,2,PD - Portador de Diploma de Nível Superior,3
+131,2019,2,SISU Ampla Concorrencia,16
+132,2019,2,SISU Escola Publica - Indep. de Renda,7
+133,2019,2,"SISU Escola Publica até 1,5 S.M.",5
+134,2019,2,"SISU Escola Pública até 1,5 S.M Preto e Pardo",4
+135,2019,2,"SISU Escola Pública, Indep. de Renda : Preto e Pardo",5
+136,2019,2,TE - Transferência Externa - oriunda de outra instituição,3
+137,2020,1,SISU Ampla Concorrencia,21
+138,2020,1,SISU Escola Publica - Indep. de Renda,4
+139,2020,1,"SISU Escola Publica até 1,5 S.M.",5
+140,2020,1,"SISU Escola Pública até 1,5 S.M Preto e Pardo",4
+141,2020,1,"SISU Escola Pública, Indep. de Renda : Preto e Pardo",4
+142,2020,2,SISU Ampla Concorrencia,17
+143,2020,2,SISU Escola Publica - Indep. de Renda,6
+144,2020,2,"SISU Escola Publica até 1,5 S.M.",4
+145,2020,2,"SISU Escola Pública até 1,5 S.M Preto e Pardo",4
+146,2020,2,"SISU Escola Pública até 1,5 S.M Índio",1
+147,2020,2,"SISU Escola Pública, Indep. de Renda : Preto e Pardo",4
+148,2020,2,TE - Transferência Externa - oriunda de outra instituição,2
+149,2021,1,SISU Ampla Concorrencia,18
+150,2021,1,SISU Escola Publica - Indep. de Renda,6
+151,2021,1,"SISU Escola Publica até 1,5 S.M.",4
+152,2021,1,"SISU Escola Pública até 1,5 S.M Preto e Pardo",4
+153,2021,1,"SISU Escola Pública, Indep. de Renda : Preto e Pardo",4
+154,2021,2,SISU Ampla Concorrencia,15
+155,2021,2,SISU Escola Publica - Indep. de Renda,6
+156,2021,2,"SISU Escola Publica até 1,5 S.M.",4
+157,2021,2,"SISU Escola Pública até 1,5 S.M Preto e Pardo",2
+158,2021,2,"SISU Escola Pública, Indep. de Renda : Preto e Pardo",4
