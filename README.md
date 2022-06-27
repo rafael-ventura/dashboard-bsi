@@ -45,4 +45,4 @@ python3 app.py
 
 ### Voce pode acessar a aplicao funcionando online
 
-[![Heroku App](https://dashboard-bsi.herokuapp.com/)]
+[Heroku App](https://dashboard-bsi.herokuapp.com/)
