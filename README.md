@@ -22,10 +22,10 @@ Linux e macOS:
 
 ```
 git clone https://github.com/tsydolmir/dashboard-bsi
+cd dashboard-bsi
 ```
 
 Ativar o ambiente Python
-
 ```
 source notebook/jupyterenv/bin/activate
 ```
@@ -36,7 +36,13 @@ Instalar depedencias
 pip install pandas
 pip install dash 
 ```
+Executar Jupyter Notebook com a Análise dos Dados
 
+```
+cd analise/notebook
+jupyter notebook analiseJupiter.ipynb
+
+```
 Executar aplicacacao
 
 ```
