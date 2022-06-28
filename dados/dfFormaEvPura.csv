@@ -1,0 +1,11 @@
+,FORMA_EVASAO,ALUNOS,TIPO_EVASAO
+0,ABA - Abandono do curso,186,EVASAO
+1,APO - Aluno Especial - Disciplina Isolada,3,EVASAO
+2,APO -Conclusão a Mobilidade Acadêmica Externa - ANDIFES,3,EVASAO
+3,APO -Conclusão da Mobilidade Acadêmica Externa - IAE/IESCE,2,EVASAO
+4,CAN - Cancelamento Geral do curso,173,EVASAO
+5,CON - Curso concluído,335,CONCLUIDO
+6,Desistência SiSU,15,EVASAO
+7,JUB - Jubilamento,120,EVASAO
+8,Não identificada (vide pasta do aluno),5,EVASAO
+9,Sem evasão,418,CURSANDO
