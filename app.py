@@ -31,7 +31,12 @@ generoFig = px.pie( dfGenero, values='ALUNOS', names='SEXO',
                         'VALUE' : 'Alunos',
                     }
                     )
-idadeFig = px.bar(dfIdade ,x='IDADE', y='ALUNOS')
+idadeFig = px.bar(dfIdade ,x='IDADE', y='ALUNOS', 
+                    title='Perfil de Idade dos Alunos',
+                     hover_data=['PERCENT'],
+                    labels={
+                        'PERCENT' : 'PERCENTUAL'
+                    })
 
 
 evasaoFig.update_traces(hoverinfo='label', textinfo='percent', textfont_size=20)
