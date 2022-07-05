@@ -4,10 +4,10 @@ Aplicacao feita em Dash com o intuito de mostrar visualizacoes gráficas da aná
 
 Os dados disponibilizados foram criptografados.
 
-[![GitHub repo size](https://img.shields.io/github/repo-size/iuricode/README-template?style=for-the-badge)](https://img.shields.io/github/repo-size/tsydolmir/dashboard-bsi?style=for-the-badge)
-[![GitHub forks](https://img.shields.io/github/forks/iuricode/README-template?style=for-the-badge)]
+[![GitHub repo size](https://img.shields.io/github/repo-size/tsydolmir/dashboard-bsi?style=for-the-badge)
+[![GitHub forks](https://img.shields.io/github/forks/tsydolmir/dashboard-bsi?style=for-the-badge)]
 [![GitHub stars](https://img.shields.io/github/stars/tsydolmir/dashboard-bsi?style=for-the-badge)]
-[![GitHub language count](https://img.shields.io/github/languages/count/iuricode/README-template?style=for-the-badge)](https://img.shields.io/github/languages/count/tsydolmir/dashboard-bsi)
+[![GitHub language count](https://img.shields.io/github/languages/count/tsydolmir/dashboard-bsi?style=for-the-badge)](https://img.shields.io/github/languages/count/tsydolmir/dashboard-bsi)
 [![GitHub languages](https://img.shields.io/github/languages/top/tsydolmir/dashboard-bsi?style=for-the-badge)]
 
 
