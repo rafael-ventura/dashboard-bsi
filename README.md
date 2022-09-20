@@ -15,7 +15,7 @@ Os dados disponibilizados foram criptografados.
 
 Antes de começar, verifique se você atendeu aos seguintes requisitos:
 <!---Estes são apenas requisitos de exemplo. Adicionar, duplicar ou remover conforme necessário--->
-* Você instalou a versão mais recente de `<Python / Pip / Pandas / Dash >`.
+* Você instalou a versão mais recente de `<Python / Pip / Pandas / Dash / Jupyter >`.
 * Você leu `<Documentacao Pandas / Documentacao Dash>`.
 
 Linux e macOS:
