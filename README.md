@@ -1,6 +1,6 @@
 # dashboard-bsi
 
-Aplicacao feita em Dash com o intuito de mostrar visualizacoes gráficas da análise exploratória feita nos dados dos discentes do curso de Sistemas de Informacao da UNIRIO.
+Aplicacao feita em Python com o intuito de mostrar os resultados da análise exploratória feita nos dados dos discentes do curso de Sistemas de Informacao da UNIRIO de maneira grafica e visual.
 
 Os dados disponibilizados foram criptografados.
 
@@ -15,7 +15,7 @@ Os dados disponibilizados foram criptografados.
 
 Antes de começar, verifique se você atendeu aos seguintes requisitos:
 <!---Estes são apenas requisitos de exemplo. Adicionar, duplicar ou remover conforme necessário--->
-* Você instalou a versão mais recente de `<Python / Pip / Pandas / Dash / Jupyter >`.
+* Você instalou a versão mais recente de `<Python / Pip / Pandas / Dash / Jupyter>`.
 * Você leu `<Documentacao Pandas / Documentacao Dash>`.
 
 Linux e macOS:
@@ -25,30 +25,25 @@ git clone https://github.com/tsydolmir/dashboard-bsi
 cd dashboard-bsi
 ```
 
-Ativar o ambiente Python
-```
-source notebook/jupyterenv/bin/activate
-```
-
-Instalar depedencias
+### Instalar depedencias
 
 ```
 pip install pandas
 pip install dash 
 ```
-Executar Jupyter Notebook com a Análise dos Dados
+### Executar Jupyter Notebook com a Análise dos Dados
 
 ```
 cd analise/notebook
 jupyter notebook analiseJupiter.ipynb
 
 ```
-Executar aplicacacao
+### Executar aplicacacao
 
 ```
 python3 app.py
 ```
 
-### Voce pode acessar a aplicao funcionando online
+### Voce pode acessar a aplicacao funcionando online
 
 [Heroku App](https://dashboard-bsi.herokuapp.com/)
