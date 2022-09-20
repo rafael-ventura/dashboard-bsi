@@ -35,7 +35,7 @@ pip install dash
 
 ```
 cd analise/notebook
-jupyter notebook analiseJupiter.ipynb
+jupyter notebook analiseFinal.ipynb
 
 ```
 ### Executar aplicacacao
