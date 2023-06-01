@@ -4,120 +4,52 @@ import sys
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-#pip install cryptography
 from cryptography.fernet import Fernet
-
-from join import df_join
+from join import juntar_planilhas
 
 # Cria uma chave aleatória através do método da biblioteca Fernet
-def criarChave():
-    key = Fernet.generate_key()
-    print(f'Chave de criptografia criada.')
-    return key
+def criar_chave() -> bytes:
+    chave = Fernet.generate_key()  
+    print('Chave de criptografia criada.')  
+    return chave 
+
 # Cria arquivo para armazenar a chave
-def criarArquivo():
-    with open(os.path.join(sys.path[0], "chave.key"), "wb") as f:
-        f.write(criarChave())
-        f.close()
-    print('Arquivo chave.key criado na pasta.')
+def criar_arquivo_chave():
+    with open(os.path.join(sys.path[0], "chave.key"), "wb") as f:  
+        f.write(criar_chave())  
+    print('Arquivo chave.key criado na pasta.') 
+    
 # Acessa a chave que estará contida no arquivo chave.key
-def getChave():
-    return open('chave.key', 'rb').read()
+def obter_chave() -> bytes:
+    return open('chave.key', 'rb').read() 
 
 #Programa
-print("Algoritmo de criptografia")
-criarArquivo()
-f = Fernet(getChave())
+def criptografar_coluna(df: pd.DataFrame, coluna: str, f: Fernet) -> list:
+    coluna_cript = []
+    for valor in df[coluna]:  
+        valor_codificado = str(valor).encode()  
+        valor_cripto = f.encrypt(valor_codificado)  
+        coluna_cript.append(valor_cripto)  
+    return coluna_cript
 
-idCol = df_join['ID_PESSOA']
-nomeCol = df_join['NOME_PESSOA']
-matriculaCol = df_join['MATR_ALUNO']
-cpfCol = df_join['CPF_MASCARA']
+def criar_planilha_criptografada(df: pd.DataFrame):
+    criar_arquivo_chave()  
+    f = Fernet(obter_chave())
+    
+    colunas_para_criptografar = ['ID_PESSOA', 'NOME_PESSOA', 'MATR_ALUNO', 'CPF_MASCARA']
+    for coluna in colunas_para_criptografar:
+        df[coluna] = criptografar_coluna(df, coluna, f)
 
-idCriptCol = []
-nomeCriptCol = []
-matriculaCriptCol = []
-cpfCriptCol = []
+    df.to_excel('planilhaJoinCriptografada.xlsx', index=True, header=True)  
+    print('Planilha Criptografada criada e adicionada na pasta.')
 
-    #ID
-for id in idCol:
-    idCodificado = str(id).encode()
-    idCripto = f.encrypt(idCodificado) 
-    #cripto = f.encrypt(idCodificado)
-    #criptoString = cripto.decode('utf-8')
-    idCriptCol.append(idCripto)
-#NOME
-for nome in nomeCol:
-    nomeCodificado = nome.encode()
-    nomeCripto = f.encrypt(nomeCodificado)
-    #cripto = f.encrypt(nomeCodificado)
-    #criptoString = cripto.decode('utf-8')
-    nomeCriptCol.append(nomeCripto)
-#MATRICULA
-for matricula in matriculaCol:
-    matriculaCodificado = str(matricula).encode()
-    matriculaCripto = f.encrypt(matriculaCodificado)
-    #cripto = f.encrypt(matriculaCodificado)
-    #criptoString = cripto.decode('utf-8')
-    matriculaCriptCol.append(matriculaCripto)
-#CPF
-for cpf in cpfCol:
-    cpfCodificado = cpf.encode()
-    cpfCripto = f.encrypt(cpfCodificado)
-    #cripto = f.encrypt(cpfCodificado)
-    #criptoString = cripto.decode('utf-8')
-    cpfCriptCol.append(cpfCripto) 
+def main():
+    print("Algoritmo de criptografia")
+    nome_planilha1, nome_planilha2 = input("Digite o nomes das duas planilhas separado por vírgula ('ex: alunos_bsi, endereco_cra_bsi') :").split(',')
+    # Juntar as duas planilhas em um DataFrame
+    df = juntar_planilhas(nome_planilha1, nome_planilha2)
+    # Crie a planilha criptografada a partir do DataFrame
+    criar_planilha_criptografada(df)
 
-tabelaCriptografada = df_join
-
-#insere colunas criptografadas
-tabelaCriptografada['ID_PESSOA'] = idCriptCol
-tabelaCriptografada['NOME_PESSOA'] = nomeCriptCol
-tabelaCriptografada['MATR_ALUNO'] = matriculaCriptCol
-tabelaCriptografada['CPF_MASCARA'] = cpfCriptCol
-
-tabelaCriptografada
-
-temp = tabelaCriptografada  
-temp.to_excel('planilhaJoinCriptografada.xlsx', index = True, header=True)
-print('Planilha Criptografada criada e adicionada na pasta!')
-
-
-# cria array para receber as colunas criptografadas
-idCol = tabelaCriptografada['ID_PESSOA']
-nomeCol = tabelaCriptografada['NOME_PESSOA']
-matriculaCol = tabelaCriptografada['MATR_ALUNO']
-cpfCol = tabelaCriptografada['CPF_MASCARA']
-
-idDescriptCol = []
-nomeDescriptCol = []
-matriculaDescriptCol = []
-cpfCriptDescCol = []
-
-for id in idCol:
-    aux = f.decrypt(id)
-    print(aux)
-    idDescriptCol.append(int((aux).decode('utf-8')))
-
-for nome in nomeCol:
-    aux = f.decrypt(nome)
-    nomeDescriptCol.append(aux.decode('utf-8'))
-
-for matricula in matriculaCol:
-    aux = f.decrypt(matricula)
-    matriculaDescriptCol.append(aux.decode('utf-8'))
-
-for cpf in cpfCol:
-    aux = f.decrypt(cpf)
-    cpfCriptDescCol.append(aux.decode('utf-8')) 
-
-tabelaDescriptografada = tabelaCriptografada
-
-tabelaDescriptografada['ID_PESSOA'] = idDescriptCol
-tabelaDescriptografada['NOME_PESSOA'] = nomeDescriptCol
-tabelaDescriptografada['MATR_ALUNO'] = matriculaDescriptCol
-tabelaDescriptografada['CPF_MASCARA'] = cpfCriptDescCol
-
-temp = tabelaDescriptografada  
-temp.to_excel('planilhaJoinDescriptografada.xlsx', index = True, header=True)
-print('Planilha Descriptografada criada e adicionada na pasta!')
+if __name__ == "__main__":
+    main()
