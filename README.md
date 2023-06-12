@@ -1,5 +1,4 @@
 # dashboard-bsi
-
 Aplicacao feita em Python com o intuito de mostrar os resultados da análise exploratória feita nos dados dos discentes do curso de Sistemas de Informacao da UNIRIO de maneira grafica e visual.
 
 Os dados disponibilizados foram criptografados.
@@ -55,72 +54,7 @@ A partir dessa planilha, eu comecei a fazer a limpeza dos dados e ver algumas in
 - Aqui esta um pouco do que eu fiz no juptyer notebook para separar os tipos de forma de evasao em 3 tipos ( Evasao, Concluido e Cursando). 
 A tabelaPrinc eh o arquivo 'planilhaCriptografada.xlsx' em forma de dataframe:
 
-```jupyterpython
-### Categorizando alunos por concluido, evadido e cursando"""
-
-historicoIngresso = tabelaPrinc.groupby(['PER_INGRESSO_FORMAT']).size().reset_index(name='ALUNOS')
-historicoIngresso
-
-historicoEvasao = tabelaPrinc.groupby(['PER_EVASAO_FORMAT']).size().reset_index(name='ALUNOS')
-historicoEvasao = historicoEvasao.dropna()
-historicoEvasao = historicoEvasao[historicoEvasao.PER_EVASAO_FORMAT.str.contains('nan.') == False]
-historicoIngresso
-
-evasoesDF = tabelaPrinc.groupby(['ANO_EVASAO','FORMA_EVASAO'], dropna=False).size().reset_index(name='ALUNOS')
-
-evasoesDF['FORMA_EVASAO'] = evasoesDF.FORMA_EVASAO.str.replace('ABA - Abandono do curso', 'Evasão') 
-evasoesDF['FORMA_EVASAO'] = evasoesDF.FORMA_EVASAO.str.replace('APO - Aluno Especial - Disciplina Isolada', 'Evasão') 
-evasoesDF['FORMA_EVASAO'] = evasoesDF.FORMA_EVASAO.str.replace('APO -Conclusão a Mobilidade Acadêmica Externa - ANDIFES', 'Evasão') 
-evasoesDF['FORMA_EVASAO'] = evasoesDF.FORMA_EVASAO.str.replace('APO -Conclusão da Mobilidade Acadêmica Externa - IAE/IESCE', 'Evasão') 
-evasoesDF['FORMA_EVASAO'] = evasoesDF.FORMA_EVASAO.str.replace('Desistência SiSU', 'Evasão') 
-evasoesDF['FORMA_EVASAO'] = evasoesDF.FORMA_EVASAO.str.replace('JUB - Jubilamento', 'Evasão') 
-evasoesDF['FORMA_EVASAO'] = evasoesDF.FORMA_EVASAO.str.replace('CAN - Cancelamento Geral do curso', 'Evasão') 
-evasoesDF['FORMA_EVASAO'] = evasoesDF.FORMA_EVASAO.str.replace('CON - Curso concluído', 'Concluído') 
-evasoesDF['FORMA_EVASAO'] = evasoesDF.FORMA_EVASAO.str.replace('Sem evasão', 'Cursando')
-
-evasoesDF.loc[evasoesDF['FORMA_EVASAO'] == 'Não identificada (vide pasta do aluno)' , 'FORMA_EVASAO'] = 'Evasão'
-evasoesDF.loc[evasoesDF['ANO_EVASAO'].isna() , 'ANO_EVASAO'] = 2023
-
-#agrupando pelo campo forma evasao e somando a coluna de alunos
-
-evasoesDF = evasoesDF.groupby(['ANO_EVASAO','FORMA_EVASAO'] , as_index=False)['ALUNOS'].sum()
-```
-- Aqui um trecho para categorizar os alunos por Outros, Ampla Concorrencia e Cotas:
-```jupyterpython
-# Mapeamento de categorias
-forma_ingresso_mapping = {
-    'AE - Aluno Especial - Disciplina Isolada': 'Outros',
-    'AE - Mobilidade Acadêmica IAE/IESCE': 'Outros',
-    'AE - Mobilidade Adadêmica Externa - ANDIFES': 'Outros',
-    'DJ - Decisão Judicial': 'Outros',
-    'EN - ENEM': 'Ampla Concorrência',
-    'EO - Transferência Ex-Ofício': 'Outros',
-    'PD - Portador de Diploma de Nível Superior': 'Outros',
-    'Pessoas com Deficiência': 'Outros',
-    'PG - Programa de Estudantes - Convênio (PEC-G)': 'Outros',
-    'SISU Ampla Concorrência': 'Ampla Concorrência',
-    'SISU EscolaPública - Indep. de Renda': 'Cotas',
-    'SISU Escola Pública até 1,5 S.M Índio': 'Cotas',
-    'SISU Escola Pública até 1,5 S.M Preto e Pardo': 'Cotas',
-    'SISU Escola Pública até 1,5 S.M.': 'Cotas',
-    'SISU Escola Pública até 1,5 S.M. Preto, Pardo, Indígena': 'Cotas',
-    'SISU Escola Pública, Indep. de Renda: Preto, Pardo, Indígena': 'Cotas',
-    'SISU Escola Pública, Indep. de Renda: Índio': 'Cotas',
-    'SISU Escola Pública, Indep. de Renda: Preto e Pardo': 'Cotas',
-    'TE - Transferência Externa - oriunda de outra instituição': 'Outros',
-    'TC - Transferência Interna-Curso não relacionado ao anterior': 'Outros',
-    'VE - Vestibular': 'Ampla Concorrência'
-}
-
-# Substituir as categorias
-df['FORMA_INGRESSO'] = df['FORMA_INGRESSO'].replace(forma_ingresso_mapping)
-```
-
-- Aqui um trecho para formatar alguns dos campos:
-```jupyterpython
-
-
-```
+<br>
 
 O campo FORMA_INGRESSO Tambem deve ser reduzido em 3 campos: 
 Um para os alunos que ingressaram por cotas, um para os alunos que ingressaram por ampla concorrencia e outro para os outrostipos de ingresso, 
@@ -223,73 +157,15 @@ A coluna FORMA_INGRESSO tem 17 valores diferentes, mas representam os alunos cot
 - CIDADE = _(String)_ Define a cidade do aluno. (Pode ser vazio)
 - ESTADO = _(String)_ Define o estado do aluno. (Pode ser vazio)
 
-##### Informacoes adicionais:
-
-_Foi no decreto 7824, de 11 de outubro de 2012 que a Lei 12.711, 
-conhecida como Lei de Cotas, entrou em vigor. Essa lei obrigou todos as instituições de ensino superior público deveriam reservar uma 
-porcentagem das suas vagas para alunos oriundos de **escola publica**, de **baixa renda**, **pretos**, **pardos** e **indígenas**._
-
-_Tipos de Cotas:_
-* _SISU Escola Publica - Independente de Renda_	
-* _SISU Escola Publica - até 1,5 Salario Minimo_
-* _SISU Escola Publica - até 1,5 Salario Minimo : Preto, Pardo, Indígena_
-* _SISU Escola Publica - Independente de Renda  : Preto, Pardo, Indígena_
-
-_Ao analisar os dados da planilha, foram identificados esses tipos:_
-
-*   _SISU Escola Publica - Independente de Renda_	
-*   _SISU Escola Publica - até 1,5 Salario Minimo_
-*   _SISU Escola Publica - até 1,5 Salario Minimo : Preto, Pardo, Indígena_
-*   _SISU Escola Publica - Independente de Renda  : Preto, Pardo, Indígena_
-*   _SISU Escola Pública - até 1,5 Salario Minimo : Preto e Pardo_
-*   _SISU Escola Pública - até 1,5 Salario Minimo : Índio_
-*   _SISU Escola Pública - Independente de Renda  : Preto e Pardo_
-*   _SISU Escola Pública - Independente de Renda  : Índio_
-
-_Há uma quebra das categorias "até 1,5 SM: Preto, Pardo e Indígena" e "Independente da Renda: Preto, Pardo e Indígena" em 
-"Pretos e Pardos" e "Indígenas", acredito que isso se deva ao fato de ter vagas separadas para autodeclaração de "Indígena" e "Pretos e Pardos", 
-por fazerem partes de minorias sociais diferentes._
-
 ##### O que eu quero fazer:
 
-- Implementar em Python (Pandas) uma analise dos dados para comparar meu ponto principal (desempenho dos alunos cotistas e nao cotistas).
-- Implementar um dashboard (Dash + Potly) para visualizar os dados de forma mais intuitiva.
-- Criar um botao no dashboard para inserir planilhas no mesmo formato da planilha original e fazer a analise automaticamente(usar como default a planilha original).
-- Comprovar ou nao a hipotese de que os alunos cotistas tem um desempenho inferior aos nao cotistas.
-- Refatorar todo o codigo na secao "O que eu ja fiz" de acordo com a atual estrutura do projeto(localizada abaixo). Implentar as logicas que faltam na pasta de analise e src(no caso do dashboard).
-
-```
-dashboard/
-  .vscode/ 
-  analise/  
-    notebook/
-        - analiseJupiter.ipynb
-        - FormataçaoDados.ipynb 
-  dados/
-    bruto/
-      - planilhaJoinCriptografada.xlsx
-    processado/
-  scripts/
-    - cripto.py
-    - join.py
-  src/
-    - app.py
-  tests/
-  venv/
-  Procfile
-  README.md
-  requirements.txt
-  runtime.txt
-```
-
-- obs: Aqui esta tambem uma ideia mais especifica do codigo da analise pensada por mim, veja se faz sentido:
-- 
-```text
-- Agrupar os dados em 4 grupos diferentes:
+- Implementar em Python (Pandas) uma analise dos dados para analisar meu ponto principal (desempenho dos alunos cotistas e nao cotistas).
+- Implementar a Analise baseada nesse passo-a-passo:
+    - Agrupar os dados em 4 grupos diferentes:
     - Antes das Cotas
     - Depois das Cotas
     - Período Pandemico
-    - Geral (3 grupos juntos)
+    - Todos (3 grupos juntos)
     - Agrupar os dados em 2 grupos diferentes:
         - Cotistas
         - Não-Cotistas
@@ -303,4 +179,35 @@ dashboard/
             - Fazer análise visual do mapa de calor dos C e NC
             - Fazer distancia média do centro de cada bairro até a UNIRIO
             - Fazer comparacao entre C e NC olhando evasão e zona que mora do RJ
+
+
+<br>
+Futuro:
+- Comprovar ou nao a hipotese de que os alunos cotistas tem um desempenho inferior aos nao cotistas.
+- Implementar um dashboard (Dash + Potly) para visualizar os dados de forma mais intuitiva.
+- Criar um botao no dashboard para inserir planilhas no mesmo formato da planilha original e fazer a analise automaticamente(usar como default a planilha original).
+
+Estrutura de Pastas do Projeto:
+```
+dashboard/
+  .vscode/ 
+  analise/  
+    notebook/
+        - analiseJupiter.ipynb
+        - FormataçaoDados.ipynb 
+  dados/
+    bruto/
+      - planilhaJoinCriptografada.xlsx
+    processado/
+      - dfPrincipal.csv
+  scripts/
+    - cripto.py
+    - join.py
+  src/
+    - app.py (Dash)
+  venv/
+  Procfile
+  README.md
+  requirements.txt
+  runtime.txt
 ```
