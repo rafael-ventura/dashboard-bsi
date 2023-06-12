@@ -52,7 +52,7 @@ criei um script de criptografia e um script de join, que foi executado pelos meu
 que esta na pasta "join".
 A partir dessa planilha, eu comecei a fazer a limpeza dos dados e ver algumas informacoes sobre.
 
-Aqui esta um pouco do que eu fiz no juptyer notebook para separar os tipos de forma de evasao em 3 tipos ( Evasao, Concluido e Cursando). 
+- Aqui esta um pouco do que eu fiz no juptyer notebook para separar os tipos de forma de evasao em 3 tipos ( Evasao, Concluido e Cursando). 
 A tabelaPrinc eh o arquivo 'planilhaCriptografada.xlsx' em forma de dataframe:
 
 ```jupyterpython
@@ -84,6 +84,42 @@ evasoesDF.loc[evasoesDF['ANO_EVASAO'].isna() , 'ANO_EVASAO'] = 2023
 #agrupando pelo campo forma evasao e somando a coluna de alunos
 
 evasoesDF = evasoesDF.groupby(['ANO_EVASAO','FORMA_EVASAO'] , as_index=False)['ALUNOS'].sum()
+```
+- Aqui um trecho para categorizar os alunos por Outros, Ampla Concorrencia e Cotas:
+```jupyterpython
+# Mapeamento de categorias
+forma_ingresso_mapping = {
+    'AE - Aluno Especial - Disciplina Isolada': 'Outros',
+    'AE - Mobilidade Acadêmica IAE/IESCE': 'Outros',
+    'AE - Mobilidade Adadêmica Externa - ANDIFES': 'Outros',
+    'DJ - Decisão Judicial': 'Outros',
+    'EN - ENEM': 'Ampla Concorrência',
+    'EO - Transferência Ex-Ofício': 'Outros',
+    'PD - Portador de Diploma de Nível Superior': 'Outros',
+    'Pessoas com Deficiência': 'Outros',
+    'PG - Programa de Estudantes - Convênio (PEC-G)': 'Outros',
+    'SISU Ampla Concorrência': 'Ampla Concorrência',
+    'SISU EscolaPública - Indep. de Renda': 'Cotas',
+    'SISU Escola Pública até 1,5 S.M Índio': 'Cotas',
+    'SISU Escola Pública até 1,5 S.M Preto e Pardo': 'Cotas',
+    'SISU Escola Pública até 1,5 S.M.': 'Cotas',
+    'SISU Escola Pública até 1,5 S.M. Preto, Pardo, Indígena': 'Cotas',
+    'SISU Escola Pública, Indep. de Renda: Preto, Pardo, Indígena': 'Cotas',
+    'SISU Escola Pública, Indep. de Renda: Índio': 'Cotas',
+    'SISU Escola Pública, Indep. de Renda: Preto e Pardo': 'Cotas',
+    'TE - Transferência Externa - oriunda de outra instituição': 'Outros',
+    'TC - Transferência Interna-Curso não relacionado ao anterior': 'Outros',
+    'VE - Vestibular': 'Ampla Concorrência'
+}
+
+# Substituir as categorias
+df['FORMA_INGRESSO'] = df['FORMA_INGRESSO'].replace(forma_ingresso_mapping)
+```
+
+- Aqui um trecho para formatar alguns dos campos:
+```jupyterpython
+
+
 ```
 
 O campo FORMA_INGRESSO Tambem deve ser reduzido em 3 campos: 
@@ -220,8 +256,34 @@ por fazerem partes de minorias sociais diferentes._
 - Implementar um dashboard (Dash + Potly) para visualizar os dados de forma mais intuitiva.
 - Criar um botao no dashboard para inserir planilhas no mesmo formato da planilha original e fazer a analise automaticamente(usar como default a planilha original).
 - Comprovar ou nao a hipotese de que os alunos cotistas tem um desempenho inferior aos nao cotistas.
+- Refatorar todo o codigo na secao "O que eu ja fiz" de acordo com a atual estrutura do projeto(localizada abaixo). Implentar as logicas que faltam na pasta de analise e src(no caso do dashboard).
+
+```
+dashboard/
+  .vscode/ 
+  analise/  
+    notebook/
+        - analiseJupiter.ipynb
+        - FormataçaoDados.ipynb 
+  dados/
+    bruto/
+      - planilhaJoinCriptografada.xlsx
+    processado/
+  scripts/
+    - cripto.py
+    - join.py
+  src/
+    - app.py
+  tests/
+  venv/
+  Procfile
+  README.md
+  requirements.txt
+  runtime.txt
+```
 
 - obs: Aqui esta tambem uma ideia mais especifica do codigo da analise pensada por mim, veja se faz sentido:
+- 
 ```text
 - Agrupar os dados em 4 grupos diferentes:
     - Antes das Cotas
