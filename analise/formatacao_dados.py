@@ -22,6 +22,7 @@ def preencher_nulos(dataframe):
     return dataframe.fillna(substituicoes)
 
 
+# TODO: MUDAR O NOME AO CRIAR AS COLUNAS ABAIXO
 def formatar_periodos(dataframe):
     for periodo in ['PERIODO_EVASAO', 'PERIODO_INGRESSO']:
         dataframe_temp = pd.DataFrame(dataframe[periodo].str.split('/', expand=True))
@@ -32,7 +33,7 @@ def formatar_periodos(dataframe):
         dataframe['ANO_' + periodo] = dataframe_temp['ANO']
     return dataframe
 
-
+# TODO: implementar no arquivo formatacao_dados uma conversão do campo ANO_PERIODO_INGRESSO de float para date.year
 def converter_tipos(dataframe):
     tipo_campos = {
         'SEXO': str,
@@ -57,7 +58,9 @@ def limpa_bairros(dataframe):
     dataframe['BAIRRO'] = dataframe['BAIRRO'].apply(lambda bairro: unidecode.unidecode(bairro).lower().strip())
     return dataframe
 
+# TODO: ADICIONAR METODO PARA CRIAR COLUNA FORMA_INGRESSO_SIMPLES (Outros, Ampla Concorrência, Cotas)
 
+# TODO: CRIAR METODO PARA DEFINIR QUE ZONA O ALUNO MORA NO RJ (Norte, Sul, Centro, Oeste, Ilha, Baixada)
 def main():
     dataframe = ler_dados()
     dataframe = remover_colunas(dataframe)

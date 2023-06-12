@@ -11,6 +11,7 @@ df = pd.read_csv('../dados/dfPrincipal.csv')
 df['DT_NASCIMENTO'] = pd.to_datetime(df['DT_NASCIMENTO'])
 df['DT_EVASAO'] = pd.to_datetime(df['DT_EVASAO'])
 
+# TODO: PARAR DE USAR DT_INGRESSO E USAR ANO_PERIODO_INGRESSO EM VEZ DISSO, POREM FAZENDO COMPARACAO SOMENTE PELO ANO.
 # Separar o dataframe em grupos
 # As datas exatas para 'Antes das Cotas', 'Depois das Cotas' e 'Período Pandemico' precisarão ser ajustadas
 antes_cotas = df[df['DT_INGRESSO'] < '2010-01-01']
@@ -18,6 +19,7 @@ depois_cotas = df[(df['DT_INGRESSO'] >= '2010-01-01') & (df['DT_INGRESSO'] < '20
 periodo_pandemico = df[(df['DT_INGRESSO'] >= '2020-03-01') & (df['DT_INGRESSO'] < '2021-06-30')]
 todos = df.copy()  # inclui todos os três grupos acima
 
+# TODO: ESPERAR TODO formatacao_dados.py(61,3)"
 # Separação em Cotistas e Não-Cotistas
 # Isso pressupõe que a coluna 'FORMA_INGRESSO_SIMPLES' indica se o aluno é cotista ou não
 cotistas = df[df['FORMA_INGRESSO_SIMPLES'] == 'Cotas']
@@ -74,6 +76,7 @@ for grupo, nome in zip(grupos, nomes_grupos):
     plt.title(f'Mapa de Calor do CR - {nome}')
     plt.show()
 
+    # TODO: Usar metodo auxiliar no arquivo distancia.py"
     # Distância média do centro de cada bairro até a UNIRIO
     # Isso requer um dataframe de distâncias com as distâncias de cada bairro até a UNIRIO
     # As distâncias poderiam ser calculadas a partir das coordenadas de latitude e longitude usando a função cdist do Scipy
@@ -83,6 +86,7 @@ for grupo, nome in zip(grupos, nomes_grupos):
     distancia_media = grupo['DISTANCIA'].mean()
     print(f'Distância média do centro de cada bairro até a UNIRIO: {distancia_media}')
 
+    # TODO: ESPERAR TODO formatacao_dados.py(63,3)"
     # Comparação da evasão olhando a zona que mora do RJ
     # Isso pressupõe que existe uma coluna 'ZONA' no dataframe indicando a zona do Rio de Janeiro onde o aluno mora
     evasao_por_zona = grupo[grupo['FORMA_EVASAO'] == 'Evasão'].groupby('ZONA').size() / grupo.groupby('ZONA').size()
