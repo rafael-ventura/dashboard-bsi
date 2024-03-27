@@ -25,7 +25,7 @@ jupyter notebook analiseFinal.ipynb
 ### Executar aplicacacao
 
 ```bash
-python app.py
+python main.py
 ```
 
 ### Voce pode acessar a aplicacao funcionando online
@@ -193,8 +193,8 @@ dashboard/
   .vscode/ 
   analise/  
     notebook/
-        - analiseJupiter.ipynb
-        - FormataçaoDados.ipynb 
+        - analiseJupiter.py
+        - FormataçaoDados.py 
   dados/
     bruto/
       - planilhaJoinCriptografada.xlsx
@@ -203,8 +203,9 @@ dashboard/
   scripts/
     - cripto.py
     - join.py
+    - distancia.py
   src/
-    - app.py (Dash)
+    - app.py (Dash, n vou usar agr
   venv/
   Procfile
   README.md
