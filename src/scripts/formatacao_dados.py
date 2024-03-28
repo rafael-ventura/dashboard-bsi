@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import unidecode
-from classificacao import classificar_forma_ingresso, classificar_forma_evasao, classificar_idade
+from .classificacao import classificar_forma_ingresso, classificar_forma_evasao, classificar_idade
 
 
 def ler_dados():
@@ -51,8 +51,9 @@ def converter_tipos(dataframe):
         'PERIODO_EVASAO': np.float64,
         'ANO_PERIODO_EVASAO': np.float64,
         'PER_PERIODO_EVASAO_FORMAT': str,
-        'ANO_PERIODO_INGRESSO': np.float64,
+        'ANO_PERIODO_INGRESSO': np.float64
     }
+    dataframe['CRA'] = dataframe['CRA'].str.replace(',', '.').astype(float)
     return dataframe.astype(tipo_campos)
 
 

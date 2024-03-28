@@ -1,26 +1,23 @@
-from src.scripts.analyses.analise_exploratoria import realizar_analise_exploratoria
-from src.scripts.formatacao_dados import formatar_e_classificar_dados
+from scripts.formatacao_dados import formatar_e_classificar_dados
+from scripts.analyses.analise_exploratoria import analise_exploratoria
+from scripts.analyses.analise_temporal import analise_temporal
+from scripts.analyses.analise_ingresso_evasao import analise_ingresso_evasao
+from scripts.analyses.analise_performance_academica import analise_performance_academica
+from scripts.gerar_relatorio import salvar_graficos_como_imagem
 
 
 def main():
-    try:
-        print("Iniciando formatação e classificação dos dados...")
-        df = formatar_e_classificar_dados()
+    df = formatar_e_classificar_dados()
 
-        print("Iniciando análise exploratória...")
-        realizar_analise_exploratoria(df)
+    secoes = {
+        "Análise Exploratória": [analise_exploratoria],
+        "Análise Temporal": [analise_temporal],
+        "Análise de Ingresso e Evasão": [analise_ingresso_evasao],
+        "Análise de Performance Acadêmica": [analise_performance_academica]
+    }
 
-        print("Iniciando análise temporal...")
-        analise_temporal(df)
+    salvar_graficos_como_imagem(secoes, df)
 
-        print("Iniciando análise de categorias...")
-        analise_categoria(df)
-
-        print("Iniciando análise específica...")
-        analise_especifica(df)
-
-    except Exception as e:
-        print(f"Ocorreu um erro durante a execução: {e}")
 
 if __name__ == "__main__":
     main()
