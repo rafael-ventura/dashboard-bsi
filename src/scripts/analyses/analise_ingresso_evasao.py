@@ -1,38 +1,30 @@
-import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
+from src.utils import plot_countplot, plot_histplot, criar_pasta_graficos, salvar_grafico, carregar_dados
 
-
-def plot_distribuicao_ingresso(df):
-    sns.countplot(x='FORMA_INGRESSO_SIMPLES', data=df)
-    plt.title('Distribuição de Cotistas e Não-Cotistas')
-    plt.xlabel('Forma de Ingresso')
-    plt.ylabel('Quantidade')
-
-
-def plot_evasao_sexo(df):
-    sns.countplot(x='FORMA_EVASAO', hue='SEXO', data=df)
-    plt.title('Distribuição de Evasões por Sexo')
-    plt.xlabel('Forma de Evasão')
-    plt.ylabel('Quantidade')
-
-
-def plot_evasao_idade(df):
-    sns.histplot(df[df['STATUS_EVASAO'] == 'Evasão']['IDADE'], kde=True)
-    plt.title('Distribuição de Idades dos Alunos com Evasão')
-    plt.xlabel('Idade')
-    plt.ylabel('Quantidade')
-
-
-def analise_ingresso_evasao(df, ax=None):
-    if ax is None:
-        fig, ax = plt.subplots()
+def analise_ingresso_evasao(df):
+    criar_pasta_graficos()
     print("\nIniciando Análise de Ingresso e Evasão...")
+
     plot_distribuicao_ingresso(df)
     plot_evasao_sexo(df)
     plot_evasao_idade(df)
 
+    print("\nAnálise de Ingresso e Evasão Concluída!")
+
+def plot_distribuicao_ingresso(df):
+    # Usar função plot_countplot do utils.py
+    plot_countplot(x='FORMA_INGRESSO_SIMPLES', data=df, titulo='Distribuição de Cotistas e Não-Cotistas', xlabel='Forma de Ingresso', ylabel='Quantidade')
+    salvar_grafico('distribuicao_ingresso')
+
+def plot_evasao_sexo(df):
+    # Usar função plot_countplot do utils.py com o parâmetro hue
+    plot_countplot(x='STATUS_EVASAO', data=df, hue='SEXO', titulo='Distribuição de Evasões por Sexo', xlabel='Forma de Evasão', ylabel='Quantidade')
+    salvar_grafico('evasao_sexo')
+
+def plot_evasao_idade(df):
+    # Usar função plot_histplot do utils.py
+    plot_histplot(x=df[df['STATUS_EVASAO'] == 'Evasão']['IDADE'], data=df, titulo='Distribuição de Idades dos Alunos com Evasão', xlabel='Idade', ylabel='Quantidade')
+    salvar_grafico('evasao_idade')
 
 if __name__ == "__main__":
-    df = pd.read_csv('../dados/processado/dfPrincipal.csv')
+    df = carregar_dados()
     analise_ingresso_evasao(df)
