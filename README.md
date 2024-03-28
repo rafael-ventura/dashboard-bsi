@@ -135,29 +135,27 @@ A coluna FORMA_INGRESSO tem 17 valores diferentes, mas representam os alunos cot
   - <span style="color:#F3E6C9 ;">'Sem evasão'</span>
   - <span style="color:#F3E6C9 ;">'FAL - Falecimento do discente'</span>
   - <span style="color:#F3E6C9 ;">'TIC - Transferência Interna'</span>
-- COD_CURSO = _(String)_ Define o codigo do curso do aluno.
-<br>
+- COD_CURSO = _(String)_ Define o codigo do curso do aluno. <br>
 **obs:** Como nosso escopo e o curso de Sistemas de Informacao, todos os alunos tem o mesmo codigo de curso, que e <span style="color:#F3E6C9 ;">210</span>
-- NOME_UNIDADE = _(String)_ Define o nome da unidade do aluno.
-<br>
-**obs:** Como nosso escopo e o curso de Sistemas de Informacao da UNIRIO, o valor e igual parada todos os alunos, que e <span style="color:#F3E6C9 ;">'Sistemas de Informação - Bacharelado - Turno Integral (V/N)'</span>
-- MATR_ALUNO = _(Critografado)_ Define o numero de matricula do aluno.
-- NUM_VERSAO = _(Inteiro)_ Incerto se e o numero de versao da matricula do aluno. Tem dois valores que parecem ser referentes a data:
+- NOME_UNIDADE = _(String)_ Define o nome da unidade do aluno. <br>
+**obs:** Como nosso escopo e o curso de Sistemas de Informacao da UNIRIO, o valor e igual parada todos os alunos, que e <span style="color:#F3E6C9 ;">'Sistemas de Informação - Bacharelado - Turno Integral (V/N)'</span> <br>
+- MATR_ALUNO = _(Critografado)_ Define o numero de matricula do aluno. <br>
+- NUM_VERSAO = _(Inteiro)_ Incerto se e o numero de versao da matricula do aluno. Tem dois valores que parecem ser referentes a data: <br>
     - <span style="color:#F3E6C9 ;">2000/2</span>
     - <span style="color:#F3E6C9 ;">2008/1</span>
-- PERIODO_INGRESSO = _(String)_ Define o periodo de ingresso do aluno, podendo ter o seguinte formato:
+- PERIODO_INGRESSO = _(String)_ Define o periodo de ingresso do aluno, podendo ter o seguinte formato: <br>
     - <span style="color:#F3E6C9 ;">2002/2°. semestre</span>
-- DT_EVASAO = _(String)_ Define a data exata de evasao do aluno, podendo ter o seguinte formato:
+- DT_EVASAO = _(String)_ Define a data exata de evasao do aluno, podendo ter o seguinte formato: <br>
     - <span style="color:#F3E6C9 ;">14/09/2009</span>
-- PERIODO_EVASAO = _(String)_ Define o periodo de evasao do aluno, podendo ter o seguinte formato:
+- PERIODO_EVASAO = _(String)_ Define o periodo de evasao do aluno, podendo ter o seguinte formato: <br>
     - <span style="color:#F3E6C9 ;">2009/2°. semestre</span>
-- CPF_MASCARA = _(Critografado)_ Define o CPF do aluno.
-- CRA = _(Float)_ Define o CRA do aluno.
-- BAIRRO = _(String)_ Define o bairro do aluno. (Pode ser vazio)
-- CIDADE = _(String)_ Define a cidade do aluno. (Pode ser vazio)
-- ESTADO = _(String)_ Define o estado do aluno. (Pode ser vazio)
+- CPF_MASCARA = _(Critografado)_ Define o CPF do aluno. <br>
+- CRA = _(Float)_ Define o CRA do aluno. <br>
+- BAIRRO = _(String)_ Define o bairro do aluno. (Pode ser vazio) <br>
+- CIDADE = _(String)_ Define a cidade do aluno. (Pode ser vazio) <br>
+- ESTADO = _(String)_ Define o estado do aluno. (Pode ser vazio) <br>
 
-##### O que eu quero fazer:
+##### O que eu estou fazendo:
 
 - Implementar em Python (Pandas) uma analise dos dados para analisar meu ponto principal (desempenho dos alunos cotistas e nao cotistas).
 - Implementar a Analise baseada nesse passo-a-passo:
@@ -179,13 +177,13 @@ A coluna FORMA_INGRESSO tem 17 valores diferentes, mas representam os alunos cot
             - Fazer análise visual do mapa de calor dos C e NC
             - Fazer distancia média do centro de cada bairro até a UNIRIO
             - Fazer comparacao entre C e NC olhando evasão e zona que mora do RJ
-
-
-<br>
-Futuro:
-- Comprovar ou nao a hipotese de que os alunos cotistas tem um desempenho inferior aos nao cotistas.
 - Implementar um dashboard (Dash + Potly) para visualizar os dados de forma mais intuitiva.
-- Criar um botao no dashboard para inserir planilhas no mesmo formato da planilha original e fazer a analise automaticamente(usar como default a planilha original).
+
+
+Futuro: <br> 
+- Comprovar ou nao a hipotese de que os alunos cotistas tem um desempenho inferior aos nao cotistas. 
+- Criar um botao no dashboard para inserir planilhas no mesmo formato da planilha original e fazer a analise automaticamente(usar como default a planilha original). 
+<br>
 
 Estrutura de Pastas do Projeto:
 ```
