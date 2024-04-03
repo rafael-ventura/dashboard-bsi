@@ -61,12 +61,14 @@ def plot_boxplot(x, y, data, titulo, xlabel, ylabel, ax=None):
     ax.set_ylabel(ylabel)
 
 
-def plot_lineplot(x, y, data, titulo, xlabel, ylabel, ax=None):
+def plot_lineplot(x, y, data, titulo, xlabel, ylabel, ax=None, x_tick_params=None):
     if ax is None:
         fig, ax = plt.subplots(figsize=(10, 6))
     sns.lineplot(x=x, y=y, data=data, ax=ax)
     ax.set_title(titulo)
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
+    if x_tick_params:
+        ax.tick_params(axis='x', **x_tick_params)
     plt.grid(True)
     plt.tight_layout()

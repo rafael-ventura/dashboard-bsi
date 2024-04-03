@@ -28,7 +28,7 @@ jupyter notebook analiseFinal.ipynb
 python main.py
 ```
 
-### Voce pode acessar a aplicacao funcionando online
+<!--- ### Voce pode acessar a aplicacao funcionando online </>  ---> 
 
 <!--- [Heroku App](https://dashboard-bsi.herokuapp.com/) </>  ---> 
 
@@ -40,25 +40,22 @@ Fazer uma analise do perfil dos alunos do curso de Sistemas de Informacao, tenta
 e tentando encontrar padroes que identifiquem a diferencas entre os alunos que evadiram e os que nao evadiram, a distancia entre a residencia do aluno 
 e a universidade(Que se encontra na Urca), o CRA dos alunos, a idade dos alunos, o sexo dos alunos, a forma de ingresso dos alunos, etc.
 
-Pensei em usar este projeto para provar que o desempenho academicos dos alunos cotistas nao e pior que o desempenho academico dos alunos nao cotistas, 
-mas ver o quanto as outras variaveis afetam o desempenho academico dos alunos, principalmente a distancia entre a residencia do aluno e a universidade.
-
 
 ##### O que eu ja fiz
 
-Baseado na estrutura dos dados extraidos pelos meus professores,
-criei um script de criptografia e um script de join, que foi executado pelos meus professores e me retornou a planilha de dados criptografada,
-que esta na pasta "join".
+Baseado na estrutura dos dados extraidos pelas minhas professoras,
+Criei um script de criptografia e um script de join, que foi executado pelos meus professores e me retornou a planilha de dados criptografada (ele se esta na pasta `src/scripts`).
 A partir dessa planilha, eu comecei a fazer a limpeza dos dados e ver algumas informacoes sobre.
-
-- Aqui esta um pouco do que eu fiz no juptyer notebook para separar os tipos de forma de evasao em 3 tipos ( Evasao, Concluido e Cursando). 
-A tabelaPrinc eh o arquivo 'planilhaCriptografada.xlsx' em forma de dataframe:
 
 <br>
 
-O campo FORMA_INGRESSO Tambem deve ser reduzido em 3 campos: 
-Um para os alunos que ingressaram por cotas, um para os alunos que ingressaram por ampla concorrencia e outro para os outrostipos de ingresso, 
-entao eu fiz a seguinte analise manualmente:
+Apos alguns algoritmos para limpeza, fiz a classificao de alguns campos, reduzi o campo FORMA_INGRESSO para 3 campos, calculei a idade dos alunos e formatei os bairros cadastrados de forma errada.
+
+<br>
+
+Em seguida, criei alguns graficos para visualizar melhor os dados, e fiz algumas analises sobre os dados.
+
+<br>
 
 
 ```text

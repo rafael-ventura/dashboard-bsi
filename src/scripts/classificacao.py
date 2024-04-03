@@ -1,18 +1,19 @@
-from datetime import datetime
-
 import numpy as np
+import pandas as pd
 
 
 def classificar_idade(dataframe):
-    # Data atual para referência
-    data_atual = datetime.now()
+    # Função para calcular a idade no momento do ingresso
+    def calcular_idade_ingresso(row):
+        ano_ingresso, semestre_ingresso = map(int, row['PER_PERIODO_INGRESSO_FORMAT'].split('.'))
+        mes_ingresso = 1 if semestre_ingresso == 1 else 7  # Janeiro para o 1º semestre, Julho para o 2º
+        data_ingresso = pd.Timestamp(year=ano_ingresso, month=mes_ingresso, day=1)
+        idade_ingresso = data_ingresso.year - row['DT_NASCIMENTO'].year - ((data_ingresso.month, data_ingresso.day) < (row['DT_NASCIMENTO'].month, row['DT_NASCIMENTO'].day))
+        return idade_ingresso
 
-    # Calcular idade usando a data de nascimento e a data atual
-    # O método .apply() é usado para aplicar a função lambda em cada linha
-    dataframe['IDADE'] = dataframe['DT_NASCIMENTO'].apply(
-        lambda x: data_atual.year - x.year - ((data_atual.month, data_atual.day) < (x.month, x.day)))
+    # Aplicar a função para calcular a idade no momento do ingresso
+    dataframe['IDADE'] = dataframe.apply(calcular_idade_ingresso, axis=1)
 
-    print("Idade calculada com sucesso")
     return dataframe
 
 
@@ -55,6 +56,11 @@ def classificar_forma_evasao(dataframe):
     dataframe.loc[dataframe['STATUS_EVASAO'] == 'Cursando', 'ANO_EVASAO'] = np.nan
     # Para os alunos que evadiram, usar o ano de DT_EVASAO se disponível, caso contrário, deixar como está
     dataframe.loc[(dataframe['STATUS_EVASAO'] == 'Evasão') & (dataframe['DT_EVASAO'].notnull()), 'ANO_EVASAO'] = \
-    dataframe['DT_EVASAO'].dt.year
+        dataframe['DT_EVASAO'].dt.year
 
     return dataframe
+
+
+def arredondar_cra(df):
+    df['CRA_arredondado'] = (df['CRA'] * 2).round() / 2
+    return df

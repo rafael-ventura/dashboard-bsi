@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import unidecode
-from .classificacao import classificar_forma_ingresso, classificar_forma_evasao, classificar_idade
+from .classificacao import classificar_forma_ingresso, classificar_forma_evasao, classificar_idade, arredondar_cra
 
 
 def ler_dados():
@@ -140,7 +140,6 @@ def normalizar_bairros(dataframe):
 
 
 def classificar(dataframe):
-
     print("Iniciando classificação dos dados...")
     # Classifica a forma de ingresso
     dataframe = classificar_forma_ingresso(dataframe)
@@ -149,12 +148,16 @@ def classificar(dataframe):
     dataframe = classificar_forma_evasao(dataframe)
     # Classifica a idade
     dataframe = classificar_idade(dataframe)
+
+    # Arrendonda o CRA
+    dataframe = arredondar_cra(dataframe)
+
     return dataframe
 
 
 # Adicione as funções que você já definiu aqui
 
-def formatar_e_classificar_dados():
+def formatar():
     df = ler_dados()
     df = remover_colunas(df)
     df = preencher_nulos(df)
@@ -167,4 +170,3 @@ def formatar_e_classificar_dados():
     salvar_dados(df)
     print('DataFrame formatado, classificado e salvo com sucesso!')
     return df
-
