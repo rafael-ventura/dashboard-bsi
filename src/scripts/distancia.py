@@ -1,23 +1,63 @@
-# Calcula distância entre dois bairros 
-#  A geopy utiliza o serviço de localização Nominatim
-# https://nominatim.openstreetmap.org/ui/search.html
+from pandas import NA
+import time
+from geopy import Nominatim
+from geopy.distance import geodesic
+from geopy.exc import GeocoderTimedOut, GeocoderServiceError
+from src.utils import carregar_dados
 
-from geopy.geocoders import Nominatim
-from geopy import distance
 
-geolocator = Nominatim(user_agent="geolocalização")
-lugar = "Urca, Rio de Janeiro, Rio de Janeiro"
-localizacao = geolocator.geocode(lugar)
-#print(location)
-print(lugar, ":", (localizacao.latitude, localizacao.longitude))
+def calcular_distancia_ate_urca(bairro, cache_distancias, bairros_nao_encontrados):
+    """
+    Calcula a distância entre a Urca e um bairro específico.
+    """
+    if bairro in cache_distancias:
+        return cache_distancias[bairro]
 
-print()
-lugar2 = "Flamengo, Rio de Janeiro, Rio de Janeiro"
-localizacao2 = geolocator.geocode(lugar2)
-#print(location2)
-print(lugar2, ":", (localizacao2.latitude, localizacao2.longitude))
+    geolocator = Nominatim(user_agent="geolocalizacao_urca")
 
-print()
-distancia = distance.distance((localizacao.latitude, localizacao.longitude), (localizacao2.latitude, localizacao2.longitude)).km
+    # Defina o timeout como 5 segundos
+    timeout = 5
 
-print("Distância = ", round(distancia,2), "Km")
+    try:
+        # Inclua o timeout na chamada geocode
+        local_urca = geolocator.geocode("Urca, Rio de Janeiro, Rio de Janeiro", timeout=timeout)
+        local_bairro = geolocator.geocode(f"{bairro}, Rio de Janeiro, Rio de Janeiro", timeout=timeout)
+
+        if local_urca and local_bairro:
+            distancia_km = geodesic((local_urca.latitude, local_urca.longitude),
+                                    (local_bairro.latitude, local_bairro.longitude)).km
+            cache_distancias[bairro] = round(distancia_km, 2)
+            time.sleep(1)
+            return cache_distancias[bairro]
+    except (GeocoderTimedOut, GeocoderServiceError) as e:
+        print(f"Erro ao geolocalizar {bairro}: {e}")
+
+    bairros_nao_encontrados.append(bairro)
+    return NA  # Retorna pd.NA em vez de None
+
+
+def adicionar_distancia_ate_urca(dataframe):
+    """
+    Adiciona a coluna 'DISTANCIA_URCA' ao dataframe com a distância de cada bairro até a Urca.
+    Calcula a distância apenas uma vez para cada bairro único e usa esse resultado para todos os alunos do mesmo bairro.
+    """
+
+    cache_distancias = {}
+    bairros_nao_encontrados = []
+
+    for bairro in dataframe['BAIRRO'].unique():
+        distancia = calcular_distancia_ate_urca(bairro, cache_distancias, bairros_nao_encontrados)
+        cache_distancias[bairro] = distancia
+
+    dataframe['DISTANCIA_URCA'] = dataframe['BAIRRO'].map(cache_distancias)
+
+    if bairros_nao_encontrados:
+        print("Bairros não encontrados:", set(bairros_nao_encontrados))
+
+    return dataframe
+
+
+if __name__ == "__main__":
+    df = carregar_dados()
+    df = adicionar_distancia_ate_urca(df)
+    print(df['DISTANCIA_URCA'])

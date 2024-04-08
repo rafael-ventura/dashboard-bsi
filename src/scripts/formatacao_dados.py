@@ -154,15 +154,13 @@ def classificar_idade(df):
     """
     Função para classificar a idade dos alunos no momento do ingresso.
     """
-    df['IDADE'] = df.apply(lambda row: calcular_idade_ingresso(row), axis=1)
+    df['IDADE_INGRESSO'] = df.apply(calcular_idade_ingresso, axis=1)
     return df
 
 
 def calcular_idade_ingresso(row):
     """
-    Função para calcular a idade do aluno no momento do ingresso.
-    :param row:
-    :return:
+    Função para calcular a idade do aluno no momento do ingresso.:
     """
     ano_ingresso, semestre_ingresso = map(int, row['PERIODO_INGRESSO_FORMATADO'].split('.'))
     mes_ingresso = 1 if semestre_ingresso == 1 else 7
@@ -243,7 +241,11 @@ def formatar():
     df = classificar_forma_evasao(df)
     df = arredondar_cra(df)
     df = calcular_tempo_curso(df)
-    df = adicionar_distancia_ate_urca(df)
+    #df = adicionar_distancia_ate_urca(df)
     salvar_dados(df)
     print('DataFrame formatado, classificado e salvo com sucesso!')
     return df
+
+
+if __name__ == "__main__":
+    formatar()
