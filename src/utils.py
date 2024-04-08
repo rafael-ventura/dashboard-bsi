@@ -2,6 +2,7 @@ import os
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+import unidecode
 
 
 def criar_pasta_graficos(nome_pasta='graficos'):
@@ -72,3 +73,7 @@ def plot_lineplot(x, y, data, titulo, xlabel, ylabel, ax=None, x_tick_params=Non
         ax.tick_params(axis='x', **x_tick_params)
     plt.grid(True)
     plt.tight_layout()
+
+
+def remover_acentos_e_maiusculas(texto):
+    return unidecode.unidecode(texto).upper()
