@@ -1,63 +1,61 @@
-from pandas import NA
-import time
+import pandas as pd
+import numpy as np
 from geopy import Nominatim
 from geopy.distance import geodesic
 from geopy.exc import GeocoderTimedOut, GeocoderServiceError
-from src.utils import carregar_dados
+import time
+
+from src.utils import carregar_dados, salvar_dados
 
 
-def calcular_distancia_ate_urca(bairro, cache_distancias, bairros_nao_encontrados):
+def inicializar_geolocator():
+    """Inicializa e retorna um objeto geolocator."""
+    return Nominatim(user_agent="geolocalizacao_urca")
+
+
+def calcular_distancia_ate_urca(bairro, cidade, estado, geolocator):
     """
-    Calcula a distância entre a Urca e um bairro específico.
+    Calcula a distância entre um bairro e a Urca, no Rio de Janeiro.
+    Retorna a distância calculada ou np.NaN se não for possível calcular.
     """
-    if bairro in cache_distancias:
-        return cache_distancias[bairro]
-
-    geolocator = Nominatim(user_agent="geolocalizacao_urca")
-
-    # Defina o timeout como 5 segundos
-    timeout = 5
-
     try:
-        # Inclua o timeout na chamada geocode
-        local_urca = geolocator.geocode("Urca, Rio de Janeiro, Rio de Janeiro", timeout=timeout)
-        local_bairro = geolocator.geocode(f"{bairro}, Rio de Janeiro, Rio de Janeiro", timeout=timeout)
-
+        time.sleep(1)  # Evita sobrecarga na API
+        endereco_bairro = f"{bairro}, {cidade}, {estado}"
+        local_urca = geolocator.geocode("Urca, Rio de Janeiro, Rio de Janeiro")
+        local_bairro = geolocator.geocode(endereco_bairro)
         if local_urca and local_bairro:
-            distancia_km = geodesic((local_urca.latitude, local_urca.longitude),
-                                    (local_bairro.latitude, local_bairro.longitude)).km
-            cache_distancias[bairro] = round(distancia_km, 2)
-            time.sleep(1)
-            return cache_distancias[bairro]
+            return round(geodesic((local_urca.latitude, local_urca.longitude),
+                                  (local_bairro.latitude, local_bairro.longitude)).km, 2)
     except (GeocoderTimedOut, GeocoderServiceError) as e:
         print(f"Erro ao geolocalizar {bairro}: {e}")
-
-    bairros_nao_encontrados.append(bairro)
-    return NA  # Retorna pd.NA em vez de None
+    return np.NaN
 
 
-def adicionar_distancia_ate_urca(dataframe):
+def adicionar_distancia_ate_urca(df, df_distancias, geolocator):
     """
-    Adiciona a coluna 'DISTANCIA_URCA' ao dataframe com a distância de cada bairro até a Urca.
-    Calcula a distância apenas uma vez para cada bairro único e usa esse resultado para todos os alunos do mesmo bairro.
+    Atualiza ou adiciona distâncias do DataFrame principal baseando-se nas distâncias já calculadas.
+    Calcula novas distâncias apenas para bairros sem dados válidos.
     """
+    cache_distancias = df_distancias.set_index('BAIRRO')['DISTANCIA_URCA'].to_dict() if not df_distancias.empty else {}
 
-    cache_distancias = {}
-    bairros_nao_encontrados = []
+    if 'DISTANCIA_URCA' not in df.columns:
+        df['DISTANCIA_URCA'] = np.NaN
 
-    for bairro in dataframe['BAIRRO'].unique():
-        distancia = calcular_distancia_ate_urca(bairro, cache_distancias, bairros_nao_encontrados)
-        cache_distancias[bairro] = distancia
+    for index, row in df.iterrows():
+        bairro = row['BAIRRO']
+        if bairro not in cache_distancias or pd.isna(cache_distancias[bairro]) or cache_distancias[bairro] <= 0:
+            cache_distancias[bairro] = calcular_distancia_ate_urca(bairro, row['CIDADE'], row['ESTADO'], geolocator)
+        df.at[index, 'DISTANCIA_URCA'] = cache_distancias[bairro]
 
-    dataframe['DISTANCIA_URCA'] = dataframe['BAIRRO'].map(cache_distancias)
-
-    if bairros_nao_encontrados:
-        print("Bairros não encontrados:", set(bairros_nao_encontrados))
-
-    return dataframe
+    # Atualiza o DataFrame de distâncias apenas se houver mudanças
+    new_df_distancias = pd.DataFrame(list(cache_distancias.items()), columns=['BAIRRO', 'DISTANCIA_URCA'])
+    return df, new_df_distancias
 
 
+# Uso do código
 if __name__ == "__main__":
     df = carregar_dados()
-    df = adicionar_distancia_ate_urca(df)
-    print(df['DISTANCIA_URCA'])
+    df_distancias = carregar_dados('dados/processado/dfDistancias.csv')
+    df, updated_df_distancias = adicionar_distancia_ate_urca(df, df_distancias)
+    print(df[['BAIRRO', 'CIDADE', 'ESTADO', 'DISTANCIA_URCA']].head())
+    salvar_dados(updated_df_distancias, 'dados/processado/dfDistancias.csv')

@@ -8,7 +8,10 @@ from src.utils import carregar_dados
 
 
 def main():
-    df = formatar()
+    """
+    Função principal para execução das análises.
+    """
+    df = formatar(incluir_outros=False, dados_anterior_2013=True)
 
     analise_exploratoria(df)
     analise_temporal(df)

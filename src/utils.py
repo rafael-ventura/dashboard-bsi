@@ -3,18 +3,40 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import unidecode
+from PIL import Image, ImageDraw, ImageFont
+import textwrap
+
+
+def pega_caminho_base():
+    """
+    Função para obter o caminho base do projeto.
+    :return: Caminho base do projeto.
+    """
+    # Retorna o caminho do diretório 'dashboard-bsi' assumindo que este script está em 'dashboard-bsi/src'
+    return os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 
 
 def criar_pasta_graficos(nome_pasta='graficos'):
-    caminho_pasta = os.path.join(os.path.dirname(__file__), nome_pasta)
+    """
+    Função para criar uma pasta para salvar os gráficos.
+    :param nome_pasta: Nome da pasta a ser criada.
+    :return: None
+    """
+    caminho_pasta = os.path.join(pega_caminho_base(), 'dados', 'processado', nome_pasta)
     if not os.path.exists(caminho_pasta):
         os.makedirs(caminho_pasta)
         print(f'Pasta "{caminho_pasta}" criada com sucesso!')
 
 
 def salvar_grafico(nome_grafico, nome_pasta='graficos'):
-    caminho_pasta = os.path.join(os.path.dirname(__file__), nome_pasta)
-    criar_pasta_graficos(nome_pasta)  # Garante que a pasta exista
+    """
+    Função para salvar um gráfico em uma pasta específica.
+    :param nome_grafico: Nome do gráfico a ser salvo.
+    :param nome_pasta: Nome da pasta onde o gráfico será salvo.
+    :return: None
+    """
+    caminho_pasta = os.path.join(pega_caminho_base(), 'dados', 'processado', nome_pasta)
+    criar_pasta_graficos(nome_pasta)
     caminho_completo = os.path.join(caminho_pasta, f'{nome_grafico}.png')
     plt.savefig(caminho_completo)
     plt.close()
@@ -22,11 +44,41 @@ def salvar_grafico(nome_grafico, nome_pasta='graficos'):
 
 
 def carregar_dados(caminho='dados/processado/dfPrincipal.csv'):
-    caminho_completo = os.path.join(os.path.dirname(__file__), '..', caminho)
-    return pd.read_csv(caminho_completo)
+    """
+    Função para carregar o DataFrame.
+    :param caminho: Caminho do arquivo CSV.
+    :return: DataFrame com os dados carregados.
+    """
+    caminho_completo = os.path.join(pega_caminho_base(), caminho)
+    if os.path.exists(caminho_completo):
+        return pd.read_csv(caminho_completo)
+    else:
+        return pd.DataFrame()  # Retorna um DataFrame vazio se o arquivo não existir
 
 
-def plot_barplot(x, y, data, titulo, xlabel, ylabel, ax=None):
+def salvar_dados(dataframe, caminho='dados/processado/dfPrincipal.csv'):
+    """
+    Função para salvar o DataFrame em um arquivo CSV.
+    :param dataframe: DataFrame a ser salvo.
+    :param caminho: Caminho do arquivo CSV onde o DataFrame será salvo.
+    :return: None
+    """
+    caminho_completo = os.path.join(pega_caminho_base(), caminho)
+    dataframe.to_csv(caminho_completo, index=False)
+
+
+def plotar_grafico_de_barras(x, y, data, titulo, xlabel, ylabel, ax=None):
+    """
+    Função para plotar um gráfico de barras.
+    :param x: Nome da coluna do eixo x.
+    :param y: Nome da coluna do eixo y.
+    :param data: DataFrame com os dados.
+    :param titulo: Título do gráfico.
+    :param xlabel: Rótulo do eixo x.
+    :param ylabel: Rótulo do eixo y.
+    :param ax: Eixo do gráfico.
+    :return: None
+    """
     if ax is None:
         fig, ax = plt.subplots()
     sns.barplot(x=x, y=y, data=data, ax=ax)
@@ -35,7 +87,18 @@ def plot_barplot(x, y, data, titulo, xlabel, ylabel, ax=None):
     ax.set_ylabel(ylabel)
 
 
-def plot_countplot(x, data, titulo, xlabel, ylabel, hue=None, ax=None):
+def criar_grafico_de_contagem(x, data, titulo, xlabel, ylabel, hue=None, ax=None):
+    """
+    Função para plotar um gráfico de contagem.
+    :param x: Nome da coluna do eixo x.
+    :param data: DataFrame com os dados.
+    :param titulo: Título do gráfico.
+    :param xlabel: Rótulo do eixo x.
+    :param ylabel: Rótulo do eixo y.
+    :param hue: Nome da coluna para agrupamento.
+    :param ax: Eixo do gráfico.
+    :return: None
+    """
     if ax is None:
         fig, ax = plt.subplots()
     sns.countplot(x=x, data=data, hue=hue, ax=ax)
@@ -44,7 +107,17 @@ def plot_countplot(x, data, titulo, xlabel, ylabel, hue=None, ax=None):
     ax.set_ylabel(ylabel)
 
 
-def plot_histplot(x, data, titulo, xlabel, ylabel, ax=None):
+def plotar_histograma(x, data, titulo, xlabel, ylabel, ax=None):
+    """
+    Função para plotar um histograma.
+    :param x: Nome da coluna do eixo x.
+    :param data: DataFrame com os dados.
+    :param titulo: Título do gráfico.
+    :param xlabel: Rótulo do eixo x.
+    :param ylabel: Rótulo do eixo y.
+    :param ax: Eixo do gráfico.
+    :return: None
+    """
     if ax is None:
         fig, ax = plt.subplots()
     sns.histplot(x=x, data=data, kde=True, ax=ax)
@@ -53,7 +126,18 @@ def plot_histplot(x, data, titulo, xlabel, ylabel, ax=None):
     ax.set_ylabel(ylabel)
 
 
-def plot_boxplot(x, y, data, titulo, xlabel, ylabel, ax=None):
+def plotar_grafico_caixa(x, y, data, titulo, xlabel, ylabel, ax=None):
+    """
+    Função para plotar um boxplot.
+    :param x: Nome da coluna do eixo x.
+    :param y: Nome da coluna do eixo y.
+    :param data: DataFrame com os dados.
+    :param titulo: Título do gráfico.
+    :param xlabel: Rótulo do eixo x.
+    :param ylabel: Rótulo do eixo y.
+    :param ax: Eixo do gráfico.
+    :return: None
+    """
     if ax is None:
         fig, ax = plt.subplots()
     sns.boxplot(x=x, y=y, data=data, ax=ax)
@@ -62,7 +146,19 @@ def plot_boxplot(x, y, data, titulo, xlabel, ylabel, ax=None):
     ax.set_ylabel(ylabel)
 
 
-def plot_lineplot(x, y, data, titulo, xlabel, ylabel, ax=None, x_tick_params=None):
+def plotar_grafico_linha(x, y, data, titulo, xlabel, ylabel, ax=None, x_tick_params=None):
+    """
+    Função para plotar um gráfico de linha.
+    :param x: Nome da coluna do eixo x.
+    :param y: Nome da coluna do eixo y.
+    :param data: DataFrame com os dados.
+    :param titulo: Título do gráfico.
+    :param xlabel: Rótulo do eixo x.
+    :param ylabel: Rótulo do eixo y.
+    :param ax: Eixo do gráfico.
+    :param x_tick_params: Parâmetros para os ticks do eixo x.
+    :return: None
+    """
     if ax is None:
         fig, ax = plt.subplots(figsize=(10, 6))
     sns.lineplot(x=x, y=y, data=data, ax=ax)
@@ -76,4 +172,28 @@ def plot_lineplot(x, y, data, titulo, xlabel, ylabel, ax=None, x_tick_params=Non
 
 
 def remover_acentos_e_maiusculas(texto):
+    """
+    Função para remover acentos e converter o texto para maiúsculas.
+    :param texto: Texto a ser processado.
+    :return: Texto sem acentos e em maiúsculas.
+    """
+
     return unidecode.unidecode(texto).upper()
+
+
+def string_para_imagem(texto, nome_arquivo='output', largura=800):
+    fonte = ImageFont.load_default()
+    altura_linha = 15
+    linhas = textwrap.wrap(texto, width=70)
+    altura = altura_linha * len(linhas) + 20
+    imagem = Image.new('RGB', (largura, altura), 'white')
+    desenho = ImageDraw.Draw(imagem)
+    y_texto = 10
+    for linha in linhas:
+        desenho.text((10, y_texto), linha, fill='black', font=fonte)
+        y_texto += altura_linha
+    caminho_base = os.path.abspath(os.path.join(__file__, '..', '..', 'dados', 'processado'))
+    os.makedirs(caminho_base, exist_ok=True)  # Cria o diretório se ele não existir
+    caminho_completo = os.path.join(caminho_base, f'{nome_arquivo}.png')
+    imagem.save(caminho_completo)
+    print(f'Imagem salva como "{caminho_completo}"')

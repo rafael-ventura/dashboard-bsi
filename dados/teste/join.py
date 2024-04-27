@@ -8,9 +8,6 @@ Original file is located at
 """
 
 import pandas as pd
-import numpy as np
-import datetime as dt
-from google.colab import files
 
 df_alunos = pd.read_csv('/content/Listagem alunos por curso - atual.csv')
 df_cr = pd.read_csv('/content/Endereço_CRA_Alunos-teste.csv')
@@ -27,13 +24,7 @@ columns = ['ID_PESSOA','NOME_PESSOA','SEXO','DT_NASCIMENTO','FORMA_INGRESSO','FO
 df_join = df_join.filter(items=columns)
 
 import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
 !pip install cryptography
-from cryptography.fernet import Fernet
-import re
-import datetime as dt
-from google.colab import files
 
 tabelaPrinc = pd.read_excel("/content/planilhaJoinCriptografada.xlsx")
 
@@ -44,14 +35,7 @@ tabelaPrinc2 = tabelaPrinc[tabelaPrinc.DT_NASCIMENTO.str.contains("23/04/1999")]
 tabelaPrinc2
 
 import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
 !pip install cryptography
-from cryptography.fernet import Fernet
-import re
-import datetime as dt
-from google.colab import files
-import json
 
 import json
 

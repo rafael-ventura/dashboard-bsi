@@ -25,8 +25,11 @@ def plot_comparacao_cra(dataframe):
 
 
 def plot_correlacao_cra_distancia(dataframe):
+    df_filtrado = dataframe.dropna(subset=['DISTANCIA_URCA'])
+
     plt.figure(figsize=(6, 4))
-    sns.heatmap(dataframe[['CRA', 'DISTANCIA_URCA']].corr(), annot=True, cmap='coolwarm', fmt=".2f")
+
+    sns.heatmap(df_filtrado[['CRA', 'DISTANCIA_URCA']].corr(), annot=True, cmap='coolwarm', fmt=".2f")
     plt.title('Correlação entre CRA e Distância até a Urca')
     salvar_grafico('correlacao_cra_distancia_urca')
 

@@ -1,12 +1,50 @@
+def formatar(incluir_outros=True, dados_anterior_2013=False):
+    """
+    Função principal para formatar e classificar os dados brutos.
+    """
+    df = ler_dados_brutos()
+    df = remover_colunas(df)
+    df = preencher_nulos(df)
+    df = formatar_periodos(df)
+    if dados_anterior_2013:
+        df = remover_alunos_anteriores_2013(df, dados_anterior_2013)
+    df = converter_tipos(df)
+    df = limpar_bairros(df)
+    df = limpar_cidades(df)
+    df = adicionar_cidade_estado(df)
+    df = normalizar_bairros(df)
+    df = classificar_idade(df)
+    df = classificar_forma_ingresso(df, incluir_outros)
+    df = classificar_forma_evasao(df)
+    df = arredondar_cra(df)
+    df = calcular_tempo_curso(df)
+
+    # Carregar DataFrame de distâncias e calcular/atualizar distâncias
+    df_distancias = carregar_dados(f'{pega_caminho_base()}/dados/processado/dfDistancias.csv')
+    geolocator = inicializar_geolocator()
+    df, df_distancias = adicionar_distancia_ate_urca(df, df_distancias, geolocator)
+
+    # Salvar o DataFrame principal e o DataFrame de distâncias atualizados
+    salvar_dados(df_distancias, 'dados/processado/dfDistancias.csv')
+    salvar_df(df)
+    print('DataFrame formatado, classificado e salvo com sucesso!')
+    return df
+
+
 import numpy as np
 import pandas as pd
 import unidecode
 
-from src.scripts.distancia import calcular_distancia_ate_urca, adicionar_distancia_ate_urca
+from src.scripts.distancia import adicionar_distancia_ate_urca, inicializar_geolocator
+from src.utils import carregar_dados, pega_caminho_base, salvar_dados
 
 
 # Função para ler os dados brutos da planilha
-def ler_dados():
+def ler_dados_brutos():
+    """
+    Função para ler os dados brutos da planilha.
+    """
+
     caminho_arquivo = r'C:\Dev\dashboard-bsi\dados\bruto\planilhaJoinCriptografada.xlsx'
     df = pd.read_excel(caminho_arquivo)
     df['DT_NASCIMENTO'] = pd.to_datetime(df['DT_NASCIMENTO'], errors='coerce')
@@ -72,15 +110,41 @@ def limpar_bairros(df):
     Função para limpar e normalizar os nomes dos bairros.
     """
     df['BAIRRO'] = df['BAIRRO'].apply(lambda bairro: unidecode.unidecode(bairro).lower().strip())
-    correcoes_bairros = {'freguesia.*': 'freguesia (jacarepagua)'}
+    correcoes_bairros = {
+        'freguesia.*': 'freguesia',
+        'tanque.*': 'tanque'
+    }
+
     for padrao, correcao in correcoes_bairros.items():
         df['BAIRRO'] = df['BAIRRO'].str.replace(padrao, correcao, regex=True)
     return df
 
 
+def limpar_cidades(df):
+    """
+    Função para limpar e normalizar os nomes das cidades.
+    """
+    df['CIDADE'] = df['CIDADE'].apply(lambda x: unidecode.unidecode(x).strip().upper())
+    correcoes_cidades = {
+        'RIO DE JANEIRO': ['RIO DE JANEIRO', 'RIO DE JANERO', 'RIO D JANEIRO'],  # exemplo de correção
+        'NITEROI': ['NITEROI', 'NITERÓI'],
+        'MARICA': ['MARICA', 'MARICÁ'],
+        'VITORIA': ['VITORIA', 'VITÓRIA'],
+        'BELO HORIZONTE': ['BELO HORIZONTE', 'BELO HORIZONTE MG'],  # outro exemplo
+        'BRASILIA': ['BRASILIA', 'BRASÍLIA']
+    }
+
+    for correct, variations in correcoes_cidades.items():
+        for var in variations:
+            df['CIDADE'] = df['CIDADE'].replace(var, correct)
+
+    return df
+
+
 def adicionar_cidade_estado(df):
     """
-    Função para adicionar informações de cidade e estado com base nos bairros do Rio de Janeiro.
+    Função para adicionar informações de cidade e estado com base nos bairros do Rio de Janeiro, além de remover
+    bairros, cidades e estados desconhecidos.
     """
     bairros_rj = [
         'tijuca', 'jardim botanico', 'santa teresa', 'leme', 'copacabana',
@@ -99,6 +163,9 @@ def adicionar_cidade_estado(df):
                 (df['CIDADE'] == 'Desconhecido') | (df['ESTADO'] == 'Desconhecido')), ['CIDADE', 'ESTADO']] = [
             'Duque de Caxias', 'Rio de Janeiro']
 
+    df = df[df['BAIRRO'] != 'Desconhecido']
+    df = df[df['CIDADE'] != 'Desconhecido']
+    df = df[df['ESTADO'] != 'Desconhecido']
     return df
 
 
@@ -136,7 +203,14 @@ def normalizar_bairros(df):
         'quintino': 'quintino bocaiuva',
         'laranjeira': 'laranjeiras',
         'bonsuceso': 'bonsucesso',
-        'braz de pina': 'bras de pina'
+        'braz de pina': 'bras de pina',
+        'vila isabe': 'vila isabel',
+        'marcahl hermes': 'marechal hermes',
+        'setor habitacional jardim botanico (lago sul)': 'jardim botanico',
+        'sao corrado': 'sao conrado',
+        'vila abolicao': 'abolição',
+        'huimaita': 'humaita',
+
     }
     df['BAIRRO'] = df['BAIRRO'].apply(lambda b: correcoes.get(b, b))
     return df
@@ -170,14 +244,24 @@ def calcular_idade_ingresso(row):
     return idade_ingresso
 
 
-def classificar_forma_ingresso(df):
+def classificar_forma_ingresso(df, incluir_outros=True):
     """
     Função para classificar os alunos em cotistas, ampla concorrência e outros.
     """
-    cotas = ['SISU Escola Publica - Indep. de Renda', 'SISU Escola Publica até 1,5 S.M.']
+    cotas = ['SISU Escola Publica - Indep. de Renda',
+             'SISU Escola Pública até 1,5 S.M Índio',
+             'SISU Escola Pública até 1,5 S.M Preto e Pardo',
+             'SISU Escola Pública até 1,5 S.M.',
+             'SISU Escola Pública até 1,5 S.M. Preto, Pardo, Indígena',
+             'SISU Escola Pública, Indep. de Renda: Preto, Pardo, Indígena',
+             'SISU Escola Pública, Indep. de Renda: Índio',
+             'SISU Escola Pública, Indep. de Renda: Preto e Pardo']
     ampla_concorrencia = ['VE - Vestibular', 'EN - ENEM', 'SISU Ampla Concorrencia']
     df['FORMA_INGRESSO_SIMPLES'] = df['FORMA_INGRESSO'].apply(
         lambda x: 'Cotas' if x in cotas else 'Ampla Concorrência' if x in ampla_concorrencia else 'Outros')
+    if not incluir_outros:
+        df = df[(df['FORMA_INGRESSO_SIMPLES'] == 'Cotas') | (df['FORMA_INGRESSO_SIMPLES'] == 'Ampla Concorrência')]
+
     return df
 
 
@@ -217,35 +301,63 @@ def calcular_tempo_curso(df):
     return df
 
 
-def salvar_dados(df):
+def salvar_df(df):
     """
     Função para salvar o DataFrame formatado em um arquivo CSV.
     """
     df.to_csv(r'C:\Dev\dashboard-bsi\dados\processado\dfPrincipal.csv', index=False)
 
 
-def formatar():
+def remover_alunos_anteriores_2013(df, dados_anterior_2013):
     """
-    Função principal para formatar e classificar os dados brutos.
+    Função para remover alunos que ingressaram antes de 2013.
     """
-    df = ler_dados()
-    df = remover_colunas(df)
-    df = preencher_nulos(df)
-    df = formatar_periodos(df)
-    df = converter_tipos(df)
-    df = limpar_bairros(df)
-    df = adicionar_cidade_estado(df)
-    df = normalizar_bairros(df)
-    df = classificar_idade(df)
-    df = classificar_forma_ingresso(df)
-    df = classificar_forma_evasao(df)
-    df = arredondar_cra(df)
-    df = calcular_tempo_curso(df)
-    #df = adicionar_distancia_ate_urca(df)
-    salvar_dados(df)
-    print('DataFrame formatado, classificado e salvo com sucesso!')
+    if dados_anterior_2013:
+        df = df[df['ANO_PERIODO_INGRESSO'].astype(float) >= 2014]
     return df
 
 
+def agrupar_bairros_por_zona(df):
+    """
+    Função para agrupar os bairros do Rio de Janeiro por zona.
+    """
+    zona_norte = ['Abolição', 'Acari', 'Água Santa', 'Alto da Boa Vista', 'Anchieta', 'Andaraí', 'Bancários',
+                  'Barros Filho', 'Benfica', 'Bento Ribeiro', 'Bonsucesso', 'Brás de Pina', 'Cachambi', 'Cacuia',
+                  'Caju', 'Campinho', 'Cascadura', 'Catumbi', 'Cavalcanti', 'Cidade Universitária', 'Cocotá',
+                  'Coelho Neto', 'Colégio', 'Complexo do Alemão', 'Cordovil', 'Costa Barros', 'Del Castilho',
+                  'Encantado', 'Engenheiro Leal', 'Engenho da Rainha', 'Engenho de Dentro', 'Engenho Novo', 'Estácio',
+                  'Ilha do Governador', 'Galeão', 'Grajaú', 'Guadalupe', 'Higienópolis', 'Honório Gurgel', 'Inhaúma',
+                  'Irajá', 'Jacaré', 'Jacarezinho', 'Jardim América', 'Jardim Carioca', 'Jardim Guanabara',
+                  'Lins de Vasconcelos', 'Madureira', 'Manguinhos', 'Maracanã', 'Maré', 'Marechal Hermes',
+                  'Mangueira', 'Maria da Graça', 'Méier', 'Moneró', 'Olaria', 'Oswaldo Cruz', 'Parada de Lucas',
+                  'Parque Anchieta', 'Parque Colúmbia', 'Pavuna', 'Penha', 'Penha Circular', 'Piedade', 'Pilares',
+                  'Pitangueiras', 'Portuguesa', 'Praça da Bandeira', 'Praia da Bandeira', 'Quintino Bocaiúva', 'Ramos',
+                  'Riachuelo', 'Ribeiro', 'Ricardo de Albuquerque', 'Rocha', 'Rocha Miranda', 'Rocha Neto', 'Sampaio',
+                  'Rio Comprido', 'Vasco da Gama', 'São Cristóvão', 'São Francisco Xavier', 'Tauá', 'Tijuca',
+                  'Todos os Santos', 'Tomás Coelho', 'Turiaçu', 'Vaz Lobo', 'Vicente de Carvalho', 'Vigário Geral',
+                  'Vila Isabel', 'Vila Kosmos', 'Vila da Penha', 'Vista Alegre', 'Vila Kosmos', 'Zumbi']
+    zona_oeste = ['Anil', 'Bangu', 'Barra da Tijuca', 'Barra de Guaratiba', 'Camorim', 'Campo dos Afonsos',
+                  'Campo Grande', 'Cidade de Deus', 'Cosmos', 'Curicica', 'Deodoro', 'Freguesia (Jacarepaguá)',
+                  'Gardênia Azul', 'Gericinó', 'Grumari', 'Guaratiba', 'Ilha de Guaratiba', 'Inhoaíba', 'Itanhangá',
+                  'Jabour', 'Jacarepaguá', 'Jardim Sulacap', 'Joá', 'Magalhães Bastos', 'Paciência', 'Padre Miguel',
+                  'Pechincha', 'Pedra de Guaratiba', 'Praça Seca', 'Realengo', 'Recreio dos Bandeirantes', 'Santa Cruz',
+                  'Santíssimo', 'Senador Camará', 'Senador Vasconcelos', 'Sepetiba', 'Tanque', 'Taquara',
+                  'Vargem Grande', 'Vargem Pequena', 'Vila Kennedy', 'Vila Militar', 'Vila Valqueire']
+
+    zona_sul = ['Ipanema', 'Botafogo', 'Catete', 'Copacabana', 'Lagoa', 'Flamengo', 'Gávea', 'Humaitá',
+                'Jardim Botânico', 'Laranjeiras', 'Leme', 'Urca', 'Vidigal', 'Cosme Velo', 'São Conrado',
+                'Rocinha', 'Leblon']
+    baixada_fluminense = ['nova iguacu', 'duque de caxias', 'belford roxo', 'sao joao de meriti', 'nilopolis',
+                          'mesquita']
+    bairros_centro = ['Gamboa', 'Centro do Rio', 'Lapa', 'Saúde', 'Cidade Nova', 'Santa Teresa', 'Estácio', 'Catumbi',
+                      'Santo Cristo', 'Paquetá', 'Glória']
+
+    regiao_serrana = ['Bom Jardim', 'Cantagalo', 'Carmo', 'Cordeiro', 'Duas Barras', 'Macuco', 'Nova Friburgo',
+                      'Petrópolis', ' São José do Vale do Rio Preto', 'São Sebastião do Alto', 'Santa Maria Madalena',
+                      'Sumidouro', 'Teresópolis' 'Trajano de Morais']
+
+    regiao_dos_lagos = ['cabo frio', 'arraial do cabo', 'araruama', 'saquarema', 'iguaba grande']
+
+
 if __name__ == "__main__":
-    formatar()
+    formatar(False, False)

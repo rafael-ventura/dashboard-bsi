@@ -12,19 +12,18 @@ def analise_exploratoria(dataframe):
     plot_distribuicao_sexo(dataframe)
     plot_distribuicao_idade(dataframe)
     plot_distribuicao_evasao(dataframe)
-    plot_countplot_CRA(dataframe)
+    plot_distribuicao_CRA(dataframe)
 
     # Análises estatísticas
     estatisticas_descritivas_cra(dataframe)
-    analise_correlacao_cra_idade(dataframe)
+    plot_media_cra_por_ingresso(dataframe)
 
     # Análises de frequência
-    tabela_de_frequencia(dataframe, 'SEXO')
-    tabela_de_frequencia(dataframe, 'FORMA_INGRESSO_SIMPLES')
-    tabela_de_frequencia(dataframe, 'STATUS_EVASAO')
+    plot_tabela_frequencia(dataframe, 'SEXO')
+    plot_tabela_frequencia(dataframe, 'FORMA_INGRESSO_SIMPLES')
+    plot_tabela_frequencia(dataframe, 'STATUS_EVASAO')
 
     print("\nAnálise Exploratória Concluída!")
-
 
 
 def estatisticas_descritivas_cra(dataframe):
@@ -45,7 +44,7 @@ def estatisticas_descritivas_cra(dataframe):
     print("Coeficiente de Variação:", dataframe['CRA'].std() / dataframe['CRA'].mean() * 100)
 
 
-def plot_countplot_CRA(dataframe):
+def plot_distribuicao_CRA(dataframe):
     if 'CRA' in dataframe.columns:
         dataframe['CRA'] = dataframe['CRA'].astype(str).str.replace(',', '.').astype(float)
         plt.figure(figsize=(10, 6))
@@ -74,10 +73,10 @@ def plot_distribuicao_sexo(dataframe):
 
 
 def plot_distribuicao_idade(dataframe):
-    if 'IDADE' in dataframe.columns:
+    if 'IDADE_INGRESSO' in dataframe.columns:
         plt.figure(figsize=(10, 6))
         color = sns.color_palette('viridis')[0]
-        sns.histplot(dataframe['IDADE'], kde=True, color=color)
+        sns.histplot(dataframe['IDADE_INGRESSO'], kde=True, color=color)
         plt.title('Distribuição por Idade')
         plt.xlabel('Idade')
         plt.ylabel('Quantidade')
@@ -99,16 +98,15 @@ def plot_distribuicao_evasao(dataframe):
         print("A coluna 'STATUS_EVASAO' não existe no DataFrame.")
 
 
-def tabela_de_frequencia(dataframe, coluna):
+def plot_tabela_frequencia(dataframe, coluna):
     print(f"\nTabela de Frequência para {coluna}:")
     frequencias = dataframe[coluna].value_counts()
     print(frequencias)
 
-    print(f"\nTabela de Frequência Relativa (Percentual) para {coluna}:")
+    print(f"\nTabela de Frequência Relativa para {coluna}:")
     frequencias_relativas = dataframe[coluna].value_counts(normalize=True) * 100
     print(frequencias_relativas)
 
-    # Plotar gráfico de barras para frequências absolutas
     plt.figure(figsize=(10, 6))
     sns.barplot(x=frequencias.index, y=frequencias.values)
     plt.title(f'Frequências para {coluna}')
@@ -118,8 +116,7 @@ def tabela_de_frequencia(dataframe, coluna):
     plt.tight_layout()
     salvar_grafico(f'frequencias_{coluna}')
 
-    # Plotar gráfico de setores para frequências relativas, se for apropriado
-    if len(frequencias) <= 10:  # Limita a plotagem do gráfico de setores a no máximo 10 categorias
+    if len(frequencias) <= 10:
         plt.figure(figsize=(8, 8))
         plt.pie(frequencias, labels=frequencias.index, autopct='%1.1f%%', startangle=90)
         plt.title(f'Proporção para {coluna}')
@@ -127,13 +124,18 @@ def tabela_de_frequencia(dataframe, coluna):
         salvar_grafico(f'proporcao_{coluna}')
 
 
-def analise_correlacao_cra_idade(dataframe):
-    plt.figure(figsize=(8, 6))
-    correlacao = dataframe[['CRA', 'IDADE']].corr()
-    sns.heatmap(correlacao, annot=True, cmap='coolwarm', fmt=".2f")
-    plt.title('Correlação entre CRA e Idade')
+def plot_media_cra_por_ingresso(dataframe):
+    plt.figure(figsize=(12, 6))
+
+    ordenado = dataframe.groupby('IDADE_INGRESSO')['CRA'].mean().reset_index().sort_values('IDADE_INGRESSO')
+    sns.barplot(x='IDADE_INGRESSO', y='CRA', data=ordenado, palette="viridis")
+    plt.title('Média de CRA por Idade de Ingresso')
+    plt.xlabel('Idade de Ingresso')
+    plt.ylabel('CRA Médio')
+    plt.xticks(rotation=45)
     plt.tight_layout()
-    salvar_grafico('correlacao_cra_idade')
+
+    salvar_grafico('media_cra_por_idade_ingresso')
 
 
 if __name__ == "__main__":

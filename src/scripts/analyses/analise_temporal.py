@@ -1,7 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
-from src.utils import plot_lineplot, criar_pasta_graficos, salvar_grafico, carregar_dados
+from src.utils import plotar_grafico_linha, criar_pasta_graficos, salvar_grafico, carregar_dados
 
 
 def analise_temporal(dataframe):
@@ -24,8 +24,8 @@ def evolucao_media_cra(dataframe):
     Analisa a evolução da média do CRA ao longo dos períodos de ingresso.
     """
     media_cra_por_periodo = dataframe.groupby('PERIODO_INGRESSO_FORMATADO')['CRA'].mean().reset_index()
-    plot_lineplot(x='PERIODO_INGRESSO_FORMATADO', y='CRA', data=media_cra_por_periodo,
-                  titulo='Evolução da Média do CRA por Período', xlabel='Período de Ingresso', ylabel='Média do CRA')
+    plotar_grafico_linha(x='PERIODO_INGRESSO_FORMATADO', y='CRA', data=media_cra_por_periodo,
+                         titulo='Evolução da Média do CRA por Período', xlabel='Período de Ingresso', ylabel='Média do CRA')
     salvar_grafico('evolucao_media_cra')
 
 
