@@ -1,48 +1,16 @@
-def formatar(incluir_outros=True, dados_anterior_2013=False):
-    """
-    Função principal para formatar e classificar os dados brutos.
-    """
-    df = ler_dados_brutos()
-    df = remover_colunas(df)
-    df = preencher_nulos(df)
-    df = formatar_periodos(df)
-    if dados_anterior_2013:
-        df = remover_alunos_anteriores_2013(df, dados_anterior_2013)
-    df = converter_tipos(df)
-    df = limpar_bairros(df)
-    df = limpar_cidades(df)
-    df = adicionar_cidade_estado(df)
-    df = normalizar_bairros(df)
-    df = classificar_idade(df)
-    df = classificar_forma_ingresso(df, incluir_outros)
-    df = classificar_forma_evasao(df)
-    df = arredondar_cra(df)
-    df = calcular_tempo_curso(df)
-
-    # Carregar DataFrame de distâncias e calcular/atualizar distâncias
-    df_distancias = carregar_dados(f'{pega_caminho_base()}/dados/processado/dfDistancias.csv')
-    geolocator = inicializar_geolocator()
-    df, df_distancias = adicionar_distancia_ate_urca(df, df_distancias, geolocator)
-
-    # Salvar o DataFrame principal e o DataFrame de distâncias atualizados
-    salvar_dados(df_distancias, 'dados/processado/dfDistancias.csv')
-    salvar_df(df)
-    print('DataFrame formatado, classificado e salvo com sucesso!')
-    return df
-
-
 import numpy as np
 import pandas as pd
 import unidecode
 
-from src.scripts.distancia import adicionar_distancia_ate_urca, inicializar_geolocator
-from src.utils import carregar_dados, pega_caminho_base, salvar_dados
+from src.utils.distancia import adicionar_distancia_ate_urca, inicializar_geolocator
+from src.utils.utils import carregar_dados, pega_caminho_base, salvar_dados
 
 
 # Função para ler os dados brutos da planilha
 def ler_dados_brutos():
     """
     Função para ler os dados brutos da planilha.
+    :return: DataFrame com os dados.
     """
 
     caminho_arquivo = r'C:\Dev\dashboard-bsi\dados\bruto\planilhaJoinCriptografada.xlsx'
@@ -55,6 +23,8 @@ def ler_dados_brutos():
 def remover_colunas(df):
     """
     # Função para remover colunas desnecessárias do DataFrame.
+    :param df: DataFrame com os dados.
+    :return: DataFrame atualizado.
     """
     colunas_desnecessarias = ['Unnamed: 0', 'ID_PESSOA', 'NOME_PESSOA', 'MATR_ALUNO', 'CPF_MASCARA']
     return df.drop(colunas_desnecessarias, axis=1)
@@ -63,6 +33,8 @@ def remover_colunas(df):
 def preencher_nulos(df):
     """
     Função para preencher valores nulos nas colunas de bairro, cidade e estado.
+    :param df: DataFrame com os dados.
+    :return: DataFrame atualizado.
     """
     substituicoes = {'BAIRRO': 'Desconhecido',
                      'CIDADE': 'Desconhecido',
@@ -73,20 +45,24 @@ def preencher_nulos(df):
 def formatar_periodos(df):
     """
     Função para formatar os períodos de ingresso e evasão, separando o ano e o semestre.
+    :param df: DataFrame com os dados.
+    :return: DataFrame atualizado.
     """
     for periodo in ['PERIODO_EVASAO', 'PERIODO_INGRESSO']:
         df_temp = pd.DataFrame(df[periodo].str.split('/', expand=True))
         df_temp.columns = ['ANO', periodo]
         df_temp[periodo] = df_temp[periodo].str.extract('(\d+)', expand=False)
-        df[f'{periodo}_FORMATADO'] = df_temp['ANO'] + '.' + df_temp[periodo]
+        df['{}_FORMATADO'.format(periodo)] = df_temp['ANO'] + '.' + df_temp[periodo]
         df[periodo] = df_temp[periodo]
-        df[f'ANO_{periodo}'] = df_temp['ANO']
+        df['ANO_{}'.format(periodo)] = df_temp['ANO']
     return df
 
 
 def converter_tipos(df):
     """
     Função para converter os tipos das colunas do DataFrame.
+    :param df: DataFrame com os dados.
+    :return: DataFrame atualizado.
     """
     tipo_campos = {
         'SEXO': str,
@@ -108,6 +84,8 @@ def converter_tipos(df):
 def limpar_bairros(df):
     """
     Função para limpar e normalizar os nomes dos bairros.
+    :param df: DataFrame com os dados.
+    :return: DataFrame atualizado.
     """
     df['BAIRRO'] = df['BAIRRO'].apply(lambda bairro: unidecode.unidecode(bairro).lower().strip())
     correcoes_bairros = {
@@ -123,6 +101,8 @@ def limpar_bairros(df):
 def limpar_cidades(df):
     """
     Função para limpar e normalizar os nomes das cidades.
+    :param df: DataFrame com os dados.
+    :return: DataFrame atualizado.
     """
     df['CIDADE'] = df['CIDADE'].apply(lambda x: unidecode.unidecode(x).strip().upper())
     correcoes_cidades = {
@@ -143,8 +123,9 @@ def limpar_cidades(df):
 
 def adicionar_cidade_estado(df):
     """
-    Função para adicionar informações de cidade e estado com base nos bairros do Rio de Janeiro, além de remover
-    bairros, cidades e estados desconhecidos.
+    Função para adicionar a cidade e o estado para alguns bairros do Rio de Janeiro.
+    :param df: DataFrame com os dados.
+    :return: DataFrame atualizado.
     """
     bairros_rj = [
         'tijuca', 'jardim botanico', 'santa teresa', 'leme', 'copacabana',
@@ -218,9 +199,9 @@ def normalizar_bairros(df):
 
 def arredondar_cra(df):
     """
-    Função para arredondar o CRA dos alunos para a escala de 0.5.
+    Função para arredondar o CRA dos alunos para a escala de 0,5.
     """
-    df['CRA_arredondado'] = (df['CRA'] * 2).round() / 2
+    df['CRA_ARREDONDADO'] = (df['CRA'] * 2).round() / 2
     return df
 
 
@@ -357,6 +338,41 @@ def agrupar_bairros_por_zona(df):
                       'Sumidouro', 'Teresópolis' 'Trajano de Morais']
 
     regiao_dos_lagos = ['cabo frio', 'arraial do cabo', 'araruama', 'saquarema', 'iguaba grande']
+
+
+def formatar(incluir_outros=True, dados_anterior_2013=False):
+    """
+    Função principal para formatar e classificar os dados brutos.
+    """
+    df = ler_dados_brutos()
+    df = remover_colunas(df)
+    df = preencher_nulos(df)
+    df = formatar_periodos(df)
+    if dados_anterior_2013:
+        df = remover_alunos_anteriores_2013(df, dados_anterior_2013)
+    df = converter_tipos(df)
+    df = limpar_bairros(df)
+    df = limpar_cidades(df)
+    df = adicionar_cidade_estado(df)
+    df = normalizar_bairros(df)
+    df = classificar_idade(df)
+    df = classificar_forma_ingresso(df, incluir_outros)
+    df = classificar_forma_evasao(df)
+    df = arredondar_cra(df)
+    df = calcular_tempo_curso(df)
+
+    # Carregar DataFrame de distâncias e calcular/atualizar distâncias
+    print('Carregando DataFrame de distâncias do caminho:', pega_caminho_base() + '/dados/processado/dfDistancias.csv')
+    df_distancias = carregar_dados(pega_caminho_base() + '/dados/processado/dfDistancias.csv')
+
+    geolocator = inicializar_geolocator()
+    df, df_distancias = adicionar_distancia_ate_urca(df, df_distancias, geolocator)
+
+    # Salvar o DataFrame principal e o DataFrame de distâncias atualizados
+    salvar_dados(df_distancias, 'dados/processado/dfDistancias.csv')
+    salvar_df(df)
+    print('DataFrame formatado, classificado e salvo com sucesso!')
+    return df
 
 
 if __name__ == "__main__":

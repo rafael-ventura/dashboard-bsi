@@ -1,4 +1,4 @@
-SEXO,DT_NASCIMENTO,FORMA_INGRESSO,FORMA_EVASAO,NUM_VERSAO,PERIODO_INGRESSO,DT_EVASAO,PERIODO_EVASAO,CRA,BAIRRO,CIDADE,ESTADO,PERIODO_EVASAO_FORMATADO,ANO_PERIODO_EVASAO,PERIODO_INGRESSO_FORMATADO,ANO_PERIODO_INGRESSO,IDADE_INGRESSO,FORMA_INGRESSO_SIMPLES,STATUS_EVASAO,CRA_arredondado,TEMPO_CURSO,DISTANCIA_URCA
+SEXO,DT_NASCIMENTO,FORMA_INGRESSO,FORMA_EVASAO,NUM_VERSAO,PERIODO_INGRESSO,DT_EVASAO,PERIODO_EVASAO,CRA,BAIRRO,CIDADE,ESTADO,PERIODO_EVASAO_FORMATADO,ANO_PERIODO_EVASAO,PERIODO_INGRESSO_FORMATADO,ANO_PERIODO_INGRESSO,IDADE_INGRESSO,FORMA_INGRESSO_SIMPLES,STATUS_EVASAO,CRA_ARREDONDADO,TEMPO_CURSO,DISTANCIA_URCA
 F,,SISU Escola Publica - Indep. de Renda,Sem evasão,2008/1,2.0,,,9.1538,copacabana,RIO DE JANEIRO,Rio de Janeiro,,,2020.2,2020.0,,Cotas,Cursando,9.0,,2.59
 M,2000-01-11,SISU Escola Publica - Indep. de Renda,Sem evasão,2008/1,1.0,,,6.647,tijuca,RIO DE JANEIRO,Rio de Janeiro,,,2022.1,2022.0,21.0,Cotas,Cursando,6.5,,7.39
 M,,SISU Ampla Concorrencia,Sem evasão,2008/1,1.0,,,5.4223,pechincha,RIO DE JANEIRO,Rio de Janeiro,,,2021.1,2021.0,,Ampla Concorrência,Cursando,5.5,,19.22
@@ -14,7 +14,7 @@ F,1995-03-08,SISU Ampla Concorrencia,CAN - Cancelamento Geral do curso,2008/1,2.
 F,1977-07-03,SISU Ampla Concorrencia,ABA - Abandono do curso,2008/1,2.0,2018-05-14,1.0,0.0,botafogo,RIO DE JANEIRO,Rio de Janeiro,2018.1,2018.0,2017.2,2017.0,39.0,Ampla Concorrência,Evasão,0.0,,1.37
 F,1980-03-04,SISU Escola Publica - Indep. de Renda,Sem evasão,2008/1,2.0,,,6.5359,flamengo,RIO DE JANEIRO,Rio de Janeiro,,,2019.2,2019.0,39.0,Cotas,Cursando,6.5,,2.33
 F,,"SISU Escola Pública até 1,5 S.M Índio",Sem evasão,2008/1,2.0,,,5.8068,anchieta,RIO DE JANEIRO,Rio de Janeiro,,,2020.2,2020.0,,Cotas,Cursando,6.0,,27.79
-M,,"SISU Escola Pública até 1,5 S.M Índio",CON - Curso concluído,2008/1,2.0,2022-04-12,1.0,6.7499,barreto,NITEROI,Rio de Janeiro,2021.1,2021.0,2015.2,2015.0,,Cotas,Concluído,6.5,0.0,11.79
+M,,"SISU Escola Pública até 1,5 S.M Índio",CON - Curso concluído,2008/1,2.0,2022-04-12,1.0,6.7499,barreto,NITEROI,Rio de Janeiro,2021.1,2021.0,2015.2,2015.0,,Cotas,Concluído,6.5,0.0,12.06
 M,1987-09-05,SISU Ampla Concorrencia,ABA - Abandono do curso,2008/1,1.0,2018-05-14,1.0,0.0,vila isabel,RIO DE JANEIRO,Rio de Janeiro,2018.1,2018.0,2015.1,2015.0,27.0,Ampla Concorrência,Evasão,0.0,,9.45
 M,,SISU Ampla Concorrencia,ABA - Abandono do curso,2008/1,2.0,2019-05-20,1.0,2.7637,andarai,RIO DE JANEIRO,Rio de Janeiro,2019.1,2019.0,2016.2,2016.0,,Ampla Concorrência,Evasão,3.0,,9.2
 M,1999-08-01,SISU Escola Publica - Indep. de Renda,Sem evasão,2008/1,1.0,,,7.0833,andarai,RIO DE JANEIRO,Rio de Janeiro,,,2019.1,2019.0,19.0,Cotas,Cursando,7.0,,9.2
@@ -47,7 +47,7 @@ M,1997-05-06,SISU Ampla Concorrencia,Sem evasão,2008/1,2.0,,,6.515,rocha mirand
 M,,SISU Ampla Concorrencia,Sem evasão,2008/1,2.0,,,7.3039,penha,RIO DE JANEIRO,Rio de Janeiro,,,2021.2,2021.0,,Ampla Concorrência,Cursando,7.5,,16.99
 M,,SISU Ampla Concorrencia,Sem evasão,2008/1,1.0,,,7.6182,rocha,RIO DE JANEIRO,Rio de Janeiro,,,2021.1,2021.0,,Ampla Concorrência,Cursando,7.5,,10.26
 M,,SISU Ampla Concorrencia,Sem evasão,2008/1,1.0,,,8.0667,barra da tijuca,RIO DE JANEIRO,Rio de Janeiro,,,2021.1,2021.0,,Ampla Concorrência,Cursando,8.0,,20.93
-M,,SISU Ampla Concorrencia,Sem evasão,2008/1,1.0,,,7.9234,jardim campomar,RIO DAS OSTRAS,Rio de Janeiro,,,2020.1,2020.0,,Ampla Concorrência,Cursando,8.0,,132.06
+M,,SISU Ampla Concorrencia,Sem evasão,2008/1,1.0,,,7.9234,jardim campomar,RIO DAS OSTRAS,Rio de Janeiro,,,2020.1,2020.0,,Ampla Concorrência,Cursando,8.0,,131.32
 M,,SISU Ampla Concorrencia,CON - Curso concluído,2008/1,1.0,2022-06-23,2.0,7.047,meier,RIO DE JANEIRO,Rio de Janeiro,2021.2,2021.0,2016.1,2016.0,,Ampla Concorrência,Concluído,7.0,0.0,12.84
 M,1998-05-01,SISU Ampla Concorrencia,Sem evasão,2008/1,1.0,,,7.1632,tijuca,RIO DE JANEIRO,Rio de Janeiro,,,2018.1,2018.0,19.0,Ampla Concorrência,Cursando,7.0,,7.39
 F,2003-07-04,SISU Ampla Concorrencia,Sem evasão,2008/1,1.0,,,6.5605,tijuca,RIO DE JANEIRO,Rio de Janeiro,,,2021.1,2021.0,17.0,Ampla Concorrência,Cursando,6.5,,7.39
@@ -85,7 +85,7 @@ M,,SISU Escola Publica - Indep. de Renda,CAN - Cancelamento Geral do curso,2008/
 M,,SISU Ampla Concorrencia,CAN - Cancelamento Geral do curso,2008/1,2.0,2019-09-23,2.0,6.5238,engenho de dentro,RIO DE JANEIRO,Rio de Janeiro,2019.2,2019.0,2017.2,2017.0,,Ampla Concorrência,Evasão,6.5,,14.39
 M,,SISU Ampla Concorrencia,CON - Curso concluído,2008/1,2.0,2022-06-23,2.0,8.3719,vila isabel,RIO DE JANEIRO,Rio de Janeiro,2021.2,2021.0,2018.2,2018.0,,Ampla Concorrência,Concluído,8.5,0.0,9.45
 M,,SISU Ampla Concorrencia,Sem evasão,2008/1,2.0,,,6.7287,engenho novo,RIO DE JANEIRO,Rio de Janeiro,,,2016.2,2016.0,,Ampla Concorrência,Cursando,6.5,,11.39
-M,,SISU Ampla Concorrencia,Sem evasão,2008/1,2.0,,,5.8027,rocinha,RIO DE JANEIRO,Rio de Janeiro,,,2022.2,2022.0,,Ampla Concorrência,Cursando,6.0,,9.07
+M,,SISU Ampla Concorrencia,Sem evasão,2008/1,2.0,,,5.8027,rocinha,RIO DE JANEIRO,Rio de Janeiro,,,2022.2,2022.0,,Ampla Concorrência,Cursando,6.0,,9.01
 M,,SISU Ampla Concorrencia,Sem evasão,2008/1,1.0,,,4.3346,recreio dos bandeirantes,RIO DE JANEIRO,Rio de Janeiro,,,2014.1,2014.0,,Ampla Concorrência,Cursando,4.5,,31.12
 M,2002-10-04,SISU Ampla Concorrencia,Sem evasão,2008/1,2.0,,,8.4015,centro,RIO DE JANEIRO,Rio de Janeiro,,,2020.2,2020.0,17.0,Ampla Concorrência,Cursando,8.5,,23.57
 M,1997-11-07,SISU Ampla Concorrencia,CAN - Cancelamento Geral do curso,2008/1,1.0,2016-02-04,1.0,6.5222,laranjeiras,RIO DE JANEIRO,Rio de Janeiro,2016.1,2016.0,2015.1,2015.0,17.0,Ampla Concorrência,Evasão,6.5,,2.99
@@ -322,7 +322,7 @@ M,,SISU Ampla Concorrencia,Sem evasão,2008/1,2.0,,,8.3727,copacabana,RIO DE JAN
 F,,SISU Ampla Concorrencia,CON - Curso concluído,2008/1,1.0,2020-10-02,2.0,7.812,botafogo,RIO DE JANEIRO,Rio de Janeiro,2019.2,2019.0,2016.1,2016.0,,Ampla Concorrência,Concluído,8.0,0.0,1.37
 F,1995-12-07,SISU Escola Publica - Indep. de Renda,CAN - Cancelamento Geral do curso,2008/1,2.0,2015-10-22,2.0,0.0533,sao francisco xavier,RIO DE JANEIRO,Rio de Janeiro,2015.2,2015.0,2014.2,2014.0,18.0,Cotas,Evasão,0.0,,9.52
 F,,"SISU Escola Pública até 1,5 S.M Preto e Pardo",Sem evasão,2008/1,2.0,,,8.3794,grajau,RIO DE JANEIRO,Rio de Janeiro,,,2020.2,2020.0,,Cotas,Cursando,8.5,,10.5
-M,,SISU Ampla Concorrencia,Sem evasão,2008/1,2.0,,,8.1558,raul veiga,SAO GONCALO,Rio de Janeiro,,,2018.2,2018.0,,Ampla Concorrência,Cursando,8.0,,23.04
+M,,SISU Ampla Concorrencia,Sem evasão,2008/1,2.0,,,8.1558,raul veiga,SAO GONCALO,Rio de Janeiro,,,2018.2,2018.0,,Ampla Concorrência,Cursando,8.0,,22.53
 M,1954-12-06,SISU Escola Publica - Indep. de Renda,Sem evasão,2008/1,2.0,,,8.628,laranjeiras,RIO DE JANEIRO,Rio de Janeiro,,,2018.2,2018.0,63.0,Cotas,Cursando,8.5,,2.99
 F,,SISU Ampla Concorrencia,Sem evasão,2008/1,2.0,,,7.582,jardim carioca,RIO DE JANEIRO,Rio de Janeiro,,,2019.2,2019.0,,Ampla Concorrência,Cursando,7.5,,16.68
 F,,SISU Ampla Concorrencia,CON - Curso concluído,2008/1,1.0,2021-04-21,1.0,5.381,pavuna,RIO DE JANEIRO,Rio de Janeiro,2020.1,2020.0,2014.1,2014.0,,Ampla Concorrência,Concluído,5.5,0.0,25.14

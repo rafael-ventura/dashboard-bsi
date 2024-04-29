@@ -1,15 +1,34 @@
-from src.utils import criar_grafico_de_contagem, plotar_histograma, criar_pasta_graficos, salvar_grafico, carregar_dados
+import matplotlib.pyplot as plt
+import seaborn as sns
+from src.utils.utils import criar_grafico_de_contagem, plotar_histograma, criar_pasta_graficos, salvar_grafico, \
+    carregar_dados
 
 
 def analise_ingresso_evasao(dataframe):
     criar_pasta_graficos()
     print("\nIniciando Análise de Ingresso e Evasão...")
 
+    plot_media_cra_evasao(dataframe)
     plot_distribuicao_ingresso(dataframe)
     plot_evasao_sexo(dataframe)
     plot_evasao_idade(dataframe)
 
     print("\nAnálise de Ingresso e Evasão Concluída!")
+
+
+def plot_media_cra_evasao(dataframe):
+    if 'STATUS_EVASAO' in dataframe.columns and 'CRA' in dataframe.columns:
+        plt.figure(figsize=(10, 6))
+        media_cra = dataframe.groupby('STATUS_EVASAO')['CRA'].mean().reset_index()
+        sns.barplot(x='STATUS_EVASAO', y='CRA', data=media_cra)
+        plt.title('Média do CRA por Forma de Evasão')
+        plt.xlabel('Forma de Evasão')
+        plt.ylabel('Média do CRA')
+        plt.xticks(rotation=45)
+        plt.tight_layout()
+        salvar_grafico('media_cra_evasao')
+    else:
+        print("A coluna 'STATUS_EVASAO' ou 'CRA' não existe no DataFrame.")
 
 
 def plot_distribuicao_ingresso(dataframe):

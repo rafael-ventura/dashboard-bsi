@@ -1,10 +1,9 @@
-from scripts.analyses.analise_exploratoria import analise_exploratoria
-from scripts.analyses.analise_ingresso_evasao import analise_ingresso_evasao
-from scripts.analyses.analise_performance_academica import analise_performance_academica
-from scripts.analyses.analise_temporal import analise_temporal
+from src.scripts.analise_exploratoria import analise_exploratoria
+from src.scripts.analise_ingresso_evasao import analise_ingresso_evasao
+from src.scripts.analise_performance_academica import analise_performance_academica
+from src.scripts.analise_temporal import analise_temporal
 from scripts.formatacao_dados import formatar
-from src.scripts.analyses.analise_geografica import executar_analise_geografica
-from src.utils import carregar_dados
+from src.scripts.analise_geografica import executar_analise_geografica
 
 
 def main():

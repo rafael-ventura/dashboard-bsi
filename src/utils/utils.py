@@ -5,6 +5,7 @@ import seaborn as sns
 import unidecode
 from PIL import Image, ImageDraw, ImageFont
 import textwrap
+import squarify
 
 
 def pega_caminho_base():
@@ -13,7 +14,7 @@ def pega_caminho_base():
     :return: Caminho base do projeto.
     """
     # Retorna o caminho do diretório 'dashboard-bsi' assumindo que este script está em 'dashboard-bsi/src'
-    return os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+    return os.path.abspath(os.path.join(os.path.dirname(__file__), '../', '..'))
 
 
 def criar_pasta_graficos(nome_pasta='graficos'):
@@ -167,8 +168,54 @@ def plotar_grafico_linha(x, y, data, titulo, xlabel, ylabel, ax=None, x_tick_par
     ax.set_ylabel(ylabel)
     if x_tick_params:
         ax.tick_params(axis='x', **x_tick_params)
+    plt.xticks(rotation=45)
     plt.grid(True)
     plt.tight_layout()
+
+
+def plotar_grafico_linha_ponderada(data, x, y, hue=None, titulo="", xlabel="", ylabel=""):
+    """
+    Plota um gráfico de linha ponderada para dados agrupados.
+    :param data: DataFrame com os dados.
+    :param x: Coluna do DataFrame para o eixo x.
+    :param y: Coluna do DataFrame para o eixo y.
+    :param hue: Coluna do DataFrame para diferenciar linhas.
+    :param titulo: Título do gráfico.
+    :param xlabel: Rótulo para o eixo x.
+    :param ylabel: Rótulo para o eixo y.
+    """
+    plt.figure(figsize=(10, 6))
+    sns.lineplot(data=data, x=x, y=y, hue=hue, marker='o')
+    plt.title(titulo)
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.xticks(rotation=45)
+    plt.grid(True)
+    plt.legend(title=hue)
+    plt.tight_layout()
+
+
+def plot_treemap(data, threshold, title, color_scheme='Spectral'):
+    """
+    Plota um Treemap genérico baseado nos dados fornecidos.
+    :param data: Series com os dados (índices serão usados como labels).
+    :param threshold: Limite mínimo para inclusão no treemap.
+    :param title: Título do Treemap.
+    :param color_scheme: Esquema de cores para o treemap.
+    """
+    filtered_data = data[data > threshold]
+
+    sizes = filtered_data.values
+    labels = filtered_data.index
+
+    colors = sns.color_palette(color_scheme, len(sizes))
+    text_kwargs = {'fontsize': 10, 'fontfamily': 'sans-serif'}
+
+    plt.figure(figsize=(12, 8))
+    squarify.plot(sizes=sizes, label=labels, alpha=0.8, color=colors, pad=True, text_kwargs=text_kwargs)
+    plt.title(title)
+    plt.axis('off')
+    salvar_grafico(title.lower().replace(' ', '_'))
 
 
 def remover_acentos_e_maiusculas(texto):
@@ -182,6 +229,13 @@ def remover_acentos_e_maiusculas(texto):
 
 
 def string_para_imagem(texto, nome_arquivo='output', largura=800):
+    """
+    Função para converter uma string em uma imagem.
+    :param texto:
+    :param nome_arquivo:
+    :param largura:
+    :return:
+    """
     fonte = ImageFont.load_default()
     altura_linha = 15
     linhas = textwrap.wrap(texto, width=70)
@@ -192,7 +246,7 @@ def string_para_imagem(texto, nome_arquivo='output', largura=800):
     for linha in linhas:
         desenho.text((10, y_texto), linha, fill='black', font=fonte)
         y_texto += altura_linha
-    caminho_base = os.path.abspath(os.path.join(__file__, '..', '..', 'dados', 'processado'))
+    caminho_base = os.path.abspath(os.path.join(__file__, '../..', '..', 'dados', 'processado'))
     os.makedirs(caminho_base, exist_ok=True)  # Cria o diretório se ele não existir
     caminho_completo = os.path.join(caminho_base, f'{nome_arquivo}.png')
     imagem.save(caminho_completo)
