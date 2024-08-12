@@ -26,9 +26,9 @@ def classificar_forma_ingresso(df, incluir_outros=True):
     ]
     ampla_concorrencia = ['VE - Vestibular', 'EN - ENEM', 'SISU Ampla Concorrencia']
     df['FORMA_INGRESSO_SIMPLES'] = df['FORMA_INGRESSO'].apply(
-        lambda x: 'Cotas' if x in cotas else 'Ampla Concorrência' if x in ampla_concorrencia else 'Outros')
+        lambda x: 'Cotas' if x in cotas else 'Ampla Concorrencia' if x in ampla_concorrencia else 'Outros')
     if not incluir_outros:
-        df = df[(df['FORMA_INGRESSO_SIMPLES'] == 'Cotas') | (df['FORMA_INGRESSO_SIMPLES'] == 'Ampla Concorrência')]
+        df = df[(df['FORMA_INGRESSO_SIMPLES'] == 'Cotas') | (df['FORMA_INGRESSO_SIMPLES'] == 'Ampla Concorrencia')]
     return df
 
 

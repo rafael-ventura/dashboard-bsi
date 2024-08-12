@@ -64,7 +64,8 @@ def formatar_dados(source, incluir_outros=True, dados_anterior_2014=False):
     df = preencher_nulos(df, {'BAIRRO': 'Desconhecido', 'CIDADE': 'Desconhecido', 'ESTADO': 'Desconhecido'})
     df = formatar_periodos(df)
 
-    if dados_anterior_2014:
+    # Aplicar a lógica de remoção de alunos anteriores a 2014
+    if not dados_anterior_2014:
         df = remover_alunos_anteriores_2014(df)
 
     tipo_campos = {

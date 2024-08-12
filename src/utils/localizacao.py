@@ -54,7 +54,6 @@ def verificar_bairro_em_zonas(bairro):
 
 def verificar_cidade_em_regioes(cidade):
     cidade_normalizada = normalizar(cidade)
-    print(f"Verificando cidade: {cidade_normalizada}")
 
     for regiao, lista_cidades in [
         ('Baixada Fluminense', baixada_fluminense),
@@ -67,10 +66,8 @@ def verificar_cidade_em_regioes(cidade):
         for cidade_regiao in lista_cidades:
             cidade_regiao_normalizada = normalizar(cidade_regiao)
             if cidade_normalizada == cidade_regiao_normalizada:
-                print(f"{cidade_normalizada} encontrado em {regiao}")
                 return regiao
 
-    print(f"{cidade_normalizada} não encontrado em nenhuma região específica")
     return None
 
 
@@ -91,7 +88,6 @@ def agrupar_por_zona(df):
         if zona_cidade:
             return zona_cidade
 
-        print(f"Zona para bairro {bairro} e cidade {cidade} não encontrada, atribuindo 'Outros'")
         return 'Outros'
 
     # Adiciona a coluna 'ZONA' ao DataFrame
