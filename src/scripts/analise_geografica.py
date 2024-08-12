@@ -3,9 +3,8 @@ import matplotlib.colors as colors
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sb
-
-from src.utils.utils import salvar_grafico, criar_pasta_graficos, carregar_dados, remover_acentos_e_maiusculas, \
-    pega_caminho_base, plot_treemap
+from src.utils.plots import criar_pasta_graficos, salvar_grafico, plot_treemap
+from src.utils.utils import carregar_dados, pega_caminho_base, remover_acentos_e_maiusculas
 
 
 def executar_analise_geografica(dataframe):
@@ -23,6 +22,8 @@ def executar_analise_geografica(dataframe):
     plot_treemap_bairros(bairros_rj)
     plot_tree_map_cidades(dataframe)
     plot_tree_map_estados(dataframe)
+    plot_pie_bairros(bairros_rj)
+    plot_pie_zonas(dataframe)
     print("\nAnálise Geográfica Concluída com Sucesso!")
 
 
@@ -169,6 +170,29 @@ def plot_tree_map_estados(dataframe):
     :return: None
     """
     plot_treemap(dataframe['ESTADO'].value_counts(), 5, 'Treemap de Alunos por Estado')
+
+
+def plot_pie_bairros(bairros_rj):
+    """
+    Plota um gráfico de pizza com a distribuição de alunos por bairro.
+    """
+    plt.figure(figsize=(10, 10))
+    plt.pie(bairros_rj['ALUNOS'], labels=bairros_rj['nome'], autopct='%1.1f%%', startangle=90)
+    plt.title('Distribuição de Alunos por Bairro')
+    plt.tight_layout()
+    salvar_grafico('distribuicao_alunos_bairro_pie')
+
+
+def plot_pie_zonas(dataframe):
+    """
+    Plota um gráfico de pizza com a distribuição de alunos por zona.
+    """
+    zona_count = dataframe['ZONA'].value_counts()
+    plt.figure(figsize=(10, 10))
+    plt.pie(zona_count, labels=zona_count.index, autopct='%1.1f%%', startangle=90, colors=sb.color_palette("husl", len(zona_count)))
+    plt.title('Distribuição de Alunos por Zona')
+    plt.tight_layout()
+    salvar_grafico('distribuicao_alunos_zona_pie')
 
 
 if __name__ == "__main__":

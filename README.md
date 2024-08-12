@@ -63,11 +63,13 @@ Em seguida, criei alguns graficos para visualizar melhor os dados, e fiz algumas
     'AE - Mobilidade Acadêmica IAE/IESCE = Outros
     'AE - Mobilidade Adadêmica Externa - ANDIFES = Outros
     'DJ - Decisão Judicial = Outros
-    'EN - ENEM' = Ampla Concorrência
     'EO - Transferência Ex-Ofício' = Outros
     'PD - Portador de Diploma de Nível Superior' = Outros
     'Pessoas com Deficiência' = Outros
     'PG - Programa de Estudantes - Convênio (PEC-G)' = Outros
+    'TE - Transferência Externa - oriunda de outra instituição' = Outros
+    'TC - Transferência Interna-Curso não relacionado ao anterior' = Outros
+    'EN - ENEM' = Ampla Concorrência
     'SISU Ampla Concorrência' = Ampla Concorrência
     'SISU Escola Pública - Indep. de Renda' = Cotas
     'SISU Escola Pública até 1,5 S.M Índio' = Cotas
@@ -77,8 +79,6 @@ Em seguida, criei alguns graficos para visualizar melhor os dados, e fiz algumas
     'SISU Escola Pública, Indep. de Renda: Preto, Pardo, Indígena' = Cotas
     'SISU Escola Pública, Indep. de Renda: Índio' = Cotas
     'SISU Escola Pública, Indep. de Renda: Preto e Pardo' = Cotas
-    'TE - Transferência Externa - oriunda de outra instituição' = Outros
-    'TC - Transferência Interna-Curso não relacionado ao anterior' = Outros
     'VE - Vestibular' = Ampla Concorrência
  ```
  

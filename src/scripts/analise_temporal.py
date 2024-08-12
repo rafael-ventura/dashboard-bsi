@@ -1,7 +1,8 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-from src.utils.utils import plotar_grafico_linha, salvar_grafico, carregar_dados, plotar_grafico_linha_ponderada
+from src.utils.plots import salvar_grafico, plotar_grafico_linha, plotar_grafico_linha_ponderada
+from src.utils.utils import carregar_dados
 
 
 def analise_temporal(dataframe):
@@ -59,7 +60,6 @@ def plot_variacao_media_cra_forma_ingresso(dataframe):
     df_por_tipo = dataframe.groupby(['FORMA_INGRESSO_SIMPLES', 'PERIODO_INGRESSO_FORMATADO'])[
         'CRA'].mean().reset_index()
     plotar_grafico_linha(x='PERIODO_INGRESSO_FORMATADO', y='CRA', data=df_por_tipo,
-                         hue='FORMA_INGRESSO_SIMPLES',
                          titulo='Variação da Média do CRA por Forma de Ingresso',
                          xlabel='Período de Ingresso', ylabel='Média do CRA')
     salvar_grafico('variacao_media_cra_forma_ingresso')
@@ -71,8 +71,8 @@ def plot_variacao_media_cra_forma_evasao(dataframe):
     :param dataframe: DataFrame com os dados.
     :return: None
     """
-    df_por_evasao = dataframe.groupby(['FORMA_EVASAO', 'PERIODO_INGRESSO_FORMATADO'])['CRA'].mean().reset_index()
-    sns.lineplot(data=df_por_evasao, x='PERIODO_INGRESSO_FORMATADO', y='CRA', hue='FORMA_EVASAO')
+    df_por_evasao = dataframe.groupby(['STATUS_EVASAO', 'PERIODO_INGRESSO_FORMATADO'])['CRA'].mean().reset_index()
+    sns.lineplot(data=df_por_evasao, x='PERIODO_INGRESSO_FORMATADO', y='CRA', hue='STATUS_EVASAO')
     plt.title('Variação da Média do CRA por Forma de Evasão')
     plt.xlabel('Período de Ingresso')
     plt.ylabel('Média do CRA')
@@ -87,9 +87,14 @@ def plot_variacao_media_ponderada_cra_forma_ingresso(dataframe):
     """
     dataframe['QUANTIDADE'] = 1
     dataframe['CRA_PONDERADO'] = dataframe['CRA'] * dataframe['QUANTIDADE']
-    df_ponderado = dataframe.groupby(['FORMA_INGRESSO_SIMPLES', 'PERIODO_INGRESSO_FORMATADO']).sum()
+
+    # Especificar as colunas numéricas para realizar a soma
+    numeric_columns = ['QUANTIDADE', 'CRA_PONDERADO']
+    df_ponderado = dataframe.groupby(['FORMA_INGRESSO_SIMPLES', 'PERIODO_INGRESSO_FORMATADO'])[numeric_columns].sum()
+
     df_ponderado['CRA_PONDERADO'] /= df_ponderado['QUANTIDADE']
     df_ponderado.reset_index(inplace=True)
+
     plotar_grafico_linha_ponderada(
         data=df_ponderado, x='PERIODO_INGRESSO_FORMATADO', y='CRA_PONDERADO',
         hue='FORMA_INGRESSO_SIMPLES', titulo='Média Ponderada do CRA por Forma de Ingresso',
@@ -106,12 +111,17 @@ def plot_variacao_media_ponderada_cra_forma_evasao(dataframe):
     """
     dataframe['QUANTIDADE'] = 1
     dataframe['CRA_PONDERADO'] = dataframe['CRA'] * dataframe['QUANTIDADE']
-    df_ponderado = dataframe.groupby(['FORMA_EVASAO', 'PERIODO_INGRESSO_FORMATADO']).sum()
+
+    # Especificar as colunas numéricas para realizar a soma
+    numeric_columns = ['QUANTIDADE', 'CRA_PONDERADO']
+    df_ponderado = dataframe.groupby(['STATUS_EVASAO', 'PERIODO_INGRESSO_FORMATADO'])[numeric_columns].sum()
+
     df_ponderado['CRA_PONDERADO'] /= df_ponderado['QUANTIDADE']
     df_ponderado.reset_index(inplace=True)
+
     plotar_grafico_linha_ponderada(
         data=df_ponderado, x='PERIODO_INGRESSO_FORMATADO', y='CRA_PONDERADO',
-        hue='FORMA_EVASAO', titulo='Média Ponderada do CRA por Forma de Evasão',
+        hue='STATUS_EVASAO', titulo='Média Ponderada do CRA por Forma de Evasão',
         xlabel='Período de Ingresso', ylabel='Média Ponderada do CRA'
     )
     salvar_grafico('variacao_media_ponderada_cra_forma_evasao')
@@ -141,7 +151,7 @@ def plot_tendencia_ingresso(dataframe):
     tendencia_ingresso = dataframe.groupby(['ANO_PERIODO_INGRESSO', 'FORMA_INGRESSO_SIMPLES']).size().reset_index(
         name='Quantidade')
     plotar_grafico_linha(x='ANO_PERIODO_INGRESSO', y='Quantidade', data=tendencia_ingresso,
-                         hue='FORMA_INGRESSO_SIMPLES', titulo='Tendência de Ingresso por Ano e Forma de Ingresso',
+                         titulo='Tendência de Ingresso por Ano e Forma de Ingresso',
                          xlabel='Ano de Ingresso', ylabel='Quantidade de Alunos')
     salvar_grafico('tendencia_ingresso')
 
@@ -150,9 +160,9 @@ def plot_tendencia_evasao(dataframe):
     """
     Analisa a tendência de evasão no curso ao longo dos anos, separada por forma de evasão.
     """
-    tendencia_evasao = dataframe.groupby(['ANO_PERIODO_INGRESSO', 'FORMA_EVASAO']).size().reset_index(name='Quantidade')
+    tendencia_evasao = dataframe.groupby(['ANO_PERIODO_INGRESSO', 'STATUS_EVASAO']).size().reset_index(name='Quantidade')
     plotar_grafico_linha(x='ANO_PERIODO_INGRESSO', y='Quantidade', data=tendencia_evasao,
-                         hue='FORMA_EVASAO', titulo='Tendência de Evasão por Ano e Forma de Evasão',
+                         titulo='Tendência de Evasão por Ano e Forma de Evasão',
                          xlabel='Ano de Ingresso', ylabel='Quantidade de Evasões')
     salvar_grafico('tendencia_evasao')
 

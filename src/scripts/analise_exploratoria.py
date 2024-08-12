@@ -1,7 +1,8 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-from src.utils.utils import criar_pasta_graficos, salvar_grafico, carregar_dados
+from src.utils.plots import criar_pasta_graficos, salvar_grafico
+from src.utils.utils import carregar_dados
 
 
 def analise_exploratoria(dataframe):

@@ -2,7 +2,7 @@ BAIRRO,DISTANCIA_URCA
 copacabana,2.59
 tijuca,7.39
 pechincha,19.22
-vila itamarati,
+vila itamarati,18.45
 pavuna,25.14
 freguesia,17.93
 engenho da rainha,16.4
@@ -81,7 +81,7 @@ chacaras rio-petropolis,
 jardim excelsior,
 neopolis,2074.84
 cidade nova,348.3
-sao francisco da praia,
+sao francisco da praia,6.54
 catete,3.26
 quitandinha,47.51
 higienopolis,13.06
@@ -119,7 +119,7 @@ jardim carioca,16.68
 santo cristo,6.93
 encantado,15.32
 gamboa,6.74
-cosmorama,
+cosmorama,31.23
 glaucia,28.81
 todos os santos,13.7
 cascadura,18.19
@@ -131,3 +131,266 @@ riachuelo,10.6
 sao bras,
 desconhecido,14.68
 santa rosa,9.59
+recreio dos bandeirantes dos bandeirantes,31.12
+vila isabell,
+brás de pina,18.98
+laranjeirass,
+coelho neto neto,23.06
+humaitá,3.33
+fonseca,11.6
+barra da tijuca da tijuca,26.52
+cosme velhoo,
+vila valqueire,21.55
+santissimo,37.14
+gavea,7.82
+freguesia/jacarepagua,17.93
+parada 40,17.18
+del castilho,13.52
+jardim olavo bilac,26.28
+grajaú,10.5
+alto da boa vista da boa vista,4.36
+praça seca,19.91
+pitangueiras,15.22
+tanque - jacarepagua,
+madureira,19.61
+morin,48.46
+monero,17.71
+colubande,20.17
+jardim sulacap,23.97
+mutua,20.31
+coelho neto da rocha,
+jardim rosario,
+eden,29.35
+fazendinha,76.54
+ouro verde,39.45
+da luz,37.88
+leme,0.85
+piquet,
+centenario,24.93
+jacare,11.37
+ibes,
+fatima,105.11
+jardim meriti,28.47
+pinheiros,367.92
+lindo parque,17.54
+parque sao vicente,
+inhaúma,14.87
+tomas coelho neto,
+tiradentes,228.31
+village sao roque,
+tanque-jacarepagua,
+jardim anhanga,34.7
+vila sao luis,86.18
+ferradura,132.72
+jardim primavera,108.01
+rio do ouro,18.17
+mutando,
+cidade de deus,20.0
+agua santa,15.53
+itaipu,14.14
+taquara-jacarepagua,14.63
+sulacap,23.97
+turiacu,20.56
+colégio,21.37
+niteroi,9.1
+vista alegre,20.44
+santa catarina,55.45
+santa eugenia,38.21
+vila nova,33.94
+maria paula,16.37
+edson passos,31.44
+campinho,19.96
+vigario geral,21.63
+inga,7.34
+freguesia - jacarepagua,17.93
+freguesia  jacarepagua,17.93
+varzea,63.47
+lins,12.73
+praia brava,134.92
+zumbi,14.73
+piabeta,38.04
+ufrrj,56.49
+olavo bilac,26.28
+quintino bocaiuva bocaiuva,17.39
+sao francisco,103.45
+marechal hermes,23.24
+sauassu,
+prata,32.8
+piedade,16.17
+jardim boa esperanca,
+engenho do mato,16.17
+alcantara,22.59
+parque vitoria,
+cruzeiro do sul,34.95
+freguesia (ilha do governador),
+gardênia azul,18.8
+jardim jardim gramacho,24.57
+caxias,
+vila de cava,41.58
+engenho do porto,23.51
+sao goncalo,22.97
+oswaldo cruz,20.86
+filadelfia,
+jacarépagua,20.88
+andaraí,9.2
+praça da bandeira,6.64
+freguesia/jacarépagua,17.93
+tanque - jacarépagua,
+jacaré,11.37
+tanque-jacarépagua,
+taquara-jacarépagua,14.63
+freguesia - jacarépagua,17.93
+freguesia  jacarépagua,17.93
+bancários,18.02
+Flamengo,2.33
+Recreio Dos Bandeirantes Dos Bandeirantes,31.12
+Pilares,15.5
+Taquara,22.51
+Copacabana,2.59
+Laranjeiras,2.99
+Cachambi,13.03
+Catete,3.26
+Botafogo,1.37
+Engenho Novo,11.39
+Coelho Neto Neto,23.06
+Riachuelo,10.6
+Tijuca,7.39
+Campo Grande,40.52
+Jacarepagua,20.88
+Humaita,3.33
+Barra Da Tijuca Da Tijuca,20.93
+Portuguesa,17.53
+Cosme Velhoo,
+Vila Da Penha,19.04
+Vila Valqueire,21.55
+Praca Da Bandeira,6.64
+Ilha Do Governador,17.37
+Itapeba,33.66
+Icarai,8.44
+Santa Cruz,53.03
+Rio Comprido,5.09
+Iraja,20.68
+Vila Kosmos,17.78
+Parque Ipiranga,
+Andarai,9.2
+Rocha Miranda,21.6
+Sao Cristovao,8.21
+Realengo,28.2
+Bairro Das Gracas,31.99
+Centro,5.72
+Rocha,10.26
+Meier,12.84
+Freguesia,17.93
+Ipanema,4.83
+Alto Da Boa Vista Da Boa Vista,4.36
+Caju,9.84
+Praca Seca,19.91
+Itanhanga,14.51
+Piratininga,10.37
+Lins De Vasconcelos,12.73
+Praca Da Ponte,
+Neopolis,2075.84
+Bras De Pina,18.98
+Maracana,7.97
+Engenho Da Rainha,16.4
+Bento Ribeiro,22.03
+Estacio,5.53
+Pechincha,19.22
+Olaria,96.6
+Quitandinha,47.51
+Vila Isabel,9.45
+Cosmorama,31.23
+Senador Vasconcelos,37.59
+Vila Guanabara,
+Jardim America,22.55
+Gloria,4.01
+Benfica,10.1
+Ouro Verde,39.45
+Calhau,
+Jardim Botanico,5.78
+Bonsucesso,13.11
+Grajau,10.5
+Leblon,6.69
+Jacare,11.37
+Pavuna,25.14
+Vicente De Carvalho,18.58
+Jardim Carioca,16.68
+Penha Circular,17.98
+Inhoaiba,43.86
+Sao Francisco Xavier,9.52
+Vila Itamarati,
+Encantado,15.32
+Leme,0.85
+Nossa Senhora Das Gracas,107.39
+Padre Miguel,29.97
+Santa Teresa,4.05
+Inhauma,14.87
+Tomas Coelho Neto,
+Engenho De Dentro,14.39
+Silveira,
+Recreio Dos Bandeirantes,31.12
+Parque Anchieta,28.62
+Jardim Primavera,108.01
+Penha,16.99
+Todos Os Santos,13.7
+Rio De Janeiro,6.39
+Taua,17.42
+Sepetiba,53.98
+Cidade Nova,390.79
+Santa Teresinha,33.11
+Sao Bras,
+Jardim Guanabara,16.0
+Anil,17.48
+Chacaras Rio-Petropolis,
+Colegio,21.37
+Santa Rosa,9.59
+Abolicao,15.48
+Anchieta,27.79
+Glaucia,28.81
+Bento Ferreira,
+Higienopolis,13.06
+Ramos,14.44
+Rocinha,9.07
+Guaratiba,42.95
+Honorio Fraga,
+Cohama,
+Alto Da Boa Vista,
+Jardim Excelsior,
+Vila Nova,35.91
+Cascadura,18.19
+Gamboa,6.74
+Vila Brasil,31.03
+Barreto,12.06
+Maria Da Graca,12.6
+Raul Veiga,22.53
+Olavo Bilac,26.28
+Quintino Bocaiuva Bocaiuva,17.39
+Bancarios,18.02
+Curicica,22.49
+Vila Leopoldina,26.06
+Queimados,47.75
+Santo Cristo,6.93
+Bangu,31.68
+Sao Conrado,11.01
+Jardim Gramacho,24.95
+Joao Pinheiro,
+Freguesia (Ilha Do Governador),
+Mare,13.0
+Laranjal,
+Jardim Jardim Gramacho,24.57
+Caxias,
+Plante Cafe,
+Sao Francisco Da Praia,6.68
+santa teresinha,33.11
+freguesia (jacarepagua),17.93
+iraja!,20.68
+setor habitacional jardim botanico (lago sul),
+vila brasil (manilha),31.03
+braz de pina,20.65
+sapso francisco xavier,
+recreio,136.87
+praassa da bandeira,
+maracanaps,
+alto,86.87
+inhaaoma,
+gramacho,26.42

@@ -57,6 +57,9 @@ def adicionar_distancia_ate_urca(dataframe, dataframe_distancias, geolocator):
 
     for index, row in dataframe.iterrows():
         bairro = row['BAIRRO']
+        if bairro.lower() == 'urca':
+            dataframe.at[index, 'DISTANCIA_URCA'] = 0.0
+            continue
         if bairro not in cache_distancias or pd.isna(cache_distancias[bairro]) or cache_distancias[bairro] <= 0:
             cache_distancias[bairro] = calcular_distancia_ate_urca(bairro, row['CIDADE'], row['ESTADO'], geolocator)
         dataframe.at[index, 'DISTANCIA_URCA'] = cache_distancias[bairro]
