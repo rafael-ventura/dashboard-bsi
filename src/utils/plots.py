@@ -134,13 +134,14 @@ def plotar_grafico_linha_ponderada(data, x, y, hue=None, titulo="", xlabel="", y
     plt.tight_layout()
 
 
-def plot_treemap(data, threshold, title, color_scheme='Spectral'):
+def plot_treemap(data, threshold, title, color_scheme='Spectral', nome_pasta='graficos'):
     """
     Plota um Treemap genérico baseado nos dados fornecidos.
     :param data: Series com os dados (índices serão usados como labels).
     :param threshold: Limite mínimo para inclusão no treemap.
     :param title: Título do Treemap.
     :param color_scheme: Esquema de cores para o treemap.
+    :param nome_pasta: Pasta onde o gráfico será salvo.
     """
     filtered_data = data[data > threshold]
 
@@ -154,31 +155,32 @@ def plot_treemap(data, threshold, title, color_scheme='Spectral'):
     squarify.plot(sizes=sizes, label=labels, alpha=0.8, color=colors, pad=True, text_kwargs=text_kwargs)
     plt.title(title)
     plt.axis('off')
-    salvar_grafico(title.lower().replace(' ', '_'))
+    salvar_grafico(title.lower().replace(' ', '_'), nome_pasta)
 
 
-def criar_pasta_graficos(nome_pasta='graficos'):
+def criar_pasta_graficos(nome_pasta):
     """
     Função para criar uma pasta para salvar os gráficos.
-    :param nome_pasta: Nome da pasta a ser criada.
+    :param nome_pasta: Caminho completo da pasta onde os gráficos serão salvos.
     :return: None
     """
-    caminho_pasta = os.path.join(pega_caminho_base(), 'dados', 'processado', nome_pasta)
-    if not os.path.exists(caminho_pasta):
-        os.makedirs(caminho_pasta)
-        print(f'Pasta "{caminho_pasta}" criada com sucesso!')
+    caminho_base = os.path.join(pega_caminho_base(), 'dados', 'processado', nome_pasta)
+
+    if not os.path.exists(caminho_base):
+        os.makedirs(caminho_base)
+        print(f'Pasta "{caminho_base}" criada com sucesso!')
+
+    return caminho_base
 
 
-def salvar_grafico(nome_grafico, nome_pasta='graficos'):
+def salvar_grafico(nome_grafico, nome_pasta):
     """
-    Função para salvar um gráfico em uma pasta específica.
-    :param nome_grafico: Nome do gráfico a ser salvo.
-    :param nome_pasta: Nome da pasta onde o gráfico será salvo.
-    :return: None
+    Função para salvar gráficos em uma pasta específica.
+    :param nome_grafico: Nome do arquivo do gráfico.
+    :param nome_pasta: Caminho completo da pasta onde o gráfico será salvo.
     """
-    caminho_pasta = os.path.join(pega_caminho_base(), 'dados', 'processado', nome_pasta)
-    criar_pasta_graficos(nome_pasta)
-    caminho_completo = os.path.join(caminho_pasta, f'{nome_grafico}.png')
+    caminho_completo = os.path.join(pega_caminho_base(), 'dados', 'processado', nome_pasta, f'{nome_grafico}.png')
     plt.savefig(caminho_completo)
     plt.close()
     print(f'Gráfico "{nome_grafico}" salvo com sucesso em "{caminho_completo}"!')
+

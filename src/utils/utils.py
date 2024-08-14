@@ -93,3 +93,17 @@ def limpar_e_normalizar_array(array, cases=None):
             array = [unidecode.unidecode(x).title().strip() for x in array]
 
     return array
+
+
+def separar_por_periodo(df):
+    """
+    Função para separar o DataFrame original em diferentes períodos temporais.
+    """
+    periodos = {
+        '1_antes_cotas': df[(df['ANO_PERIODO_INGRESSO'] >= 2008) & (df['ANO_PERIODO_INGRESSO'] < 2014)],
+        '2_cotas_2014_2020': df[(df['ANO_PERIODO_INGRESSO'] >= 2014) & (df['ANO_PERIODO_INGRESSO'] <= 2020)],
+        '3_pandemia': df[(df['ANO_PERIODO_INGRESSO'] > 2020) & (df['ANO_PERIODO_INGRESSO'] <= 2022.2)],
+        '4_pos_pandemia': df[df['ANO_PERIODO_INGRESSO'] >= 2023]
+    }
+    return periodos
+

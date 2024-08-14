@@ -34,8 +34,11 @@ def classificar_forma_ingresso(df, incluir_outros=True):
 
 def classificar_forma_evasao(df):
     """
-    Função para classificar a forma de evasão dos alunos
+    Função para classificar a forma de evasão dos alunos e preservar a forma detalhada.
     """
+    # Preservando a forma de evasão detalhada
+    df['FORMA_EVASAO_DETALHADA'] = df['FORMA_EVASAO'].copy()
+
     condicoes = [
         df['FORMA_EVASAO'].str.contains('ABA|APO|Desistência SiSU|JUB|CAN|FAL|TIC ', na=False),
         df['FORMA_EVASAO'].str.contains('CON', na=False),
