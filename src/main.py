@@ -34,7 +34,7 @@ def main():
         print(Fore.GREEN + f"\nAnálise de dados para o período: {periodo}")
         analise_ingresso_evasao(df_periodo, pasta_ingresso_evasao)
         analise_performance_academica(df_periodo, pasta_performance)
-        analise_geografica(df_periodo, pasta_geografico)
+        analise_geografica(df_periodo, pasta_geografico, periodo)
 
     # Analisar os resultados gerais
     pasta_resultados_gerais = criar_pasta_graficos('graficos/resultados_gerais')
