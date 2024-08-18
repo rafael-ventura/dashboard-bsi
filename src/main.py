@@ -2,7 +2,7 @@ import os
 
 from src.scripts.analise_geografica import analise_geografica
 from src.scripts.analise_ingresso_evasao import analise_ingresso_evasao
-from src.scripts.analise_performance_academica import analise_performance_academica
+from src.scripts.analise_desempenho_academico import analise_desempenho_academico
 from src.scripts.analise_resultados_gerais import analise_resultados_gerais
 from src.scripts.formatacao_dados import formatar_dados
 from src.utils.plots import criar_pasta_graficos
@@ -32,8 +32,8 @@ def main():
 
         # Realizar as análises específicas para cada período
         print(Fore.GREEN + f"\nAnálise de dados para o período: {periodo}")
-        analise_ingresso_evasao(df_periodo, pasta_ingresso_evasao)
-        analise_performance_academica(df_periodo, pasta_performance)
+        analise_ingresso_evasao(df_periodo, pasta_ingresso_evasao, periodo)
+        analise_desempenho_academico(df_periodo, pasta_performance, periodo)
         analise_geografica(df_periodo, pasta_geografico, periodo)
 
     # Analisar os resultados gerais

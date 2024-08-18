@@ -27,24 +27,32 @@ def plotar_grafico_de_barras(x, y, data, titulo, xlabel, ylabel, ax=None):
     ax.set_ylabel(ylabel)
 
 
-def criar_grafico_de_contagem(x, data, titulo, xlabel, ylabel, hue=None, ax=None):
+def criar_grafico_de_contagem(x, data, titulo, xlabel, ylabel, hue=None, ax=None, exibir_percentual=True):
     """
-    Função para plotar um gráfico de contagem.
-    :param x: Nome da coluna do eixo x.
-    :param data: DataFrame com os dados.
-    :param titulo: Título do gráfico.
-    :param xlabel: Rótulo do eixo x.
-    :param ylabel: Rótulo do eixo y.
-    :param hue: Nome da coluna para agrupamento.
-    :param ax: Eixo do gráfico.
-    :return: None
+    Função para plotar um gráfico de contagem com opção de exibir porcentagens e valores exatos.
     """
     if ax is None:
         fig, ax = plt.subplots()
+
+    total = len(data)
+
     sns.countplot(x=x, data=data, hue=hue, ax=ax)
+
+    if exibir_percentual:
+        for p in ax.patches:
+            altura = p.get_height()
+            percentual = f'{(altura / total) * 100:.1f}%'
+            ax.annotate(f'{percentual}', (p.get_x() + p.get_width() / 2., altura), ha='center', va='center', xytext=(0, 8), textcoords='offset points')
+    else:
+        for p in ax.patches:
+            altura = p.get_height()
+            ax.annotate(f'{int(altura)}', (p.get_x() + p.get_width() / 2., altura), ha='center', va='center', xytext=(0, 8), textcoords='offset points')
+
     ax.set_title(titulo)
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
+
+    plt.tight_layout()
 
 
 def plotar_histograma(x, data, titulo, xlabel, ylabel, ax=None):
@@ -134,7 +142,7 @@ def plotar_grafico_linha_ponderada(data, x, y, hue=None, titulo="", xlabel="", y
     plt.tight_layout()
 
 
-def plot_treemap(data, threshold, title, color_scheme='Spectral', nome_pasta='graficos'):
+def plot_treemap(data, threshold, title, color_scheme='Spectral', nome_pasta='graficos', show_values=False):
     """
     Plota um Treemap genérico baseado nos dados fornecidos.
     :param data: Series com os dados (índices serão usados como labels).
@@ -142,19 +150,28 @@ def plot_treemap(data, threshold, title, color_scheme='Spectral', nome_pasta='gr
     :param title: Título do Treemap.
     :param color_scheme: Esquema de cores para o treemap.
     :param nome_pasta: Pasta onde o gráfico será salvo.
+    :param show_values: Booleano para determinar se os valores serão mostrados nas caixas.
     """
+    # Filtrando os dados com base no threshold
     filtered_data = data[data > threshold]
 
     sizes = filtered_data.values
     labels = filtered_data.index
 
+    # Definindo as cores do treemap
     colors = sns.color_palette(color_scheme, len(sizes))
-    text_kwargs = {'fontsize': 10, 'fontfamily': 'sans-serif'}
 
+    # Preparando o texto a ser exibido nas caixas do treemap
+    if show_values:
+        labels = [f'{label}\n{size} alunos' for label, size in zip(labels, sizes)]
+
+    # Criando o gráfico treemap
     plt.figure(figsize=(12, 8))
-    squarify.plot(sizes=sizes, label=labels, alpha=0.8, color=colors, pad=True, text_kwargs=text_kwargs)
+    squarify.plot(sizes=sizes, label=labels, alpha=0.8, color=colors, pad=True)
     plt.title(title)
     plt.axis('off')
+
+    # Salvando o gráfico
     salvar_grafico(title.lower().replace(' ', '_'), nome_pasta)
 
 
@@ -184,3 +201,32 @@ def salvar_grafico(nome_grafico, nome_pasta):
     plt.close()
     print(f'Gráfico "{nome_grafico}" salvo com sucesso em "{caminho_completo}"!')
 
+
+def plotar_grafico_caixa_com_estatisticas(x, y, data, titulo, xlabel, ylabel, nome_pasta, nome_grafico):
+    """
+    Função para plotar um boxplot com as principais estatísticas (média, mediana, etc.).
+    """
+    plt.figure(figsize=(12, 6))
+    ax = sns.boxplot(x=x, y=y, data=data, palette='muted')
+
+    plt.title(titulo)
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+
+    # Calculando as estatísticas
+    stats = data.groupby(x)[y].describe()
+
+    # Adicionando as estatísticas no gráfico
+    for idx, group in enumerate(stats.index):
+        media = stats.loc[group, 'mean']
+        mediana = stats.loc[group, '50%']
+        q1 = stats.loc[group, '25%']
+        q3 = stats.loc[group, '75%']
+
+        ax.annotate(f'Média: {media:.2f}\nMediana: {mediana:.2f}\nQ1: {q1:.2f}\nQ3: {q3:.2f}',
+                    xy=(idx, mediana), xycoords='data',
+                    xytext=(0, -40), textcoords='offset points',
+                    ha='center', fontsize=8, color='black', backgroundcolor='white')
+
+    plt.tight_layout()
+    salvar_grafico(nome_grafico, nome_pasta)

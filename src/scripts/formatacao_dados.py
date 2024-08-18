@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from src.utils.distancia import adicionar_distancia_ate_urca, inicializar_geolocator
 from src.utils.localizacao import correcoes_bairros, agrupar_por_zona, correcoes_cidades, adicionar_cidade_estado
-from src.utils.performance_academica import classificar_forma_ingresso, classificar_forma_evasao, arredondar_cra
+from src.utils.desempenho_academico import classificar_forma_ingresso, classificar_forma_evasao, arredondar_cra
 from src.utils.temporal import remover_alunos_anteriores_2014, classificar_idade, calcular_tempo_curso
 from src.utils.utils import carregar_dados, salvar_dados, pega_caminho_base, limpar_e_normalizar, corrigir_nomes_bairros, corrigir_nomes_cidades
 

@@ -39,11 +39,37 @@ def calcular_idade_ingresso(row):
         return np.nan
 
 
+def calcular_idade_evasao(row):
+    """
+    Função para calcular a idade do aluno no momento da evasão
+    """
+    if pd.isna(row['PERIODO_EVASAO_FORMATADO']) or pd.isna(row['DT_NASCIMENTO']):
+        return np.nan
+
+    try:
+        ano_evasao, semestre_evasao = map(int, row['PERIODO_EVASAO_FORMATADO'].split('.'))
+        if ano_evasao == 0:
+            return np.nan
+
+        mes_evasao = 1 if semestre_evasao == 1 else 7
+        data_evasao = pd.Timestamp(year=ano_evasao, month=mes_evasao, day=1)
+        idade_evasao = data_evasao.year - row['DT_NASCIMENTO'].year - (
+                (data_evasao.month, data_evasao.day) < (row['DT_NASCIMENTO'].month, row['DT_NASCIMENTO'].day))
+        return idade_evasao
+    except (ValueError, TypeError):
+        return np.nan
+
+
 def classificar_idade(df):
     """
-    Função para classificar a idade dos alunos no ingresso.
+    Função para classificar a idade dos alunos no ingresso e evasão.
     """
+    # Calcula a idade de ingresso
     df['IDADE_INGRESSO'] = df.apply(calcular_idade_ingresso, axis=1)
+
+    # Calcula a idade na evasão, se houver
+    df['IDADE_EVASAO'] = df.apply(calcular_idade_evasao, axis=1)
+
     return df
 
 
