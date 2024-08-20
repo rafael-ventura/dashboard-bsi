@@ -39,8 +39,6 @@ def analise_geografica(df_periodo, nome_pasta, periodo_nome):
     plot_cra_por_bairro_4_alunos(df_periodo, nome_pasta, periodo_nome)
     plot_cra_top_10_bairros(df_periodo, nome_pasta, periodo_nome)
     plot_cra_bottom_10_bairros(df_periodo, nome_pasta, periodo_nome)
-    plot_quantidade_alunos_por_zona_geografica(df_periodo, nome_pasta, periodo_nome)
-    plot_quantidade_alunos_por_zona_municipio(df_periodo, nome_pasta, periodo_nome)
     plot_quantidade_alunos_por_zona_geografica_e_ingresso(df_periodo, nome_pasta, periodo_nome)
     plot_quantidade_alunos_por_zona_e_ingresso(df_periodo, nome_pasta, periodo_nome)
 
