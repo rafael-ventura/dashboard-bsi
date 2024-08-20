@@ -70,14 +70,14 @@ def plot_evasao_detalhada(dataframe, nome_pasta, periodo_nome):
     ax = sns.barplot(x='FORMA_EVASAO_DETALHADA', y='percentual', hue='FORMA_INGRESSO_SIMPLES', data=evasao_agrupada, palette='pastel')
 
     adicionar_valores_barras(ax, exibir_percentual=True, total=100, fontsize=14)
-    ajustar_estilos_grafico(ax, title=f'Evasão por Tipo e Forma de Ingresso', xlabel='Tipo de Evasão', ylabel='Porcentagem de Alunos (%)')
+    ajustar_estilos_grafico(ax, title=f'Evasão Detalhada', xlabel='Tipo de Evasão', ylabel='Porcentagem de Alunos (%)')
 
     # Ajustar a legenda para aparecer com o texto logo abaixo
     handles, labels = ax.get_legend_handles_labels()
     ax.legend(handles=handles, labels=labels, title='Forma de Ingresso', loc='upper left', bbox_to_anchor=(1, 1))
 
     # Texto explicativo abaixo da legenda principal
-    plt.text(1.02, 0.6, "ABA = Abandono do Curso \nCAN = Cancelamento \nJUB = Jubilamento", ha="left", fontsize=17, transform=ax.transAxes)
+    plt.text(1.02, 0.6, "ABA = Abandono do Curso \nCAN = Cancelamento \nJUB = Jubilamento \nDES = Desistencia", ha="left", fontsize=17, transform=ax.transAxes)
 
     plt.tight_layout()
     salvar_grafico(f'evasao_detalhada_{periodo_nome}', nome_pasta)
@@ -96,30 +96,38 @@ def plot_evasao_sexo(dataframe, nome_pasta, periodo_nome):
     # Gráfico para cotistas
     cotistas = evadidos[evadidos['FORMA_INGRESSO_SIMPLES'] == 'Cotas']
     total_cotistas = len(cotistas)
-    cotistas_contagem = cotistas.groupby('SEXO').size().reset_index(name='contagem')
-    cotistas_contagem['percentual'] = (cotistas_contagem['contagem'] / total_cotistas) * 100
 
-    sns.barplot(x='SEXO', y='percentual', data=cotistas_contagem, palette='pastel', ax=axs[0])
-    axs[0].set_title(f'Evasão por Sexo (Cotistas)')
-    axs[0].set_xlabel('Sexo')
-    axs[0].set_ylabel('Porcentagem de Alunos (%)')
+    # Se houver cotistas, calcula a porcentagem corretamente
+    if total_cotistas > 0:
+        cotistas_contagem = cotistas.groupby('SEXO').size().reset_index(name='contagem')
+        cotistas_contagem['percentual'] = (cotistas_contagem['contagem'] / total_cotistas) * 100
 
-    adicionar_valores_barras(axs[0], exibir_percentual=True, total=100, fontsize=14)
-    adicionar_valores_barras(axs[1], exibir_percentual=True, total=100, fontsize=14)
+        sns.barplot(x='SEXO', y='percentual', data=cotistas_contagem, palette='pastel', ax=axs[0])
+        axs[0].set_title(f'Evasão por Sexo (Cotistas)')
+        axs[0].set_xlabel('Sexo')
+        axs[0].set_ylabel('Porcentagem de Alunos (%)')
 
+        adicionar_valores_barras(axs[0], exibir_percentual=True, total=100, fontsize=14)
+    else:
+        axs[0].text(0.5, 0.5, 'Sem dados de cotistas', ha='center', va='center', fontsize=14)
 
     # Gráfico para não-cotistas
     nao_cotistas = evadidos[evadidos['FORMA_INGRESSO_SIMPLES'] == 'Ampla Concorrencia']
     total_nao_cotistas = len(nao_cotistas)
-    nao_cotistas_contagem = nao_cotistas.groupby('SEXO').size().reset_index(name='contagem')
-    nao_cotistas_contagem['percentual'] = (nao_cotistas_contagem['contagem'] / total_nao_cotistas) * 100
 
-    sns.barplot(x='SEXO', y='percentual', data=nao_cotistas_contagem, palette='pastel', ax=axs[1])
-    axs[1].set_title(f'Evasão por Sexo (Não Cotistas)')
-    axs[1].set_xlabel('Sexo')
-    axs[1].set_ylabel('Porcentagem de Alunos (%)')
+    # Se houver não cotistas, calcula a porcentagem corretamente
+    if total_nao_cotistas > 0:
+        nao_cotistas_contagem = nao_cotistas.groupby('SEXO').size().reset_index(name='contagem')
+        nao_cotistas_contagem['percentual'] = (nao_cotistas_contagem['contagem'] / total_nao_cotistas) * 100
 
-    adicionar_valores_barras(axs[1], exibir_percentual=False)
+        sns.barplot(x='SEXO', y='percentual', data=nao_cotistas_contagem, palette='pastel', ax=axs[1])
+        axs[1].set_title(f'Evasão por Sexo (Não Cotistas)')
+        axs[1].set_xlabel('Sexo')
+        axs[1].set_ylabel('Porcentagem de Alunos (%)')
+
+        adicionar_valores_barras(axs[1], exibir_percentual=True, total=100, fontsize=14)
+    else:
+        axs[1].text(0.5, 0.5, 'Sem dados de não cotistas', ha='center', va='center', fontsize=14)
 
     plt.tight_layout()
     salvar_grafico(f'evasao_sexo_{periodo_nome}', nome_pasta)
@@ -132,8 +140,8 @@ def plot_evasao_idade(dataframe, nome_pasta, periodo_nome):
     # Filtra apenas alunos que evadiram e que têm idade válida no momento da evasão
     evasao_filtrada = dataframe[(dataframe['STATUS_EVASAO'] == 'Evasão') & dataframe['IDADE_EVASAO'].notnull()]
 
-    # Excluir grupos como 'Ampla Concorrência' ou qualquer outro, dependendo da coluna certa para filtrar
-    evasao_filtrada = evasao_filtrada[evasao_filtrada['FORMA_INGRESSO_SIMPLES'] != 'Ampla Concorrencia']
+    # Converter a coluna 'IDADE_EVASAO' para inteiros
+    evasao_filtrada['IDADE_EVASAO'] = evasao_filtrada['IDADE_EVASAO'].astype(int)
 
     # Agrupar os dados pela idade no momento da evasão e calcular a contagem
     evasao_agrupada = evasao_filtrada.groupby('IDADE_EVASAO').size().reset_index(name='contagem')
@@ -152,12 +160,13 @@ def plot_evasao_idade(dataframe, nome_pasta, periodo_nome):
     sns.barplot(x='IDADE_EVASAO', y='percentual', data=evasao_agrupada, palette='pastel', ax=ax)
 
     # Adicionar valores em cima das barras
-    adicionar_valores_barras(ax, exibir_percentual=True, total=100, fontsize=14)
+    adicionar_valores_barras(ax, exibir_percentual=True, total=100, fontsize=10)
 
     # Ajustar o estilo do gráfico
     ajustar_estilos_grafico(ax, title=f'Distribuição de Idades dos Alunos na Evasão',
                             xlabel='Idade no Momento da Evasão', ylabel='Porcentagem de Alunos (%)')
 
+    # Salvar o gráfico
     salvar_grafico(f'evasao_idade_{periodo_nome}', nome_pasta)
 
 
@@ -172,8 +181,13 @@ def plot_evasao_por_periodo(df, nome_pasta, periodo_nome, periodo_inicio, period
     sns.histplot(data=evadidos, x='PERIODO_EVASAO', hue='FORMA_INGRESSO_SIMPLES', multiple='stack', bins=range(1, 20),
                  palette='pastel', edgecolor='black', ax=ax)
 
+    # Ajustar os ticks do eixo x para mostrar de 1 em 1
+    ax.set_xticks(range(1, 20))
+    ax.set_xticklabels(range(1, 20))
+
     ajustar_estilos_grafico(ax, title=f'Evasão por Período do Curso', xlabel='Período do Curso', ylabel='Número de Evasões')
 
+    # Salvar o gráfico
     salvar_grafico(f'evasao_por_periodo_{periodo_nome}', nome_pasta)
 
 

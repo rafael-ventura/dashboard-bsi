@@ -103,22 +103,19 @@ def plot_diferenca_media_tempo_termino(dataframe, nome_pasta, periodo_nome):
     concluidos = dataframe[dataframe['STATUS_EVASAO'] == 'Concluído']
 
     # Verifica se há dados de cotistas para o período analisado
-    if 'Cotas' in concluidos['FORMA_INGRESSO_SIMPLES'].unique():
-        medias = concluidos.groupby('FORMA_INGRESSO_SIMPLES')['TEMPO_CURSO'].mean().reset_index()
+    medias = concluidos.groupby('FORMA_INGRESSO_SIMPLES')['TEMPO_CURSO'].mean().reset_index()
 
-        fig, ax = plt.subplots(figsize=(8, 6))
-        sns.barplot(x='FORMA_INGRESSO_SIMPLES', y='TEMPO_CURSO', data=medias, palette='pastel', ax=ax)
+    fig, ax = plt.subplots(figsize=(8, 6))
+    sns.barplot(x='FORMA_INGRESSO_SIMPLES', y='TEMPO_CURSO', data=medias, palette='pastel', ax=ax)
 
-        # Adicionar valores em cima das barras
-        adicionar_valores_barras(ax, exibir_percentual=False)
+    # Adicionar valores em cima das barras
+    adicionar_valores_barras(ax, exibir_percentual=False)
 
-        # Ajustar o estilo
-        ajustar_estilos_grafico(ax, title=f'Média de Tempo de Término do Curso', xlabel='Forma de Ingresso', ylabel='Média de Tempo de Curso (Anos)')
+    # Ajustar o estilo
+    ajustar_estilos_grafico(ax, title=f'Média de Tempo de Término do Curso', xlabel='Forma de Ingresso', ylabel='Média de Tempo de Curso (Anos)')
 
-        # Salvar o gráfico
-        salvar_grafico(f'diferenca_media_tempo_termino_{periodo_nome}', nome_pasta)
-    else:
-        print(Fore.YELLOW + f"\nAviso: Não há dados de cotistas para o período {periodo_nome}.")
+    # Salvar o gráfico
+    salvar_grafico(f'diferenca_media_tempo_termino_{periodo_nome}', nome_pasta)
 
 
 if __name__ == "__main__":

@@ -5,6 +5,7 @@ from geopy.distance import geodesic
 from geopy.exc import GeocoderTimedOut, GeocoderServiceError
 import time
 import os
+from colorama import Fore, Style
 
 from src.utils.utils import carregar_dados, salvar_dados
 
@@ -87,9 +88,9 @@ def adicionar_distancia_ate_urca(dataframe, dataframe_distancias, geolocator, ba
     if 'DISTANCIA_URCA' not in dataframe.columns:
         dataframe['DISTANCIA_URCA'] = np.NaN
 
-    # Inicializa listas para armazenar bairros bem-sucedidos e com erro
     bairros_sucesso = []
     bairros_falha = bairros_falha_existentes.copy()  # Copiamos os bairros falhos existentes
+    bairros_falha_atual = set()  # Para armazenar falhas na execução atual
 
     for index, row in dataframe.iterrows():
         bairro = row['BAIRRO']
@@ -100,7 +101,6 @@ def adicionar_distancia_ate_urca(dataframe, dataframe_distancias, geolocator, ba
 
         # Verifica se o bairro já falhou anteriormente
         if bairro in bairros_falha:
-            print(f"Pulado {bairro}, falhou anteriormente.")
             dataframe.at[index, 'DISTANCIA_URCA'] = np.NaN
             continue
 
@@ -110,21 +110,18 @@ def adicionar_distancia_ate_urca(dataframe, dataframe_distancias, geolocator, ba
 
         dataframe.at[index, 'DISTANCIA_URCA'] = cache_distancias[bairro]
 
-        # Verifica se a distância foi calculada corretamente
         if pd.notna(cache_distancias[bairro]):
             bairros_sucesso.append(bairro)
         else:
             bairros_falha.add(bairro)  # Adiciona o bairro na lista de falhas
+            bairros_falha_atual.add(bairro)  # Adiciona na lista de falhas desta execução
 
     # Atualiza o DataFrame de distâncias apenas se houver mudanças
     new_df_distancias = pd.DataFrame(list(cache_distancias.items()), columns=['BAIRRO', 'DISTANCIA_URCA'])
 
     # Printar o número de bairros processados e os bairros que falharam
-    print(f"\nTotal de bairros processados com sucesso: {len(bairros_sucesso)}")
-    print(f"Bairros processados: {', '.join(bairros_sucesso)}")
-
-    print(f"\nTotal de bairros que falharam ao calcular a distância: {len(bairros_falha - bairros_falha_existentes)}")
-    print(f"Bairros com falha nesta execução: {', '.join(bairros_falha - bairros_falha_existentes)}")
+    print(Fore.GREEN + f"\nTotal de bairros processados com sucesso: {len(bairros_sucesso)}" + Style.RESET_ALL)
+    print(Fore.YELLOW + f"\nTotal de bairros que falharam: {len(bairros_falha_existentes) + len(bairros_falha_atual)}" + Style.RESET_ALL)
 
     return dataframe, new_df_distancias, bairros_falha
 

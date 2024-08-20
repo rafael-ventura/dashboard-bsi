@@ -1,4 +1,5 @@
 import os
+import pandas as pd
 
 from src.scripts.analise_geografica import analise_geografica
 from src.scripts.analise_ingresso_evasao import analise_ingresso_evasao
@@ -7,7 +8,27 @@ from src.scripts.analise_resultados_gerais import analise_resultados_gerais
 from src.scripts.formatacao_dados import formatar_dados
 from src.utils.plots import criar_pasta_graficos
 from src.utils.utils import separar_por_periodo
-from colorama import Fore, init
+from colorama import Fore, init, Style
+
+init(autoreset=True)
+
+
+def imprimir_informacoes_gerais(df_original, df_formatado):
+    """
+    Imprime informações gerais sobre o número de registros antes e depois da formatação, incluindo descartes.
+    """
+    # Contagem de registros originais
+    total_original = len(df_original)
+
+    # Contagem de registros formatados
+    total_formatado = len(df_formatado)
+
+    # Calculando registros descartados
+    registros_descartados = total_original - total_formatado
+
+    print(Fore.CYAN + f"Total de alunos no dataset original: {total_original}" + Style.RESET_ALL)
+    print(Fore.GREEN + f"Total de alunos após a formatação: {total_formatado}" + Style.RESET_ALL)
+    print(Fore.RED + f"Total de registros descartados no geral: {registros_descartados}" + Style.RESET_ALL)
 
 
 def main():
@@ -16,10 +37,19 @@ def main():
     """
     init(autoreset=True)
     print(Fore.CYAN + "Iniciando o processo de formatação de dados...")
-    df_geral = formatar_dados(r'C:\Dev\dashboard-bsi\dados\bruto\PlanilhaNova.xlsx', incluir_outros=False, dados_anterior_2014=True)
+
+    # Carregar os dados diretamente da planilha antes de qualquer formatação
+    caminho_planilha = r'C:\Dev\dashboard-bsi\dados\bruto\PlanilhaNova.xlsx'
+    df_original = pd.read_excel(caminho_planilha)
+
+    # Chamar a função de formatação e obter os dados formatados
+    df_formatado = formatar_dados(caminho_planilha, incluir_outros=False, dados_anterior_2014=True)
+
+    # Exibir informações gerais comparando o dataset original e o formatado
+    imprimir_informacoes_gerais(df_original, df_formatado)
 
     # Separar os dados por período
-    periodos = separar_por_periodo(df_geral)
+    periodos = separar_por_periodo(df_formatado)
 
     for periodo, df_periodo in periodos.items():
         # Atualizar a pasta de destino para os gráficos
@@ -38,7 +68,7 @@ def main():
 
     # Analisar os resultados gerais
     pasta_resultados_gerais = criar_pasta_graficos('graficos/resultados_gerais')
-    analise_resultados_gerais(df_geral, pasta_resultados_gerais)
+    analise_resultados_gerais(df_formatado, pasta_resultados_gerais)
 
     print(Fore.CYAN + "Processo de análise concluído!")
 

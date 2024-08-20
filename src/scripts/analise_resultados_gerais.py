@@ -23,82 +23,51 @@ def analise_resultados_gerais(df, nome_pasta):
 
         periodos_dados[periodo] = (grupo_cotistas, grupo_nao_cotistas)
 
-    # Plotar gráficos consolidados
-    plotar_media_cra_por_grupo_consolidado(periodos_dados, nome_pasta)
-    plotar_taxa_evasao_conclusao_cursando_consolidado(periodos_dados, nome_pasta)
+    # Plotar gráficos separados para cada período
+    for periodo, (grupo_cotistas, grupo_nao_cotistas) in periodos_dados.items():
+        plotar_grafico_por_periodo(periodo, grupo_cotistas, grupo_nao_cotistas, nome_pasta, df)
 
     print(Fore.GREEN + "\nAnálise por Período Concluída!")
 
 
-def plotar_media_cra_por_grupo_consolidado(periodos_dados, nome_pasta):
+def plotar_grafico_por_periodo(periodo, grupo_cotistas, grupo_nao_cotistas, nome_pasta, df):
     dados_consolidados = []
 
-    for periodo, (grupo_cotistas, grupo_nao_cotistas) in periodos_dados.items():
-        media_cotistas = grupo_cotistas['CRA'].mean() if not grupo_cotistas.empty else None
-        media_nao_cotistas = grupo_nao_cotistas['CRA'].mean() if not grupo_nao_cotistas.empty else None
+    if 'ZONA' in df.columns:  # Verifica se a coluna 'ZONA' existe
+        for zona in df['ZONA'].unique():
+            total_cotistas_zona = grupo_cotistas[grupo_cotistas['ZONA'] == zona].shape[0] if not grupo_cotistas.empty else 0
+            total_nao_cotistas_zona = grupo_nao_cotistas[grupo_nao_cotistas['ZONA'] == zona].shape[0] if not grupo_nao_cotistas.empty else 0
 
-        dados_consolidados.append({'Periodo': periodo, 'Grupo': 'Cotistas', 'Média CRA': media_cotistas})
-        dados_consolidados.append({'Periodo': periodo, 'Grupo': 'Não Cotistas', 'Média CRA': media_nao_cotistas})
+            total_cotistas_zona_perc = (total_cotistas_zona / len(grupo_cotistas)) * 100 if len(grupo_cotistas) > 0 else 0
+            total_nao_cotistas_zona_perc = (total_nao_cotistas_zona / len(grupo_nao_cotistas)) * 100 if len(grupo_nao_cotistas) > 0 else 0
 
-    df_consolidado = pd.DataFrame(dados_consolidados)
+            dados_consolidados.append({'Zona': zona, 'Grupo': 'Cotistas', 'Porcentagem': total_cotistas_zona_perc})
+            dados_consolidados.append({'Zona': zona, 'Grupo': 'Não Cotistas', 'Porcentagem': total_nao_cotistas_zona_perc})
 
-    plt.figure(figsize=(14, 8))
-    ax = sns.barplot(x='Periodo', y='Média CRA', hue='Grupo', data=df_consolidado, palette='pastel', ci=None)
+        df_consolidado_zona = pd.DataFrame(dados_consolidados)
 
-    # Adicionando os valores exatos das médias em cima das barras
-    for p in ax.patches:
-        if p.get_height() > 0:  # Verifica se o valor é maior que 0 para evitar anotações erradas
-            ax.annotate(f'{p.get_height():.2f}', (p.get_x() + p.get_width() / 2., p.get_height()),
-                        ha='center', va='center', xytext=(0, 8), textcoords='offset points')
+        # Criar um gráfico grande com labels e ticks maiores
+        plt.figure(figsize=(16, 10))
+        ax = sns.barplot(x='Zona', y='Porcentagem', hue='Grupo', data=df_consolidado_zona, palette='pastel', ci=None)
 
-    plt.title(f'Comparação de Média de CRA por Período e Grupo')
-    plt.xlabel('Período')
-    plt.ylabel('Média CRA')
-    plt.legend(loc='upper left', bbox_to_anchor=(1, 1))
-    plt.tight_layout()
-    salvar_grafico('comparacao_media_cra_por_grupo_e_periodo', nome_pasta)
+        # Adicionando os valores exatos em cima das barras
+        for p in ax.patches:
+            if p.get_height() > 0:  # Verifica se o valor é maior que 0 para evitar anotações erradas
+                ax.annotate(f'{p.get_height():.1f}%', (p.get_x() + p.get_width() / 2., p.get_height()),
+                            ha='center', va='center', xytext=(0, 8), textcoords='offset points')
 
+        plt.title(f'Número de Alunos por Zona Geográfica - {periodo}', fontsize=18)
+        plt.xlabel('Zona Geográfica', fontsize=14)
+        plt.ylabel('Porcentagem (%)', fontsize=14)
+        plt.xticks(rotation=45, fontsize=12)
+        plt.yticks(fontsize=12)
+        plt.legend(loc='upper left', bbox_to_anchor=(1, 1), fontsize=12)
+        plt.tight_layout()
 
-def plotar_taxa_evasao_conclusao_cursando_consolidado(periodos_dados, nome_pasta):
-    dados_consolidados = []
-
-    def calcular_taxas(grupo):
-        total = len(grupo)
-        if total == 0:
-            return 0, 0, 0
-        evasao = len(grupo[grupo['STATUS_EVASAO'] == 'Evasão']) / total * 100
-        conclusao = len(grupo[grupo['STATUS_EVASAO'] == 'Concluído']) / total * 100
-        cursando = len(grupo[grupo['STATUS_EVASAO'] == 'Cursando']) / total * 100
-        return evasao, conclusao, cursando
-
-    for periodo, (grupo_cotistas, grupo_nao_cotistas) in periodos_dados.items():
-        taxas_cotistas = calcular_taxas(grupo_cotistas)
-        taxas_nao_cotistas = calcular_taxas(grupo_nao_cotistas)
-
-        dados_consolidados.append({'Periodo': periodo, 'Grupo': 'Cotistas', 'Status': 'Evasão', 'Porcentagem': taxas_cotistas[0]})
-        dados_consolidados.append({'Periodo': periodo, 'Grupo': 'Cotistas', 'Status': 'Conclusão', 'Porcentagem': taxas_cotistas[1]})
-        dados_consolidados.append({'Periodo': periodo, 'Grupo': 'Cotistas', 'Status': 'Cursando', 'Porcentagem': taxas_cotistas[2]})
-
-        dados_consolidados.append({'Periodo': periodo, 'Grupo': 'Não Cotistas', 'Status': 'Evasão', 'Porcentagem': taxas_nao_cotistas[0]})
-        dados_consolidados.append({'Periodo': periodo, 'Grupo': 'Não Cotistas', 'Status': 'Conclusão', 'Porcentagem': taxas_nao_cotistas[1]})
-        dados_consolidados.append({'Periodo': periodo, 'Grupo': 'Não Cotistas', 'Status': 'Cursando', 'Porcentagem': taxas_nao_cotistas[2]})
-
-    df_consolidado = pd.DataFrame(dados_consolidados)
-
-    plt.figure(figsize=(14, 8))
-    ax = sns.barplot(x='Periodo', y='Porcentagem', hue='Status', data=df_consolidado, palette='muted', ci=None)
-
-    # Adicionando os valores exatos das porcentagens em cima das barras
-    for p in ax.patches:
-        ax.annotate(f'{p.get_height():.1f}%', (p.get_x() + p.get_width() / 2., p.get_height()),
-                    ha='center', va='center', xytext=(0, 8), textcoords='offset points')
-
-    plt.title(f'Taxa de Evasão, Conclusão e Cursando por Período e Grupo')
-    plt.xlabel('Período')
-    plt.ylabel('Porcentagem (%)')
-    plt.legend(loc='upper left', bbox_to_anchor=(1, 1))
-    plt.tight_layout()
-    salvar_grafico('comparacao_taxa_evasao_conclusao_cursando_por_periodo', nome_pasta)
+        # Salvar o gráfico para cada período separadamente
+        salvar_grafico(f'distribuicao_alunos_por_zona_{periodo}', nome_pasta)
+    else:
+        print(Fore.RED + "A coluna 'ZONA' não existe no DataFrame!")
 
 
 if __name__ == "__main__":
