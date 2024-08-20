@@ -17,7 +17,7 @@ def adicionar_cidade_estado(df):
     for cidade, bairros in mapeamento_bairros.items():
         df.loc[
             (df['BAIRRO'].isin(bairros)) &
-            ((df['CIDADE'] == 'Desconhecido') | (df['ESTADO'] == 'Desconhecido')),
+            ((df['CIDADE'] == 'desconhecido') | (df['ESTADO'] == 'desconhecido')),
             ['CIDADE', 'ESTADO']
         ] = [cidade, 'Rio de Janeiro']
 
@@ -77,7 +77,7 @@ def agrupar_por_zona(df):
     """
 
     def get_zona(bairro, cidade, estado):
-        if estado != 'Rio de Janeiro':
+        if estado.lower() != 'rio de janeiro':
             return 'Outro Estado'
 
         zona_bairro = verificar_bairro_em_zonas(bairro)

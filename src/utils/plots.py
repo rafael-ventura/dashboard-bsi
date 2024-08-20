@@ -34,19 +34,31 @@ def criar_grafico_de_contagem(x, data, titulo, xlabel, ylabel, hue=None, ax=None
     if ax is None:
         fig, ax = plt.subplots()
 
-    total = len(data)
+    # Calcula o total para cada categoria (sem considerar hue)
+    total_por_categoria = data.groupby(x).size().reset_index(name='total')
 
     sns.countplot(x=x, data=data, hue=hue, ax=ax)
 
     if exibir_percentual:
+        # Caso haja hue, calcula o total dentro de cada subcategoria corretamente
         for p in ax.patches:
             altura = p.get_height()
-            percentual = f'{(altura / total) * 100:.1f}%'
-            ax.annotate(f'{percentual}', (p.get_x() + p.get_width() / 2., altura), ha='center', va='center', xytext=(0, 8), textcoords='offset points')
+
+            if altura > 0:  # Adiciona anotação apenas se a altura for maior que zero
+                categoria = int(p.get_x() + p.get_width() / 2.0)
+                categoria_nome = ax.get_xticklabels()[categoria].get_text()  # Pega o rótulo da categoria
+
+                if categoria_nome in total_por_categoria[x].values:
+                    total_categoria = total_por_categoria[total_por_categoria[x] == categoria_nome].iloc[0]['total']
+                    percentual = f'{(altura / total_categoria) * 100:.1f}%'
+                    ax.annotate(f'{percentual}', (p.get_x() + p.get_width() / 2., altura), ha='center', va='center', xytext=(0, 8), textcoords='offset points')
+
     else:
+        # Exibe o valor absoluto apenas quando a altura for maior que zero
         for p in ax.patches:
             altura = p.get_height()
-            ax.annotate(f'{int(altura)}', (p.get_x() + p.get_width() / 2., altura), ha='center', va='center', xytext=(0, 8), textcoords='offset points')
+            if altura > 0:
+                ax.annotate(f'{int(altura)}', (p.get_x() + p.get_width() / 2., altura), ha='center', va='center', xytext=(0, 8), textcoords='offset points')
 
     ax.set_title(titulo)
     ax.set_xlabel(xlabel)
@@ -230,3 +242,185 @@ def plotar_grafico_caixa_com_estatisticas(x, y, data, titulo, xlabel, ylabel, no
 
     plt.tight_layout()
     salvar_grafico(nome_grafico, nome_pasta)
+
+
+def ajustar_fontes_eixos(ax, xlabel_size=16, ylabel_size=16, xticks_size=14, yticks_size=14):
+    """
+    Ajusta os tamanhos das fontes dos eixos e rótulos em um gráfico.
+
+    Parâmetros:
+    - ax: O objeto de eixos do matplotlib ou seaborn.
+    - xlabel_size: Tamanho da fonte do rótulo do eixo X.
+    - ylabel_size: Tamanho da fonte do rótulo do eixo Y.
+    - xticks_size: Tamanho da fonte dos rótulos do eixo X.
+    - yticks_size: Tamanho da fonte dos rótulos do eixo Y.
+    """
+    ax.set_xlabel(ax.get_xlabel(), fontsize=xlabel_size)
+    ax.set_ylabel(ax.get_ylabel(), fontsize=ylabel_size)
+    ax.tick_params(axis='x', labelsize=xticks_size)
+    ax.tick_params(axis='y', labelsize=yticks_size)
+
+
+def ajustar_estilos_grafico(ax, title="", xlabel="", ylabel="",
+                            title_size=18, xlabel_size=14, ylabel_size=14,
+                            xticks_size=12, yticks_size=12, legend_size=12):
+    """
+    Ajusta os tamanhos das fontes do título, rótulos dos eixos e dos ticks de um gráfico.
+
+    Parâmetros:
+    - ax: O objeto de eixos do matplotlib ou seaborn.
+    - title: Título do gráfico.
+    - xlabel: Rótulo do eixo X.
+    - ylabel: Rótulo do eixo Y.
+    - title_size: Tamanho da fonte do título.
+    - xlabel_size: Tamanho da fonte do rótulo do eixo X.
+    - ylabel_size: Tamanho da fonte do rótulo do eixo Y.
+    - xticks_size: Tamanho da fonte dos rótulos do eixo X.
+    - yticks_size: Tamanho da fonte dos rótulos do eixo Y.
+    - legend_size: Tamanho da fonte da legenda (se houver).
+    """
+    # Definir título e tamanhos de fonte
+    ax.set_title(title, fontsize=title_size)
+    ax.set_xlabel(xlabel, fontsize=xlabel_size)
+    ax.set_ylabel(ylabel, fontsize=ylabel_size)
+
+    # Ajustar tamanhos dos ticks nos eixos
+    ax.tick_params(axis='x', labelsize=xticks_size)
+    ax.tick_params(axis='y', labelsize=yticks_size)
+
+    # Ajustar tamanho da legenda, se existir
+    if ax.get_legend() is not None:
+        ax.legend(fontsize=legend_size)
+
+    plt.tight_layout()
+
+
+def adicionar_valores_barras(ax, exibir_percentual=True, total=None, fontsize=12, offset=8):
+    """
+    Adiciona valores exatos em cima das barras em um gráfico de barras.
+    Se `exibir_percentual` for True, adiciona o percentual em vez do valor absoluto.
+
+    Parâmetros:
+    - ax: O objeto de eixos do matplotlib ou seaborn.
+    - exibir_percentual: Exibe o percentual se True.
+    - total: O valor total para calcular o percentual.
+    - fontsize: Tamanho da fonte dos valores nas barras.
+    - offset: Distância dos valores até a barra.
+    """
+    for p in ax.patches:
+        altura = p.get_height()
+        if altura > 0:  # Apenas adiciona valores se a barra for maior que zero
+            if exibir_percentual and total is not None:
+                percentual = altura / total * 100
+                ax.annotate(f'{percentual:.1f}%', (p.get_x() + p.get_width() / 2., altura),
+                            ha='center', va='center', xytext=(0, offset), textcoords='offset points',
+                            fontsize=fontsize)
+            else:
+                ax.annotate(f'{altura:.2f}', (p.get_x() + p.get_width() / 2., altura),
+                            ha='center', va='center', xytext=(0, offset), textcoords='offset points',
+                            fontsize=fontsize)
+
+
+def adicionar_valores_barras_laterais(ax, exibir_percentual=True, total=None, fontsize=14, offset=8):
+    """
+    Adiciona valores exatos nas barras horizontais (laterais).
+    Se `exibir_percentual` for True, adiciona o percentual em vez do valor absoluto.
+
+    Parâmetros:
+    - ax: O objeto de eixos do matplotlib ou seaborn.
+    - exibir_percentual: Exibe o percentual se True.
+    - total: O valor total para calcular o percentual.
+    - fontsize: Tamanho da fonte dos valores nas barras.
+    - offset: Distância dos valores até a barra.
+    """
+    for p in ax.patches:
+        largura = p.get_width()
+        if largura > 0:  # Apenas adiciona valores se a barra for maior que zero
+            if exibir_percentual and total is not None:
+                percentual = largura / total * 100
+                ax.annotate(f'{percentual:.1f}%',
+                            (largura + offset, p.get_y() + p.get_height() / 2),
+                            ha='left', va='center', fontsize=fontsize)
+            else:
+                ax.annotate(f'{largura:.2f}',
+                            (largura + offset, p.get_y() + p.get_height() / 2),
+                            ha='left', va='center', fontsize=fontsize)
+
+
+def plotar_grafico_barras_laterais(data, x, y, title, xlabel, ylabel, ax=None, exibir_percentual=True):
+    """
+    Plota um gráfico de barras laterais customizado e aplica ajustes de estilos.
+
+    Parâmetros:
+    - data: DataFrame contendo os dados.
+    - x: Coluna a ser usada no eixo X.
+    - y: Coluna a ser usada no eixo Y.
+    - title: Título do gráfico.
+    - xlabel: Rótulo do eixo X.
+    - ylabel: Rótulo do eixo Y.
+    - ax: Objeto de eixo (opcional).
+    - exibir_percentual: Exibe percentuais nas barras se True.
+    """
+    if ax is None:
+        fig, ax = plt.subplots(figsize=(10, 6))
+
+    sns.barplot(x=x, y=y, data=data, ax=ax, orient='h')
+
+    total = data[x].sum() if exibir_percentual else None
+    adicionar_valores_barras_laterais(ax, exibir_percentual=exibir_percentual, total=total)
+
+    ajustar_estilos_grafico(ax, title=title, xlabel=xlabel, ylabel=ylabel,
+                            title_size=18, xlabel_size=14, ylabel_size=14,
+                            xticks_size=12, yticks_size=12, legend_size=12)
+
+
+def plotar_grafico_barras_customizado(data, x, y, title, xlabel, ylabel, ax=None):
+    """
+    Plota um gráfico de barras customizado e aplica ajustes de estilos.
+
+    Parâmetros:
+    - data: DataFrame contendo os dados.
+    - x: Coluna a ser usada no eixo X.
+    - y: Coluna a ser usada no eixo Y.
+    - title: Título do gráfico.
+    - xlabel: Rótulo do eixo X.
+    - ylabel: Rótulo do eixo Y.
+    - ax: Objeto de eixo (opcional).
+    """
+    if ax is None:
+        fig, ax = plt.subplots(figsize=(10, 6))
+
+    sns.barplot(x=x, y=y, data=data, ax=ax)
+
+    # Adicionar valores em cima das barras
+    adicionar_valores_barras(ax, fontsize=12)
+
+    # Ajustar o estilo do gráfico
+    ajustar_estilos_grafico(ax, title=title, xlabel=xlabel, ylabel=ylabel,
+                            title_size=18, xlabel_size=14, ylabel_size=14,
+                            xticks_size=12, yticks_size=12, legend_size=12)
+
+
+# Exemplo de uso para gráfico de linha:
+def plotar_grafico_linha_customizado(data, x, y, title, xlabel, ylabel, ax=None):
+    """
+    Plota um gráfico de linha customizado e aplica ajustes de estilos.
+
+    Parâmetros:
+    - data: DataFrame contendo os dados.
+    - x: Coluna a ser usada no eixo X.
+    - y: Coluna a ser usada no eixo Y.
+    - title: Título do gráfico.
+    - xlabel: Rótulo do eixo X.
+    - ylabel: Rótulo do eixo Y.
+    - ax: Objeto de eixo (opcional).
+    """
+    if ax is None:
+        fig, ax = plt.subplots(figsize=(10, 6))
+
+    sns.lineplot(x=x, y=y, data=data, ax=ax)
+
+    # Ajustar o estilo do gráfico
+    ajustar_estilos_grafico(ax, title=title, xlabel=xlabel, ylabel=ylabel,
+                            title_size=18, xlabel_size=14, ylabel_size=14,
+                            xticks_size=12, yticks_size=12, legend_size=12)

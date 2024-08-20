@@ -39,7 +39,7 @@ correcoes_bairros = {
     'sauaçu': ['sauassu '],
     'sao conrado': ['sao corrado'],
     'sao francisco xavier': ['sapso francisco xavier'],
-    'tanque': ['tanque-jacarepagua', 'tanque - jacarepaguá'],
+    'tanque': ['tanque-jacarepagua', 'tanque - jacarepaguá', 'tanque - jacarepagua'],
     'taquara': ['taquara-jacarepagua'],
     'vila brasil': ['vila brasil (manilha)'],
     'vila inhomirim': ['vila carvalho (vila inhomirim)', 'parque maita (vila inhomirim)'],

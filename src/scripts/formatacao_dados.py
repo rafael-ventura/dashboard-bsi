@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from src.utils.distancia import adicionar_distancia_ate_urca, inicializar_geolocator
+from src.utils.distancia import adicionar_distancia_ate_urca, inicializar_geolocator, salvar_bairros_falha, carregar_bairros_falha
 from src.utils.localizacao import correcoes_bairros, agrupar_por_zona, correcoes_cidades, adicionar_cidade_estado
 from src.utils.desempenho_academico import classificar_forma_ingresso, classificar_forma_evasao, arredondar_cra
 from src.utils.temporal import remover_alunos_anteriores_2014, classificar_idade, calcular_tempo_curso
@@ -99,12 +99,19 @@ def formatar_dados(source, incluir_outros=True, dados_anterior_2014=False):
     # Carregar DataFrame de distâncias e calcular/atualizar distâncias
     df_distancias = carregar_dados(pega_caminho_base() + '/dados/processado/dfDistancias.csv')
 
+    # Carregar a lista de bairros que falharam anteriormente
+    bairros_falha_existentes = carregar_bairros_falha()
+
     geolocator = inicializar_geolocator()
-    df, df_distancias = adicionar_distancia_ate_urca(df, df_distancias, geolocator)
+
+    # Passar a lista de bairros que falharam na função adicionar_distancia_ate_urca
+    df, df_distancias, bairros_falha_atualizado = adicionar_distancia_ate_urca(df, df_distancias, geolocator, bairros_falha_existentes)
 
     # Salvar o DataFrame principal e o DataFrame de distâncias atualizados
     salvar_dados(df_distancias, 'dados/processado/dfDistancias.csv')
+    salvar_bairros_falha(bairros_falha_atualizado)  # Salvar a lista atualizada de bairros falhos
     salvar_dados(df, 'dados/processado/dfPrincipal.csv')
+
     print('DataFrame formatado, classificado e salvo com sucesso!')
     return df
 
