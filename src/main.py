@@ -63,12 +63,12 @@ def main():
         # Realizar as análises específicas para cada período
         print(Fore.GREEN + f"\nAnálise de dados para o período: {periodo}")
         analise_ingresso_evasao(df_periodo, pasta_ingresso_evasao, periodo)
-        analise_desempenho_academico(df_periodo, pasta_performance, periodo)
-        analise_geografica(df_periodo, pasta_geografico, periodo)
+        # analise_desempenho_academico(df_periodo, pasta_performance, periodo)
+        # analise_geografica(df_periodo, pasta_geografico, periodo)
 
     # Analisar os resultados gerais
     pasta_resultados_gerais = criar_pasta_graficos('graficos/resultados_gerais')
-    analise_resultados_gerais(df_formatado, pasta_resultados_gerais)
+    # analise_resultados_gerais(df_formatado, pasta_resultados_gerais)
 
     print(Fore.CYAN + "Processo de análise concluído!")
 

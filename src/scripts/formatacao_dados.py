@@ -55,19 +55,50 @@ def converter_tipos(df, tipo_campos):
     return df.astype(tipo_campos)
 
 
+from colorama import Fore, Style
+
+
 def formatar_dados(source, incluir_outros=True, dados_anterior_2014=False):
     """
-    Função principal para formatar os dados
+    Função principal para formatar os dados.
     """
+
+    print(Fore.CYAN + "\n=== INICIANDO FORMATAÇÃO DE DADOS ===" + Style.RESET_ALL)
+
+    # Carregar os dados brutos da planilha
     df = ler_dados_brutos(source)
+    print(f"Total de registros após leitura do arquivo: {len(df)}")
+
+    # Checando registros nulos ou inválidos nas colunas principais
+    colunas_verificacao = ['CRA', 'BAIRRO', 'CIDADE', 'ESTADO', 'FORMA_INGRESSO', 'FORMA_EVASAO']
+    for coluna in colunas_verificacao:
+        nulos = df[coluna].isna().sum()
+        vazios = (df[coluna] == '').sum()
+        if nulos > 0 or vazios > 0:
+            print(Fore.RED + f"Atenção: {nulos + vazios} registros com {coluna} nulo ou vazio." + Style.RESET_ALL)
+
+    # Remover colunas desnecessárias
     df = remover_colunas(df, ['Seq.'])
+    print(f"Total de registros após remover colunas desnecessárias: {len(df)}")
+
+    # Preencher valores nulos
     df = preencher_nulos(df, {'BAIRRO': 'Desconhecido', 'CIDADE': 'Desconhecido', 'ESTADO': 'Desconhecido'})
+    print(Fore.GREEN + f"Preenchimento de nulos para BAIRRO, CIDADE, ESTADO concluído." + Style.RESET_ALL)
+    print(f"Total de registros após preencher nulos: {len(df)}")
+
+    # Formatar os períodos de ingresso e evasão
     df = formatar_periodos(df)
+    print(f"Total de registros após formatar períodos: {len(df)}")
 
     # Aplicar a lógica de remoção de alunos anteriores a 2014
     if not dados_anterior_2014:
+        registros_antes_remocao = len(df)
         df = remover_alunos_anteriores_2014(df)
+        registros_removidos = registros_antes_remocao - len(df)
+        print(f"Registros removidos (anteriores a 2014): {registros_removidos}")
+        print(f"Total de registros após remover alunos anteriores a 2014: {len(df)}")
 
+    # Converter tipos de colunas
     tipo_campos = {
         'SEXO': str,
         'DT_NASCIMENTO': 'datetime64[ns]',
@@ -80,39 +111,60 @@ def formatar_dados(source, incluir_outros=True, dados_anterior_2014=False):
         'PERIODO_INGRESSO_FORMATADO': str,
         'ANO_PERIODO_INGRESSO': np.float64
     }
-
     df = converter_tipos(df, tipo_campos)
+    print(f"Total de registros após converter tipos: {len(df)}")
+
+    # Normalizar e corrigir bairros
     df = limpar_e_normalizar(df, 'BAIRRO', correcoes_bairros, case='title')
     df = limpar_e_normalizar(df, 'BAIRRO', correcoes_bairros, case='lower')
     df = corrigir_nomes_bairros(df, correcoes_bairros)
+    print(Fore.GREEN + f"Correção e normalização de bairros concluída." + Style.RESET_ALL)
+    print(f"Total de registros após normalizar e corrigir bairros: {len(df)}")
+
+    # Normalizar e corrigir cidades
     df = limpar_e_normalizar(df, 'CIDADE', correcoes_cidades, case='title')
     df = limpar_e_normalizar(df, 'CIDADE', correcoes_cidades, case='lower')
     df = corrigir_nomes_cidades(df, correcoes_cidades)
+    print(Fore.GREEN + f"Correção e normalização de cidades concluída." + Style.RESET_ALL)
+    print(f"Total de registros após normalizar e corrigir cidades: {len(df)}")
+
+    # Adicionar cidade e estado
     df = adicionar_cidade_estado(df)
+    print(f"Total de registros após adicionar cidade e estado: {len(df)}")
+
+    # Agrupar por zona geográfica
     df = agrupar_por_zona(df)
+    print(f"Total de registros após agrupar por zona: {len(df)}")
+
+    # Classificar idade, forma de ingresso e forma de evasão
     df = classificar_idade(df)
     df = classificar_forma_ingresso(df, incluir_outros)
     df = classificar_forma_evasao(df)
+    print(f"Total de registros após classificar idade, forma de ingresso e forma de evasão: {len(df)}")
+
+    # Arredondar CRA
     df = arredondar_cra(df)
+    print(f"Total de registros após arredondar CRA: {len(df)}")
+
+    # Calcular tempo de curso
     df = calcular_tempo_curso(df)
+    print(f"Total de registros após calcular tempo de curso: {len(df)}")
 
-    # Carregar DataFrame de distâncias e calcular/atualizar distâncias
+    # Carregar DataFrame de distâncias e calcular distâncias para Urca
     df_distancias = carregar_dados(pega_caminho_base() + '/dados/processado/dfDistancias.csv')
-
-    # Carregar a lista de bairros que falharam anteriormente
     bairros_falha_existentes = carregar_bairros_falha()
-
     geolocator = inicializar_geolocator()
 
-    # Passar a lista de bairros que falharam na função adicionar_distancia_ate_urca
+    print(Fore.CYAN + f"\nIniciando cálculo de distâncias para Urca..." + Style.RESET_ALL)
     df, df_distancias, bairros_falha_atualizado = adicionar_distancia_ate_urca(df, df_distancias, geolocator, bairros_falha_existentes)
+    print(Fore.GREEN + f"Total de registros após adicionar distâncias: {len(df)}" + Style.RESET_ALL)
 
-    # Salvar o DataFrame principal e o DataFrame de distâncias atualizados
     salvar_dados(df_distancias, 'dados/processado/dfDistancias.csv')
     salvar_bairros_falha(bairros_falha_atualizado)  # Salvar a lista atualizada de bairros falhos
     salvar_dados(df, 'dados/processado/dfPrincipal.csv')
 
-    print('DataFrame formatado, classificado e salvo com sucesso!')
+    print(Fore.GREEN + 'DataFrame formatado, classificado e salvo com sucesso!' + Style.RESET_ALL)
+
     return df
 
 

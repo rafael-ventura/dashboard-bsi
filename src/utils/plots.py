@@ -211,7 +211,7 @@ def salvar_grafico(nome_grafico, nome_pasta):
     caminho_completo = os.path.join(pega_caminho_base(), 'dados', 'processado', nome_pasta, f'{nome_grafico}.png')
     plt.savefig(caminho_completo)
     plt.close()
-    print(f'Gráfico "{nome_grafico}" salvo com sucesso em "{caminho_completo}"!')
+    # print(f'Gráfico "{nome_grafico}" salvo com sucesso em "{caminho_completo}"!')
 
 
 def plotar_grafico_caixa_com_estatisticas(x, y, data, titulo, xlabel, ylabel, nome_pasta, nome_grafico):
@@ -315,7 +315,7 @@ def adicionar_valores_barras(ax, exibir_percentual=True, total=None, fontsize=14
                 ax.annotate(f'{percentual:.1f}%', (p.get_x() + p.get_width() / 2., altura),
                             ha='center', va='bottom', fontsize=fontsize)
             else:
-                ax.annotate(f'{altura:.2f}', (p.get_x() + p.get_width() / 2., altura),
+                ax.annotate(f'{altura:.1f}', (p.get_x() + p.get_width() / 2., altura),
                             ha='center', va='bottom', fontsize=fontsize)
 
 
@@ -340,7 +340,7 @@ def adicionar_valores_barras_laterais(ax, exibir_percentual=True, total=None, fo
                             ha='center', va='center', xytext=(offset, 0), textcoords='offset points',
                             fontsize=fontsize)
             else:
-                ax.annotate(f'{largura:.2f}', (largura, p.get_y() + p.get_height() / 2),
+                ax.annotate(f'', (largura, p.get_y() + p.get_height() / 2),
                             ha='center', va='center', xytext=(offset, 0), textcoords='offset points',
                             fontsize=fontsize)
 
