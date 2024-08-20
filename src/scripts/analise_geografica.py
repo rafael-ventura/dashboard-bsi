@@ -3,9 +3,11 @@ import matplotlib.colors as colors
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
-from src.utils.plots import salvar_grafico, plot_treemap, ajustar_estilos_grafico, adicionar_valores_barras, plotar_grafico_barras_laterais
+from src.utils.plots import salvar_grafico, plot_treemap, ajustar_estilos_grafico, adicionar_valores_barras, plotar_grafico_barras_laterais, adicionar_valores_barras_laterais
 from src.utils.utils import carregar_dados, remover_acentos_e_maiusculas, pega_caminho_base
 from colorama import Fore, init
+
+from src.utils.zonas_geograficas import zona_norte, zona_oeste, zona_sul, bairros_centro, baixada_fluminense, regiao_volta_redonda, niteroi_sao_goncalo, regiao_serrana, regiao_campos, regiao_dos_lagos
 
 # Inicializa o Colorama
 init(autoreset=True)
@@ -37,6 +39,10 @@ def analise_geografica(df_periodo, nome_pasta, periodo_nome):
     plot_cra_por_bairro_4_alunos(df_periodo, nome_pasta, periodo_nome)
     plot_cra_top_10_bairros(df_periodo, nome_pasta, periodo_nome)
     plot_cra_bottom_10_bairros(df_periodo, nome_pasta, periodo_nome)
+    plot_quantidade_alunos_por_zona_geografica(df_periodo, nome_pasta, periodo_nome)
+    plot_quantidade_alunos_por_zona_municipio(df_periodo, nome_pasta, periodo_nome)
+    plot_quantidade_alunos_por_zona_geografica_e_ingresso(df_periodo, nome_pasta, periodo_nome)
+    plot_quantidade_alunos_por_zona_e_ingresso(df_periodo, nome_pasta, periodo_nome)
 
     print(Fore.GREEN + f"\nAnálise Geográfica Concluída para o período: {periodo_nome}")
 
@@ -235,7 +241,7 @@ def plot_cra_top_10_bairros(df, nome_pasta, periodo_nome):
     cra_bairro = cra_bairro.sort_values(by='CRA', ascending=False).head(10)
 
     # Plotar o gráfico de barras laterais
-    fig, ax = plt.subplots(figsize=(12, 8))
+    fig, ax = plt.subplots(figsize=(14, 10))
     plotar_grafico_barras_laterais(cra_bairro, 'CRA', 'BAIRRO',
                                    title=f'Top 10 Bairros com Maior CRA',
                                    xlabel='CRA', ylabel='Bairro', ax=ax)
@@ -252,7 +258,7 @@ def plot_cra_bottom_10_bairros(df, nome_pasta, periodo_nome):
     cra_bairro = cra_bairro.sort_values(by='CRA').head(10)
 
     # Plotar o gráfico de barras laterais
-    fig, ax = plt.subplots(figsize=(12, 8))
+    fig, ax = plt.subplots(figsize=(14, 10))
     plotar_grafico_barras_laterais(cra_bairro, 'CRA', 'BAIRRO',
                                    title=f'Top 10 Bairros com Menor CRA',
                                    xlabel='CRA', ylabel='Bairro', ax=ax)
@@ -307,13 +313,101 @@ def plot_quantidade_alunos_por_zona(df, nome_pasta, periodo_nome):
     sns.barplot(x='ZONA', y='PERCENTUAL', hue='FORMA_INGRESSO_SIMPLES', data=contagem_alunos_zona, palette='muted', ax=ax)
 
     # Adicionar os valores nas barras
-    adicionar_valores_barras(ax, exibir_percentual=True, total=100, fontsize=14)  # Total ajustado para 100% correto
+    adicionar_valores_barras(ax, exibir_percentual=True, total=100, fontsize=14)
 
     # Ajustar estilos
     ajustar_estilos_grafico(ax, title=f'Quantidade de Alunos por Zona e Forma de Ingresso', xlabel='Zona', ylabel='Percentual de Alunos (%)')
 
     # Salvar o gráfico
     salvar_grafico(f'quantidade_alunos_por_zona_percentual_{periodo_nome}', nome_pasta)
+
+
+def plot_quantidade_alunos_por_zona_e_ingresso(df, nome_pasta, periodo_nome):
+    """
+    Plota a porcentagem de alunos por zona e forma de ingresso (Cotistas e Não Cotistas) no mesmo gráfico.
+    """
+    zonas_municipio = ['Centro', 'Zona Norte', 'Zona Oeste', 'Zona Sul']
+    df['ZONA_MUNICIPIO'] = df['ZONA'].apply(lambda z: z if z in zonas_municipio else 'Fora do Município')
+
+    # Agrupar por Zona e Forma de Ingresso e contar o número de alunos
+    contagem_alunos_zona_municipio = df.groupby(['ZONA_MUNICIPIO', 'FORMA_INGRESSO_SIMPLES']).size().reset_index(name='QUANTIDADE')
+
+    # Calcular o total de alunos para obter o percentual correto
+    total_alunos = contagem_alunos_zona_municipio['QUANTIDADE'].sum()
+
+    # Calcular o percentual correto em relação ao total de alunos
+    contagem_alunos_zona_municipio['PERCENTUAL'] = (contagem_alunos_zona_municipio['QUANTIDADE'] / total_alunos) * 100
+
+    # Plotar o gráfico de barras normais com agrupamento por Forma de Ingresso
+    fig, ax = plt.subplots(figsize=(12, 8))
+    sns.barplot(x='ZONA_MUNICIPIO', y='PERCENTUAL', hue='FORMA_INGRESSO_SIMPLES', data=contagem_alunos_zona_municipio, palette='muted', ax=ax)
+
+    # Adicionar os valores nas barras
+    adicionar_valores_barras(ax, exibir_percentual=True, total=100, fontsize=14)
+
+    # Ajustar estilos
+    ajustar_estilos_grafico(ax, title=f'Percentual de Alunos por Zona e Forma de Ingresso', xlabel='Zona', ylabel='Percentual de Alunos (%)')
+
+    # Salvar o gráfico
+    salvar_grafico(f'percentual_alunos_por_zona_e_ingresso_{periodo_nome}', nome_pasta)
+
+
+def plot_quantidade_alunos_por_zona_geografica_e_ingresso(df, nome_pasta, periodo_nome):
+    """
+    Plota a porcentagem de alunos por zona geográfica com base nas listas de zonas definidas,
+    separando por forma de ingresso (cotistas e não cotistas).
+    """
+    df['BAIRRO'] = df['BAIRRO'].apply(remover_acentos_e_maiusculas)
+
+    def categorizar_zona(bairro):
+        if bairro in [remover_acentos_e_maiusculas(b) for b in zona_norte]:
+            return 'Zona Norte'
+        elif bairro in [remover_acentos_e_maiusculas(b) for b in zona_oeste]:
+            return 'Zona Oeste'
+        elif bairro in [remover_acentos_e_maiusculas(b) for b in zona_sul]:
+            return 'Zona Sul'
+        elif bairro in [remover_acentos_e_maiusculas(b) for b in bairros_centro]:
+            return 'Centro'
+        elif bairro in [remover_acentos_e_maiusculas(b) for b in baixada_fluminense]:
+            return 'Baixada Fluminense'
+        elif bairro in [remover_acentos_e_maiusculas(b) for b in regiao_volta_redonda]:
+            return 'Região Volta Redonda'
+        elif bairro in [remover_acentos_e_maiusculas(b) for b in niteroi_sao_goncalo]:
+            return 'Niterói/São Gonçalo'
+        elif bairro in [remover_acentos_e_maiusculas(b) for b in regiao_serrana]:
+            return 'Região Serrana'
+        elif bairro in [remover_acentos_e_maiusculas(b) for b in regiao_campos]:
+            return 'Região Campos'
+        elif bairro in [remover_acentos_e_maiusculas(b) for b in regiao_dos_lagos]:
+            return 'Região dos Lagos'
+        else:
+            return 'Fora do Estado'
+
+    # Aplicar a categorização de zonas geográficas
+    df['ZONA_GEOGRAFICA'] = df['BAIRRO'].apply(categorizar_zona)
+
+    # Agrupar por Zona Geográfica e Forma de Ingresso e contar o número de alunos
+    contagem_alunos_zona_geografica = df.groupby(['ZONA_GEOGRAFICA', 'FORMA_INGRESSO_SIMPLES']).size().reset_index(name='QUANTIDADE')
+
+    # Calcular o total de alunos para obter o percentual correto
+    total_alunos = contagem_alunos_zona_geografica['QUANTIDADE'].sum()
+
+    # Calcular o percentual correto em relação ao total de alunos
+    contagem_alunos_zona_geografica['PERCENTUAL'] = (contagem_alunos_zona_geografica['QUANTIDADE'] / total_alunos) * 100
+
+    # Plotar o gráfico de barras verticais com agrupamento por Forma de Ingresso
+    fig, ax = plt.subplots(figsize=(16, 12))
+
+    sns.barplot(x='ZONA_GEOGRAFICA', y='PERCENTUAL', hue='FORMA_INGRESSO_SIMPLES', data=contagem_alunos_zona_geografica, palette='muted', ax=ax)
+
+    # Adicionar os valores nas barras
+    adicionar_valores_barras(ax, exibir_percentual=True, total=100, fontsize=14)
+
+    # Ajustar estilos
+    ajustar_estilos_grafico(ax, title=f'Percentual de Alunos por Zona Geográfica e Forma de Ingresso', xlabel='Zona Geográfica', ylabel='Percentual de Alunos (%)')
+
+    # Salvar o gráfico
+    salvar_grafico(f'percentual_alunos_por_zona_geografica_e_ingresso_{periodo_nome}', nome_pasta)
 
 
 if __name__ == "__main__":

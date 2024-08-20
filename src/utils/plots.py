@@ -295,9 +295,9 @@ def ajustar_estilos_grafico(ax, title="", xlabel="", ylabel="",
     plt.tight_layout()
 
 
-def adicionar_valores_barras(ax, exibir_percentual=True, total=None, fontsize=12, offset=8):
+def adicionar_valores_barras(ax, exibir_percentual=True, total=None, fontsize=14, offset=8):
     """
-    Adiciona valores exatos em cima das barras em um gráfico de barras.
+    Adiciona valores exatos nas barras verticais.
     Se `exibir_percentual` for True, adiciona o percentual em vez do valor absoluto.
 
     Parâmetros:
@@ -313,15 +313,13 @@ def adicionar_valores_barras(ax, exibir_percentual=True, total=None, fontsize=12
             if exibir_percentual and total is not None:
                 percentual = altura / total * 100
                 ax.annotate(f'{percentual:.1f}%', (p.get_x() + p.get_width() / 2., altura),
-                            ha='center', va='center', xytext=(0, offset), textcoords='offset points',
-                            fontsize=fontsize)
+                            ha='center', va='bottom', fontsize=fontsize)
             else:
                 ax.annotate(f'{altura:.2f}', (p.get_x() + p.get_width() / 2., altura),
-                            ha='center', va='center', xytext=(0, offset), textcoords='offset points',
-                            fontsize=fontsize)
+                            ha='center', va='bottom', fontsize=fontsize)
 
 
-def adicionar_valores_barras_laterais(ax, exibir_percentual=True, total=None, fontsize=14, offset=8):
+def adicionar_valores_barras_laterais(ax, exibir_percentual=True, total=None, fontsize=12, offset=20):
     """
     Adiciona valores exatos nas barras horizontais (laterais).
     Se `exibir_percentual` for True, adiciona o percentual em vez do valor absoluto.
@@ -338,13 +336,13 @@ def adicionar_valores_barras_laterais(ax, exibir_percentual=True, total=None, fo
         if largura > 0:  # Apenas adiciona valores se a barra for maior que zero
             if exibir_percentual and total is not None:
                 percentual = largura / total * 100
-                ax.annotate(f'{percentual:.1f}%',
-                            (largura + offset, p.get_y() + p.get_height() / 2),
-                            ha='left', va='center', fontsize=fontsize)
+                ax.annotate(f'{percentual:.1f}%', (largura, p.get_y() + p.get_height() / 2),
+                            ha='center', va='center', xytext=(offset, 0), textcoords='offset points',
+                            fontsize=fontsize)
             else:
-                ax.annotate(f'{largura:.2f}',
-                            (largura + offset, p.get_y() + p.get_height() / 2),
-                            ha='left', va='center', fontsize=fontsize)
+                ax.annotate(f'{largura:.2f}', (largura, p.get_y() + p.get_height() / 2),
+                            ha='center', va='center', xytext=(offset, 0), textcoords='offset points',
+                            fontsize=fontsize)
 
 
 def plotar_grafico_barras_laterais(data, x, y, title, xlabel, ylabel, ax=None, exibir_percentual=True):
@@ -374,7 +372,7 @@ def plotar_grafico_barras_laterais(data, x, y, title, xlabel, ylabel, ax=None, e
                             xticks_size=12, yticks_size=12, legend_size=12)
 
 
-def plotar_grafico_barras_customizado(data, x, y, title, xlabel, ylabel, ax=None):
+def plotar_grafico_barras_customizado(data, x, y, title, xlabel, ylabel, ax=None, exibir_percentual=True):
     """
     Plota um gráfico de barras customizado e aplica ajustes de estilos.
 
@@ -386,14 +384,18 @@ def plotar_grafico_barras_customizado(data, x, y, title, xlabel, ylabel, ax=None
     - xlabel: Rótulo do eixo X.
     - ylabel: Rótulo do eixo Y.
     - ax: Objeto de eixo (opcional).
+    - exibir_percentual: Exibe percentuais nas barras se True.
     """
     if ax is None:
         fig, ax = plt.subplots(figsize=(10, 6))
 
     sns.barplot(x=x, y=y, data=data, ax=ax)
 
+    # Calcular o total para exibir percentuais corretamente
+    total = data[y].sum() if exibir_percentual else None
+
     # Adicionar valores em cima das barras
-    adicionar_valores_barras(ax, fontsize=12)
+    adicionar_valores_barras(ax, exibir_percentual=exibir_percentual, total=total)
 
     # Ajustar o estilo do gráfico
     ajustar_estilos_grafico(ax, title=title, xlabel=xlabel, ylabel=ylabel,
