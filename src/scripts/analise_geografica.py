@@ -7,7 +7,16 @@ from src.utils.plots import salvar_grafico, plot_treemap, ajustar_estilos_grafic
 from src.utils.utils import carregar_dados, remover_acentos_e_maiusculas, pega_caminho_base
 from colorama import Fore, init
 
-from src.utils.zonas_geograficas import zona_norte, zona_oeste, zona_sul, bairros_centro, baixada_fluminense, regiao_volta_redonda, niteroi_sao_goncalo, regiao_serrana, regiao_campos, regiao_dos_lagos
+from src.utils.zonas_geograficas import (zona_norte, zona_oeste, zona_sul,
+
+
+
+
+
+
+
+
+                                         bairros_centro, baixada_fluminense, regiao_volta_redonda, niteroi_sao_goncalo, regiao_serrana, regiao_campos, regiao_dos_lagos)
 
 # Inicializa o Colorama
 init(autoreset=True)

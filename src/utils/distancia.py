@@ -18,7 +18,7 @@ def inicializar_geolocator():
     return Nominatim(user_agent="geolocalizacao_urca")
 
 
-def carregar_bairros_falha(filepath='dados/processado/bairros_falha.csv'):
+def carregar_bairros_falha(filepath=r'R:\Dev\dashboard-bsi\dados\processado\bairros_falha.csv'):
     """
     Carrega a lista de bairros que falharam em calcular a distância anteriormente.
     :param filepath: Caminho do arquivo CSV de bairros falhos.

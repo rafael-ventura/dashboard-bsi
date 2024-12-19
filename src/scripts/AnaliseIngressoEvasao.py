@@ -5,7 +5,6 @@ import pandas as pd
 import seaborn as sns
 from colorama import Fore, init, Style
 from src.utils.plots import salvar_grafico, adicionar_valores_barras, ajustar_estilos_grafico
-from src.utils.utils import carregar_dados
 from src.utils.config_cores import ConfigCores
 
 # Inicializa o Colorama
@@ -16,6 +15,7 @@ class AnaliseIngressoEvasao:
     def __init__(self, dataframes, nome_pasta, config_cores=None):
         """
         Inicializa a classe com os dataframes de cada período e o nome da pasta para salvar os gráficos.
+
         :param dataframes: Dicionário com os dataframes segmentados por período.
         :param nome_pasta: Nome da pasta onde os gráficos serão salvos.
         :param config_cores: Instância da classe ConfigCores (opcional).
@@ -32,226 +32,323 @@ class AnaliseIngressoEvasao:
         self.cores_periodos = self.config_cores.get_cores_periodos()
         self.cores_forma_ingresso = self.config_cores.get_cores_forma_ingresso()
 
-    def plot_evasao_detalhada_unificada(self):
+        # Define uma paleta de cores para os tipos de evasão
+        self.cores_forma_evasao = self._definir_cores_forma_evasao()
+
+    def _definir_cores_forma_evasao(self):
         """
-        Plota a distribuição das formas de evasão unificando todos os períodos.
+        Define uma paleta de cores para os diferentes tipos de evasão.
         """
-        print(Fore.YELLOW + "Plotando Evasão Detalhada Unificada..." + Style.RESET_ALL)
-        evasao_data = []
+        # Identifica todas as categorias únicas de evasão após simplificação
+        categorias = set()
+        for df in self.dataframes.values():
+            if 'STATUS_EVASAO' in df.columns:
+                categorias.update(
+                    df['STATUS_EVASAO'].dropna().apply(
+                        lambda x: 'DES' if 'Desistência' in x else (x.split()[0] if isinstance(x, str) and ' ' in x else 'DES')
+                    ).unique()
+                )
 
-        for periodo, df in self.dataframes.items():
-            # Filtra os evadidos excluindo 'CON - Curso concluído' e 'Sem evasão'
-            evasao_filtrada = df[~df['FORMA_EVASAO_DETALHADA'].isin(['CON - Curso concluído', 'Sem evasão'])]
-            evasao_filtrada = evasao_filtrada[['FORMA_EVASAO_DETALHADA', 'FORMA_INGRESSO_SIMPLES']].copy()
-            evasao_filtrada['Período'] = self._formatar_nome_periodo(periodo)
-            evasao_data.append(evasao_filtrada)
+        categorias = sorted(categorias)
+        # Define uma paleta com cores distintas
+        palette = sns.color_palette("Set2", n_colors=len(categorias))
+        return dict(zip(categorias, palette))
 
-        evasao_combined = pd.concat(evasao_data)
-
-        # Calcula total de evasão
-        total_evasao = len(evasao_combined)
-
-        # Agrupa os dados
-        evasao_agrupada = evasao_combined.groupby(['FORMA_EVASAO_DETALHADA', 'FORMA_INGRESSO_SIMPLES']).size().reset_index(name='contagem')
-        evasao_agrupada['percentual'] = (evasao_agrupada['contagem'] / total_evasao) * 100
-        evasao_agrupada['FORMA_EVASAO_DETALHADA'] = evasao_agrupada['FORMA_EVASAO_DETALHADA'].apply(lambda x: x.split()[0])
-
-        # Ordena as categorias de evasão
-        ordem_evasao = ['ABA', 'CAN', 'JUB', 'DES']
-        evasao_agrupada['FORMA_EVASAO_DETALHADA'] = pd.Categorical(
-            evasao_agrupada['FORMA_EVASAO_DETALHADA'],
-            categories=ordem_evasao,
-            ordered=True
-        )
-
-        # Cria o gráfico
-        plt.figure(figsize=(12, 6))
-        sns.set(style="whitegrid")
-
-        ax = sns.barplot(
-            x='FORMA_EVASAO_DETALHADA',
-            y='percentual',
-            hue='FORMA_INGRESSO_SIMPLES',
-            data=evasao_agrupada,
-            palette='pastel',
-            order=ordem_evasao
-        )
-
-        # Adiciona valores nas barras com percentual
-        adicionar_valores_barras(ax, exibir_percentual=True, total=total_evasao, fontsize=14)
-
-        # Ajusta estilos do gráfico
-        ajustar_estilos_grafico(
-            ax,
-            title='Evasão Detalhada',
-            xlabel='Tipo de Evasão',
-            ylabel='Porcentagem de Alunos (%)'
-        )
-
-        # Ajusta a legenda para não sobrepor o gráfico
-        handles, labels = ax.get_legend_handles_labels()
-        ax.legend(handles=handles, labels=labels, title='Forma de Ingresso', loc='upper left', bbox_to_anchor=(1, 1))
-
-        # Adiciona texto explicativo sobre as siglas
-        plt.text(1.02, 0.6, "ABA = Abandono do Curso \nCAN = Cancelamento \nJUB = Jubilamento \nDES = Desistência",
-                 ha="left", fontsize=17, transform=ax.transAxes)
-
-        plt.tight_layout()
-        salvar_grafico(f'evasao_detalhada_unificada', self.nome_pasta)
-
-    def plot_evasao_cra_arredondado_unificada(self):
+    def plot_evasao_detalhada_unificada_countplot(self):
         """
-        Plota a distribuição da evasão por faixas de CRA arredondado unificando todos os períodos.
+        Plota a distribuição das formas de evasão unificando todos os períodos,
+        utilizando um countplot para mostrar a distribuição.
         """
-        print(Fore.YELLOW + "Plotando Evasão por CRA Arredondado Unificada..." + Style.RESET_ALL)
-        evasao_data = []
+        try:
+            print(Fore.YELLOW + "Plotando Evasão Detalhada Unificada com Count Plot..." + Style.RESET_ALL)
+            evasao_data = []
 
-        for periodo, df in self.dataframes.items():
-            # Filtra os evadidos
-            evadidos = df[df['STATUS_EVASAO'] == 'Evasão']
-            evadidos = evadidos[['CRA_ARREDONDADO', 'FORMA_INGRESSO_SIMPLES']].copy()
-            evadidos['Período'] = self._formatar_nome_periodo(periodo)
-            evasao_data.append(evadidos)
+            for periodo, df in self.dataframes.items():
+                # Verifica se as colunas necessárias existem
+                if 'STATUS_EVASAO' not in df.columns or 'FORMA_INGRESSO_SIMPLES' not in df.columns:
+                    print(Fore.RED + f"As colunas 'STATUS_EVASAO' ou 'FORMA_INGRESSO_SIMPLES' não estão presentes no DataFrame para o período {periodo}." + Style.RESET_ALL)
+                    continue
 
-        evasao_combined = pd.concat(evasao_data)
+                # Filtra as formas de evasão relevantes
+                evasao_filtrada = df[df['STATUS_EVASAO'].isin(['Desistência', 'Cancelamento', 'Jubilamento', 'Transferência Interna', 'Falecimento'])].copy()
+                evasao_filtrada = evasao_filtrada[['STATUS_EVASAO', 'FORMA_INGRESSO_SIMPLES']].copy()
+                evasao_filtrada['Período'] = self._formatar_nome_periodo(periodo)
 
-        # Agrupa os dados
-        evasao_agrupada = evasao_combined.groupby(['Período', 'CRA_ARREDONDADO']).size().reset_index(name='Contagem')
+                # Simplifica os tipos de evasão
+                evasao_filtrada['STATUS_EVASAO'] = evasao_filtrada['STATUS_EVASAO'].apply(
+                    lambda x: 'DES' if 'Desistência' in x else (x.split()[0] if isinstance(x, str) and ' ' in x else 'DES')
+                )
+                evasao_data.append(evasao_filtrada)
 
-        # Cria o gráfico
-        plt.figure(figsize=(16, 10))
-        sns.set(style="whitegrid")
+            if not evasao_data:
+                print(Fore.RED + "Nenhum dado de evasão filtrado encontrado para plotar." + Style.RESET_ALL)
+                return
 
-        ax = sns.barplot(
-            x='CRA_ARREDONDADO',
-            y='Contagem',
-            hue='Período',
-            data=evasao_agrupada,
-            palette=self.cores_periodos
-        )
+            evasao_combined = pd.concat(evasao_data, ignore_index=True)
+            evasao_combined.dropna(subset=['STATUS_EVASAO', 'FORMA_INGRESSO_SIMPLES', 'Período'], inplace=True)
 
-        # Adiciona valores nas barras
-        adicionar_valores_barras(ax, exibir_percentual=False, fontsize=12)
+            # Define a ordem das categorias de evasão
+            ordem_evasao = sorted(evasao_combined['STATUS_EVASAO'].unique())
+            evasao_combined['STATUS_EVASAO'] = pd.Categorical(
+                evasao_combined['STATUS_EVASAO'],
+                categories=ordem_evasao,
+                ordered=True
+            )
 
-        # Ajusta estilos do gráfico
-        ajustar_estilos_grafico(
-            ax,
-            title='Distribuição da Evasão por CRA Arredondado por Período',
-            xlabel='CRA Arredondado',
-            ylabel='Número de Alunos Evadidos'
-        )
+            # Cria o gráfico de countplot
+            plt.figure(figsize=(14, 8))
+            sns.set(style="whitegrid")
 
-        # Ajusta os ticks do eixo Y para incrementos de 1 até 10
-        plt.yticks(ticks=range(0, evasao_agrupada['Contagem'].max() + 1, 1))
+            ax = sns.countplot(
+                data=evasao_combined,
+                x='Período',
+                hue='STATUS_EVASAO',
+                palette=self.cores_forma_evasao
+            )
 
-        # Ajusta a legenda para não sobrepor o gráfico
-        plt.legend(title='Período Temporal', loc='upper right')
-        plt.tight_layout()
+            # Ajusta títulos e labels
+            plt.title('Distribuição das Formas de Evasão por Período Temporal')
+            plt.xlabel('Período Temporal')
+            plt.ylabel('Número de Alunos Evadidos')
 
-        salvar_grafico(f'evasao_cra_arredondado_unificada', self.nome_pasta)
+            # Ajusta a legenda para evitar sobreposição
+            plt.legend(title='Tipo de Evasão', bbox_to_anchor=(1.15, 1), loc='upper left')
 
-    def plot_evasao_por_periodo_curso_unificada(self):
+            # Adiciona texto explicativo sobre as siglas
+            plt.text(1.02, 0.6, "DES = Desistência \nCAN = Cancelamento \nJUB = Jubilamento \nTIC = Transferência Interna \nFAL = Falecimento",
+                     ha="left", fontsize=12, transform=plt.gca().transAxes)
+
+            plt.tight_layout()
+            salvar_grafico('evasao_detalhada_unificada_countplot', self.nome_pasta)
+        except Exception as e:
+            print(Fore.RED + f"Ocorreu um erro inesperado em plot_evasao_detalhada_unificada_countplot: {e}" + Style.RESET_ALL)
+
+    def plot_evasao_cumulativa_por_periodo(self):
         """
-        Plota a distribuição da evasão por período do curso unificando todos os períodos.
+        Plota a evasão cumulativa por período do curso para destacar os primeiros períodos.
         """
-        print(Fore.YELLOW + "Plotando Evasão por Período do Curso Unificada..." + Style.RESET_ALL)
-        evasao_data = []
+        try:
+            print(Fore.YELLOW + "Plotando Evasão Cumulativa por Período do Curso..." + Style.RESET_ALL)
+            evasao_data = []
 
-        for periodo, df in self.dataframes.items():
-            # Filtra os evadidos
-            evasao_filtrada = df[df['STATUS_EVASAO'] == 'Evasão']
-            evasao_filtrada = evasao_filtrada[['PERIODO_EVASAO', 'FORMA_INGRESSO_SIMPLES']].copy()
-            evasao_filtrada['Período'] = self._formatar_nome_periodo(periodo)
-            evasao_data.append(evasao_filtrada)
+            for periodo, df in self.dataframes.items():
+                if 'STATUS_EVASAO' not in df.columns or 'TEMPO_CURSO' not in df.columns or 'FORMA_INGRESSO_SIMPLES' not in df.columns:
+                    print(Fore.RED + f"As colunas necessárias não estão presentes no DataFrame para o período {periodo}." + Style.RESET_ALL)
+                    continue
 
-        evasao_combined = pd.concat(evasao_data)
+                evasao_filtrada = df[df['STATUS_EVASAO'] == 'Evasão'].copy()
+                evasao_filtrada['PERIODO_EVASAO'] = (evasao_filtrada['TEMPO_CURSO'] * 2).round().astype(int)
 
-        # Agrupa os dados
-        evasao_agrupada = evasao_combined.groupby(['Período', 'PERIODO_EVASAO']).size().reset_index(name='Contagem')
+                # Filtra os períodos do curso entre 1 e 12
+                evasao_filtrada = evasao_filtrada[
+                    (evasao_filtrada['PERIODO_EVASAO'] >= 1) &
+                    (evasao_filtrada['PERIODO_EVASAO'] <= 12)
+                    ]
 
-        # Cria o gráfico de linha
-        plt.figure(figsize=(16, 10))
-        sns.set(style="whitegrid")
+                evasao_filtrada = evasao_filtrada[['PERIODO_EVASAO']].copy()
+                evasao_filtrada['Período'] = self._formatar_nome_periodo(periodo)
+                evasao_data.append(evasao_filtrada)
 
-        ax = sns.lineplot(
-            x='PERIODO_EVASAO',
-            y='Contagem',
-            hue='Período',
-            data=evasao_agrupada,
-            marker='o',
-            palette=self.cores_periodos
-        )
+            if not evasao_data:
+                print(Fore.RED + "Nenhum dado de evasão filtrado encontrado para plotar evasão cumulativa." + Style.RESET_ALL)
+                return
 
-        ajustar_estilos_grafico(
-            plt.gca(),
-            title='Evasão por Período do Curso por Período Temporal',
-            xlabel='Período do Curso',
-            ylabel='Número de Alunos Evadidos'
-        )
+            evasao_combined = pd.concat(evasao_data, ignore_index=True)
+            evasao_combined.dropna(subset=['PERIODO_EVASAO', 'Período'], inplace=True)
 
-        # Ajusta a legenda para não sobrepor o gráfico
-        plt.legend(title='Período Temporal', loc='upper left', bbox_to_anchor=(1, 1))
-        plt.tight_layout()
+            # Agrupa os dados por PERIODO_EVASAO e Período Temporal
+            evasao_agrupada = evasao_combined.groupby(['Período', 'PERIODO_EVASAO']).size().reset_index(name='Contagem')
 
-        salvar_grafico(f'evasao_por_periodo_curso_unificada', self.nome_pasta)
+            # Ordena os períodos do curso de 1 a 12
+            evasao_agrupada['PERIODO_EVASAO'] = evasao_agrupada['PERIODO_EVASAO'].astype(int)
+            evasao_agrupada = evasao_agrupada.sort_values('PERIODO_EVASAO')
+
+            # Calcula a evasão cumulativa
+            evasao_agrupada['Contagem_Cumulativa'] = evasao_agrupada.groupby('Período')['Contagem'].cumsum()
+
+            # Cria o gráfico de linha
+            plt.figure(figsize=(14, 8))
+            sns.set(style="whitegrid")
+
+            ax = sns.lineplot(
+                data=evasao_agrupada,
+                x='PERIODO_EVASAO',
+                y='Contagem_Cumulativa',
+                hue='Período',
+                marker='o',
+                palette=self.cores_periodos
+            )
+
+            plt.title('Evasão Cumulativa por Período do Curso e Período Temporal')
+            plt.xlabel('Período do Curso')
+            plt.ylabel('Número Cumulativo de Evasões')
+
+            # Ajusta os ticks do eixo X para mostrar de 1 em 1
+            plt.xticks(ticks=range(0, 13, 1))
+
+            plt.legend(title='Período Temporal', bbox_to_anchor=(1.05, 1), loc='upper left')
+
+            # Destacar os primeiros períodos com maior evasão
+            for periodo in evasao_agrupada['Período'].unique():
+                subset = evasao_agrupada[evasao_agrupada['Período'] == periodo]
+                max_evasao = subset['Contagem_Cumulativa'].max()
+                plt.text(subset['PERIODO_EVASAO'].iloc[-1], max_evasao, periodo,
+                         horizontalalignment='left', size='medium',
+                         color=self.cores_periodos.get(periodo, 'black'), weight='semibold')
+
+            plt.tight_layout()
+            salvar_grafico('evasao_cumulativa_por_periodo', self.nome_pasta)
+        except Exception as e:
+            print(Fore.RED + f"Ocorreu um erro inesperado em plot_evasao_cumulativa_por_periodo: {e}" + Style.RESET_ALL)
 
     def plot_media_cra_unificada(self):
         """
-        Plota a média do CRA por forma de ingresso unificando todos os períodos.
+        Plota a média do CRA por forma de ingresso unificando todos os períodos temporais,
+        mantendo a legenda fora e ajustando o tamanho.
         """
-        print(Fore.YELLOW + "Plotando Média do CRA por Forma de Ingresso Unificada..." + Style.RESET_ALL)
-        media_cra_data = []
+        try:
+            print(Fore.YELLOW + "Plotando Média do CRA por Forma de Ingresso Unificada..." + Style.RESET_ALL)
+            media_cra_data = []
 
-        for periodo, df in self.dataframes.items():
-            # Calcula a média de CRA por forma de ingresso
-            media_cra = df.groupby(['FORMA_INGRESSO_SIMPLES'])['CRA'].mean().reset_index()
-            media_cra['Período'] = self._formatar_nome_periodo(periodo)
-            media_cra_data.append(media_cra)
+            for periodo, df in self.dataframes.items():
+                if 'FORMA_INGRESSO_SIMPLES' not in df.columns or 'CRA' not in df.columns:
+                    print(Fore.RED + f"As colunas necessárias não estão presentes no DataFrame para o período {periodo}." + Style.RESET_ALL)
+                    continue
 
-        media_cra_combined = pd.concat(media_cra_data)
+                # Calcula a média de CRA por forma de ingresso
+                media_cra = df.groupby(['FORMA_INGRESSO_SIMPLES'])['CRA'].mean().reset_index()
+                media_cra['Período'] = self._formatar_nome_periodo(periodo)
+                media_cra_data.append(media_cra)
 
-        # Cria o gráfico com altura aumentada
-        plt.figure(figsize=(16, 12))  # Aumenta a altura para 12
-        sns.set(style="whitegrid")
+            if not media_cra_data:
+                print(Fore.RED + "Nenhum dado de média de CRA encontrado para plotar." + Style.RESET_ALL)
+                return
 
-        ax = sns.barplot(
-            x='Período',
-            y='CRA',
-            hue='FORMA_INGRESSO_SIMPLES',
-            data=media_cra_combined,
-            palette=self.cores_forma_ingresso
-        )
+            media_cra_combined = pd.concat(media_cra_data, ignore_index=True)
+            media_cra_combined.dropna(subset=['FORMA_INGRESSO_SIMPLES', 'CRA', 'Período'], inplace=True)
 
-        # Adiciona valores nas barras
-        adicionar_valores_barras(ax, exibir_percentual=False, fontsize=14)
+            # Cria o gráfico com tamanho ajustado
+            plt.figure(figsize=(14, 8))  # Ajuste o tamanho conforme necessário
+            sns.set(style="whitegrid")
 
-        # Ajusta estilos do gráfico
-        ajustar_estilos_grafico(
-            ax,
-            title='Média do CRA por Forma de Ingresso por Período Temporal',
-            xlabel='Período Temporal',
-            ylabel='Média do CRA'
-        )
+            ax = sns.barplot(
+                x='Período',
+                y='CRA',
+                hue='FORMA_INGRESSO_SIMPLES',
+                data=media_cra_combined,
+                palette=self.cores_forma_ingresso
+            )
 
-        # Move a legenda para fora do gráfico
-        plt.legend(title='Forma de Ingresso', loc='upper left', bbox_to_anchor=(1, 1))
-        plt.tight_layout()
+            # Adiciona valores nas barras
+            adicionar_valores_barras(ax, exibir_percentual=False, fontsize=12)
 
-        salvar_grafico(f'media_cra_unificada', self.nome_pasta)
+            # Ajusta estilos do gráfico
+            ajustar_estilos_grafico(
+                ax,
+                title='Média do CRA por Forma de Ingresso Unificada',
+                xlabel='Período Temporal',
+                ylabel='Média do CRA'
+            )
+
+            # Move a legenda para fora do gráfico
+            plt.legend(title='Forma de Ingresso', loc='upper left', bbox_to_anchor=(1, 1))
+            plt.tight_layout()
+
+            salvar_grafico('media_cra_unificada', self.nome_pasta)
+        except Exception as e:
+            print(Fore.RED + f"Ocorreu um erro inesperado em plot_media_cra_unificada: {e}" + Style.RESET_ALL)
+
+    def plot_porcentagem_evasao_simples_por_grupo_temporal(self):
+        """
+        Plota a porcentagem de alunos agrupados por 'STATUS_EVASAO' de acordo com os grupos temporais.
+        """
+        try:
+            print(Fore.YELLOW + "Plotando Porcentagem de Evasão Simples por Grupo Temporal..." + Style.RESET_ALL)
+            evasao_data = []
+
+            for periodo, df in self.dataframes.items():
+                periodo_nome = self._formatar_nome_periodo(periodo)
+                print(Fore.BLUE + f"\nProcessando dados para o período: {periodo_nome}" + Style.RESET_ALL)
+
+                # Verifica se as colunas necessárias existem
+                if 'STATUS_EVASAO' not in df.columns or 'FORMA_INGRESSO_SIMPLES' not in df.columns:
+                    print(Fore.RED + f"As colunas 'STATUS_EVASAO' ou 'FORMA_INGRESSO_SIMPLES' não estão presentes no DataFrame para o período {periodo_nome}." + Style.RESET_ALL)
+                    continue
+
+                # Filtra apenas os registros com evasão
+                evasao_filtrada = df[df['STATUS_EVASAO'] == 'Evasão'].copy()
+
+                # Agrupa por 'STATUS_EVASAO' e calcula a contagem
+                contagem_evasao = evasao_filtrada.groupby('STATUS_EVASAO').size().reset_index(name='Contagem')
+
+                # Calcula o total de evasões no período
+                total_evasoes = contagem_evasao['Contagem'].sum()
+
+                # Calcula a porcentagem
+                contagem_evasao['Porcentagem'] = (contagem_evasao['Contagem'] / total_evasoes) * 100
+                contagem_evasao['Período'] = periodo_nome
+
+                evasao_data.append(contagem_evasao)
+
+            if not evasao_data:
+                print(Fore.RED + "Nenhum dado de evasão encontrado para plotar a porcentagem de evasão simples." + Style.RESET_ALL)
+                return
+
+            # Concatena todos os dados
+            evasao_combined = pd.concat(evasao_data, ignore_index=True)
+
+            # Opcional: Ordena as categorias de evasão
+            ordem_evasao = sorted(evasao_combined['STATUS_EVASAO'].unique())
+            evasao_combined['STATUS_EVASAO'] = pd.Categorical(
+                evasao_combined['STATUS_EVASAO'],
+                categories=ordem_evasao,
+                ordered=True
+            )
+
+            # Cria o gráfico de barras agrupadas
+            plt.figure(figsize=(16, 8))
+            sns.set(style="whitegrid")
+
+            ax = sns.barplot(
+                data=evasao_combined,
+                x='Período',
+                y='Porcentagem',
+                hue='STATUS_EVASAO',
+                palette=self.cores_forma_evasao
+            )
+
+            # Adiciona valores percentuais nas barras
+            adicionar_valores_barras(ax, exibir_percentual=True, fontsize=12, offset=1.5)
+
+            # Ajusta títulos e labels
+            plt.title('Porcentagem de Alunos por Forma de Evasão Simples por Grupo Temporal')
+            plt.xlabel('Grupo Temporal')
+            plt.ylabel('Porcentagem (%)')
+
+            # Ajusta a legenda para evitar sobreposição
+            plt.legend(title='Forma de Evasão Simples', bbox_to_anchor=(1.05, 1), loc='upper left')
+
+            plt.tight_layout()
+            salvar_grafico('porcentagem_evasao_simples_por_grupo_temporal', self.nome_pasta)
+        except Exception as e:
+            print(Fore.RED + f"Ocorreu um erro inesperado em plot_porcentagem_evasao_simples_por_grupo_temporal: {e}" + Style.RESET_ALL)
 
     def executar_analises(self):
         """
         Executa todas as análises de ingresso e evasão unificadas.
         """
-        self.plot_evasao_detalhada_unificada()
-        self.plot_evasao_cra_arredondado_unificada()
-        self.plot_evasao_por_periodo_curso_unificada()
         self.plot_media_cra_unificada()
+        self.plot_evasao_detalhada_unificada_countplot()
+        self.plot_evasao_cumulativa_por_periodo()
+        self.plot_porcentagem_evasao_simples_por_grupo_temporal()  # Chamada do novo método
 
     @staticmethod
     def _formatar_nome_periodo(periodo):
         """
         Formata o nome do período para correspondência com as cores.
+
+        :param periodo: Identificador do período (ex: '1_antes_cotas').
+        :return: Nome legível do período.
         """
         mapeamento = {
             '1_antes_cotas': 'Antes Cotas',

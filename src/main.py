@@ -2,10 +2,8 @@
 
 import os
 import pandas as pd
-from src.scripts.analise_geografica import analise_geografica
 from src.scripts.AnaliseIngressoEvasao import AnaliseIngressoEvasao
-from src.scripts.analise_desempenho_academico import analise_desempenho_academico
-from src.scripts.analise_resultados_gerais import analise_resultados_gerais
+from src.scripts.AnaliseDesempenhoAcademico import AnaliseDesempenhoAcademico
 from src.scripts.formatacao_dados import formatar_dados
 from src.utils.plots import criar_pasta_graficos
 from src.utils.utils import separar_por_periodo
@@ -62,24 +60,15 @@ def main():
         # Carregar as configurações de cores
         config_cores = ConfigCores()
 
-        # Instanciar a classe de análise de ingresso e evasão
+        # Instanciar e executar a classe de análise de ingresso e evasão
         pasta_ingresso_evasao = criar_pasta_graficos('graficos/ingresso_evasao')
         analise_ingresso_evasao = AnaliseIngressoEvasao(periodos, pasta_ingresso_evasao, config_cores=config_cores)
-
-        # Executar as análises unificadas
         analise_ingresso_evasao.executar_analises()
 
-        # # Analisar desempenho acadêmico
-        # pasta_performance = criar_pasta_graficos('graficos/performance_academica')
-        # analise_desempenho_academico(periodos, pasta_performance)
-        #
-        # # Analisar geográfica
-        # pasta_geografico = criar_pasta_graficos('graficos/geografico')
-        # analise_geografica(periodos, pasta_geografico)
-        #
-        # # Analisar resultados gerais
-        # pasta_resultados_gerais = criar_pasta_graficos('graficos/resultados_gerais')
-        # analise_resultados_gerais(df_formatado, pasta_resultados_gerais)
+        # Instanciar e executar a classe de análise de desempenho acadêmico
+        pasta_performance = criar_pasta_graficos('graficos/performance_academica')
+        analise_desempenho_academico = AnaliseDesempenhoAcademico(periodos, pasta_performance, config_cores=config_cores)
+        analise_desempenho_academico.executar_analises()
 
         print(Fore.CYAN + "Processo de análise concluído!" + Style.RESET_ALL)
 

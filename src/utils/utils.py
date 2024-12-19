@@ -97,12 +97,13 @@ def limpar_e_normalizar_array(array, cases=None):
 
 def separar_por_periodo(df):
     print(f"Total de registros antes da separação por período: {len(df)}")
+    df['PERIODO_INGRESSO_FORMATADO'] = pd.to_numeric(df['PERIODO_INGRESSO_FORMATADO'], errors='coerce')
 
     periodos = {
-        '1_antes_cotas': df[(df['ANO_PERIODO_INGRESSO'] >= 2008) & (df['ANO_PERIODO_INGRESSO'] < 2014)],
-        '2_cotas_2014_2020': df[(df['ANO_PERIODO_INGRESSO'] >= 2014) & (df['ANO_PERIODO_INGRESSO'] <= 2020)],
-        '3_pandemia': df[(df['ANO_PERIODO_INGRESSO'] > 2020) & (df['ANO_PERIODO_INGRESSO'] <= 2022.2)],
-        '4_pos_pandemia': df[df['ANO_PERIODO_INGRESSO'] >= 2023]
+        '1_antes_cotas': df[(df['ANO_PERIODO_INGRESSO'] >= 2008) & (df['PERIODO_INGRESSO_FORMATADO'] < 2014.1)],
+        '2_cotas_2014_2020': df[(df['PERIODO_INGRESSO_FORMATADO'] >= 2014.1) & (df['PERIODO_INGRESSO_FORMATADO'] <= 2019.2)],
+        '3_pandemia': df[(df['PERIODO_INGRESSO_FORMATADO'] > 2020.1) & (df['PERIODO_INGRESSO_FORMATADO'] <= 2022.2)],
+        '4_pos_pandemia': df[df['PERIODO_INGRESSO_FORMATADO'] >= 2023.0]
     }
 
     for periodo, df_periodo in periodos.items():
