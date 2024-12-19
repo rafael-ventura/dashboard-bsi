@@ -50,9 +50,9 @@ def main():
 
         # Chamar a função de formatação e obter os dados formatados
         df_formatado = formatar_dados(caminho_planilha, incluir_outros=False, dados_anterior_2014=True)
-
+        print(df_formatado.head().to_string())
         # Exibir informações gerais comparando o dataset original e o formatado
-        imprimir_informacoes_gerais(df_original, df_formatado)
+        # imprimir_informacoes_gerais(df_original, df_formatado)
 
         # Separar os dados por período
         periodos = separar_por_periodo(df_formatado)

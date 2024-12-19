@@ -36,6 +36,8 @@ class AnaliseDesempenhoAcademico:
         self.cores_grupo = self.config_cores.get_cores_grupo()  # Cores para grupos (Cotistas vs Não Cotistas)
         self.cores_periodos = self.config_cores.get_cores_periodos()  # Cores para períodos temporais
         self.cores_forma_evasao = self.config_cores.get_cores_forma_evasao()  # Cores para formas de evasão
+        self.cores_sexo_periodo = self.config_cores.get_cores_sexo_periodo()  # Cores para sexo por período
+        self.cores_forma_ingresso_periodo = self.config_cores.get_cores_forma_ingresso_periodo()  # Cores para forma de ingresso por período
 
     # ------------------------------
     # Métodos de Plotagem Unificados
@@ -72,6 +74,14 @@ class AnaliseDesempenhoAcademico:
                 return
 
             cra_combined = pd.concat(dados_consolidados, ignore_index=True)
+            cra_combined.dropna(subset=['CRA', 'Período'], inplace=True)
+
+            # Converter 'ANO_PERIODO_INGRESSO' para categórico com ordem definida
+            cra_combined['ANO_PERIODO_INGRESSO'] = pd.Categorical(
+                cra_combined['ANO_PERIODO_INGRESSO'],
+                categories=sorted(cra_combined['ANO_PERIODO_INGRESSO'].unique()),
+                ordered=True
+            )
 
             plt.figure(figsize=(16, 8))
             sns.lineplot(
@@ -83,15 +93,227 @@ class AnaliseDesempenhoAcademico:
                 palette=self.cores_periodos
             )
 
-            ajustar_estilos_grafico(
-                plt.gca(),
-                title='Oscilação do CRA Médio Geral ao Longo dos Anos de Ingresso',
-                xlabel='Ano de Ingresso',
-                ylabel='CRA Médio'
-            )
+            # Ajustar os ticks do eixo x para evitar gaps
+            plt.xticks(rotation=45)  # Rotaciona os labels para melhor visualização
+            plt.xlabel('Ano e Semestre de Ingresso')
+            plt.ylabel('CRA Médio')
+            plt.title('Oscilação do CRA Médio Geral ao Longo dos Anos de Ingresso')
+            plt.legend(title='Período Temporal', bbox_to_anchor=(1.05, 1), loc='upper left')
+            plt.tight_layout()
+
             salvar_grafico('cra_oscila_periodo_unificado', self.nome_pasta)
         except Exception as e:
             print(Fore.RED + f"Ocorreu um erro inesperado em plot_cras_oscila_periodo_unificado: {e}" + Style.RESET_ALL)
+
+    def plot_cras_oscila_sexo_unificado(self):
+        """
+        Plota um gráfico unificado mostrando a oscilação do CRA médio por sexo ao longo dos anos de ingresso,
+        consolidando todos os períodos temporais.
+        """
+        try:
+            print(Fore.YELLOW + "Plotando Oscilação do CRA Médio por Sexo ao Longo dos Anos de Ingresso..." + Style.RESET_ALL)
+
+            dados_consolidados = []
+
+            for periodo, df in self.dataframes.items():
+                periodo_nome = self._formatar_nome_periodo(periodo)
+                print(Fore.BLUE + f"\nProcessando dados para o período: {periodo_nome}" + Style.RESET_ALL)
+
+                dataframe_filtrado = self._filtrar_cra(df)
+                if dataframe_filtrado.empty:
+                    print(Fore.RED + f"Sem dados válidos para o período {periodo_nome}." + Style.RESET_ALL)
+                    continue
+
+                # Verificar se a coluna 'Sexo' existe
+                if 'Sexo' not in dataframe_filtrado.columns:
+                    print(Fore.RED + f"A coluna 'Sexo' não está presente no DataFrame para o período {periodo_nome}." + Style.RESET_ALL)
+                    continue
+
+                # Calcular a média de CRA por ano de ingresso e sexo
+                cra_medio_sexo = dataframe_filtrado.groupby(['ANO_PERIODO_INGRESSO', 'SEXO'])['CRA'].mean().reset_index()
+                cra_medio_sexo['Período'] = periodo_nome
+
+                # Concatenar os dados
+                dados_consolidados.append(cra_medio_sexo)
+
+            if not dados_consolidados:
+                print(Fore.RED + "Nenhum dado válido encontrado para plotar a oscilação do CRA por sexo." + Style.RESET_ALL)
+                return
+
+            cra_combined = pd.concat(dados_consolidados, ignore_index=True)
+            cra_combined.dropna(subset=['CRA', 'Período', 'SEXO'], inplace=True)
+
+            # Converter 'ANO_PERIODO_INGRESSO' para categórico com ordem definida
+            cra_combined['ANO_PERIODO_INGRESSO'] = pd.Categorical(
+                cra_combined['ANO_PERIODO_INGRESSO'],
+                categories=sorted(cra_combined['ANO_PERIODO_INGRESSO'].unique()),
+                ordered=True
+            )
+
+            # Preparar a coluna 'Sexo_Periodo' para a paleta
+            cra_combined['Sexo_Periodo'] = cra_combined.apply(lambda row: f"{row['Período']} - {row['SEXO']}", axis=1)
+
+            plt.figure(figsize=(16, 8))
+            sns.lineplot(
+                data=cra_combined,
+                x='ANO_PERIODO_INGRESSO',
+                y='CRA',
+                hue='Sexo_Periodo',
+                marker='o',
+                palette=self.cores_sexo_periodo
+            )
+
+            # Ajustar os ticks do eixo x para evitar gaps
+            plt.xticks(rotation=45)  # Rotaciona os labels para melhor visualização
+            plt.xlabel('Ano e Semestre de Ingresso')
+            plt.ylabel('CRA Médio')
+            plt.title('Oscilação do CRA Médio por Sexo ao Longo dos Anos de Ingresso')
+            plt.legend(title='Período e Sexo', bbox_to_anchor=(1.05, 1), loc='upper left')
+            plt.tight_layout()
+
+            salvar_grafico('cra_oscila_sexo_unificado', self.nome_pasta)
+        except Exception as e:
+            print(Fore.RED + f"Ocorreu um erro inesperado em plot_cras_oscila_sexo_unificado: {e}" + Style.RESET_ALL)
+
+    def plot_cras_oscila_forma_ingresso_unificado(self):
+        """
+        Plota um gráfico unificado mostrando a oscilação do CRA médio por forma de ingresso ao longo dos anos de ingresso,
+        consolidando todos os períodos temporais.
+        """
+        try:
+            print(Fore.YELLOW + "Plotando Oscilação do CRA Médio por Forma de Ingresso ao Longo dos Anos de Ingresso..." + Style.RESET_ALL)
+
+            dados_consolidados = []
+
+            for periodo, df in self.dataframes.items():
+                periodo_nome = self._formatar_nome_periodo(periodo)
+                print(Fore.BLUE + f"\nProcessando dados para o período: {periodo_nome}" + Style.RESET_ALL)
+
+                dataframe_filtrado = self._filtrar_cra(df)
+                if dataframe_filtrado.empty:
+                    print(Fore.RED + f"Sem dados válidos para o período {periodo_nome}." + Style.RESET_ALL)
+                    continue
+
+                # Verificar se a coluna 'FORMA_INGRESSO_SIMPLES' existe
+                if 'FORMA_INGRESSO_SIMPLES' not in dataframe_filtrado.columns:
+                    print(Fore.RED + f"A coluna 'FORMA_INGRESSO_SIMPLES' não está presente no DataFrame para o período {periodo_nome}." + Style.RESET_ALL)
+                    continue
+
+                # Calcular a média de CRA por ano de ingresso e forma de ingresso
+                cra_medio_ingresso = dataframe_filtrado.groupby(['ANO_PERIODO_INGRESSO', 'FORMA_INGRESSO_SIMPLES'])['CRA'].mean().reset_index()
+                cra_medio_ingresso['Período'] = periodo_nome
+
+                # Concatenar os dados
+                dados_consolidados.append(cra_medio_ingresso)
+
+            if not dados_consolidados:
+                print(Fore.RED + "Nenhum dado válido encontrado para plotar a oscilação do CRA por forma de ingresso." + Style.RESET_ALL)
+                return
+
+            cra_combined = pd.concat(dados_consolidados, ignore_index=True)
+            cra_combined.dropna(subset=['CRA', 'Período', 'FORMA_INGRESSO_SIMPLES'], inplace=True)
+
+            # Converter 'ANO_PERIODO_INGRESSO' para categórico com ordem definida
+            cra_combined['ANO_PERIODO_INGRESSO'] = pd.Categorical(
+                cra_combined['ANO_PERIODO_INGRESSO'],
+                categories=sorted(cra_combined['ANO_PERIODO_INGRESSO'].unique()),
+                ordered=True
+            )
+
+            # Preparar a coluna 'FormaIngresso_Periodo' para a paleta
+            cra_combined['FormaIngresso_Periodo'] = cra_combined.apply(lambda row: f"{row['Período']} - {row['FORMA_INGRESSO_SIMPLES']}", axis=1)
+
+            plt.figure(figsize=(16, 8))
+            sns.lineplot(
+                data=cra_combined,
+                x='ANO_PERIODO_INGRESSO',
+                y='CRA',
+                hue='FormaIngresso_Periodo',
+                marker='o',
+                palette=self.cores_forma_ingresso_periodo
+            )
+
+            # Ajustar os ticks do eixo x para evitar gaps
+            plt.xticks(rotation=45)  # Rotaciona os labels para melhor visualização
+            plt.xlabel('Ano e Semestre de Ingresso')
+            plt.ylabel('CRA Médio')
+            plt.title('Oscilação do CRA Médio por Forma de Ingresso ao Longo dos Anos de Ingresso')
+            plt.legend(title='Período e Forma de Ingresso', bbox_to_anchor=(1.05, 1), loc='upper left')
+            plt.tight_layout()
+
+            salvar_grafico('cra_oscila_forma_ingresso_unificado', self.nome_pasta)
+        except Exception as e:
+            print(Fore.RED + f"Ocorreu um erro inesperado em plot_cras_oscila_forma_ingresso_unificado: {e}" + Style.RESET_ALL)
+
+    def plot_correlacao_cra_idade_unificado(self):
+        """
+        Plota a correlação entre a média do CRA e a idade dos alunos de forma unificada para os 4 períodos temporais.
+        """
+        try:
+            print(Fore.YELLOW + "Plotando Correlação entre Média do CRA e Idade Unificada..." + Style.RESET_ALL)
+
+            dados_consolidados = []
+
+            for periodo, df in self.dataframes.items():
+                periodo_nome = self._formatar_nome_periodo(periodo)
+                print(Fore.BLUE + f"\nProcessando dados para o período: {periodo_nome}" + Style.RESET_ALL)
+
+                # Filtrar dados com CRA e Idade não nulos
+                dataframe_filtrado = df[df['CRA'].notnull() & df['IDADE_INGRESSO'].notnull()].copy()
+                if dataframe_filtrado.empty:
+                    print(Fore.RED + f"Sem dados válidos para o período {periodo_nome}." + Style.RESET_ALL)
+                    continue
+
+                # Calcular a média de CRA e Idade
+                cra_medio = dataframe_filtrado['CRA'].mean()
+                idade_media = dataframe_filtrado['IDADE_INGRESSO'].mean()
+
+                dados_consolidados.append({
+                    'Período': periodo_nome,
+                    'CRA_Medio': cra_medio,
+                    'Idade_Media': idade_media
+                })
+
+            if not dados_consolidados:
+                print(Fore.RED + "Nenhum dado válido encontrado para plotar a correlação entre CRA e Idade." + Style.RESET_ALL)
+                return
+
+            df_consolidado = pd.DataFrame(dados_consolidados)
+
+            plt.figure(figsize=(14, 8))
+            sns.set(style="whitegrid")
+
+            ax = sns.scatterplot(
+                data=df_consolidado,
+                x='Idade_Media',
+                y='CRA_Medio',
+                hue='Período',
+                palette=self.cores_periodos,
+                s=100
+            )
+
+            # Adicionar linha de regressão
+            sns.regplot(
+                data=df_consolidado,
+                x='Idade_Media',
+                y='CRA_Medio',
+                scatter=False,
+                ax=ax,
+                color='gray'
+            )
+
+            # Ajustar títulos e labels
+            plt.title('Correlação entre Média do CRA e Idade dos Alunos por Período Temporal')
+            plt.xlabel('Idade Média')
+            plt.ylabel('CRA Médio')
+
+            # Ajustar a legenda para evitar sobreposição
+            plt.legend(title='Período Temporal', bbox_to_anchor=(1.05, 1), loc='upper left')
+
+            plt.tight_layout()
+            salvar_grafico('correlacao_cra_idade_unificado', self.nome_pasta)
+        except Exception as e:
+            print(Fore.RED + f"Ocorreu um erro inesperado em plot_correlacao_cra_idade_unificado: {e}" + Style.RESET_ALL)
 
     def plot_media_tempo_termino_curso_unificado(self):
         """
@@ -171,24 +393,26 @@ class AnaliseDesempenhoAcademico:
                     print(Fore.RED + f"As colunas necessárias não estão presentes no DataFrame para o período {periodo_nome}." + Style.RESET_ALL)
                     continue
 
-                # Calcula a média de CRA geral (sem considerar forma de ingresso)
-                cra_medio = df.groupby(['Período Temporal'])['CRA'].mean().reset_index()
-                cra_medio['Período'] = periodo_nome
-                media_cra_data.append(cra_medio)
+                # Calcular a média de CRA geral (sem considerar forma de ingresso)
+                cra_medio = df['CRA'].mean()
+                media_cra_data.append({
+                    'Período': periodo_nome,
+                    'CRA_Medio': cra_medio
+                })
 
             if not media_cra_data:
                 print(Fore.RED + "Nenhum dado de média de CRA encontrado para plotar." + Style.RESET_ALL)
                 return
 
-            media_cra_combined = pd.concat(media_cra_data, ignore_index=True)
-            media_cra_combined.dropna(subset=['CRA', 'Período'], inplace=True)
+            media_cra_combined = pd.DataFrame(media_cra_data)
+            media_cra_combined.dropna(subset=['CRA_Medio', 'Período'], inplace=True)
 
             plt.figure(figsize=(14, 8))
             sns.set(style="whitegrid")
 
             ax = sns.barplot(
                 x='Período',
-                y='CRA',
+                y='CRA_Medio',
                 data=media_cra_combined,
                 palette=self.cores_periodos
             )
@@ -210,10 +434,6 @@ class AnaliseDesempenhoAcademico:
             salvar_grafico('media_cra_unificada', self.nome_pasta)
         except Exception as e:
             print(Fore.RED + f"Ocorreu um erro inesperado em plot_media_cra_unificada: {e}" + Style.RESET_ALL)
-
-    # ------------------------------
-    # Métodos de Análise de Resultados Gerais
-    # ------------------------------
 
     def plot_distribuicao_alunos_por_zona_unificada(self):
         """
@@ -327,19 +547,20 @@ class AnaliseDesempenhoAcademico:
         # Plotagem unificada do CRA médio geral
         self.plot_cras_oscila_periodo_unificado()
 
+        # Plotagem unificada da oscilação do CRA por sexo
+        self.plot_cras_oscila_sexo_unificado()
+
+        # Plotagem unificada da oscilação do CRA por forma de ingresso
+        self.plot_cras_oscila_forma_ingresso_unificado()
+
+        # Plotagem unificada da correlação entre CRA e Idade
+        self.plot_correlacao_cra_idade_unificado()
+
         # Plotagem unificada da média de tempo de término do curso
         self.plot_media_tempo_termino_curso_unificado()
 
-        # Plotagem unificada da média do CRA
-        self.plot_media_cra_unificada()
-
         # Plotagem unificada da distribuição de alunos por zona geográfica
         self.plot_distribuicao_alunos_por_zona_unificada()
-
-        # Removidos os gráficos indesejados:
-        # self.plot_distribuicao_cra()
-        # self.plot_distribuicao_cra_sexo()
-        # self.plot_impacto_cra_evasao()
 
     @staticmethod
     def _formatar_nome_periodo(periodo):

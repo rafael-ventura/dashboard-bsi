@@ -96,7 +96,7 @@ def limpar_e_normalizar_array(array, cases=None):
 
 
 def separar_por_periodo(df):
-    print(f"Total de registros antes da separação por período: {len(df)}")
+    # print(f"Total de registros antes da separação por período: {len(df)}")
     df['PERIODO_INGRESSO_FORMATADO'] = pd.to_numeric(df['PERIODO_INGRESSO_FORMATADO'], errors='coerce')
 
     periodos = {
@@ -106,7 +106,7 @@ def separar_por_periodo(df):
         '4_pos_pandemia': df[df['PERIODO_INGRESSO_FORMATADO'] >= 2023.0]
     }
 
-    for periodo, df_periodo in periodos.items():
-        print(f"Registros no período {periodo}: {len(df_periodo)}")
+    # for periodo, df_periodo in periodos.items():
+    #     print(f"Registros no período {periodo}: {len(df_periodo)}")
 
     return periodos

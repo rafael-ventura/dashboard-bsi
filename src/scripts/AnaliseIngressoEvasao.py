@@ -32,31 +32,15 @@ class AnaliseIngressoEvasao:
         self.cores_periodos = self.config_cores.get_cores_periodos()
         self.cores_forma_ingresso = self.config_cores.get_cores_forma_ingresso()
 
-        # Define uma paleta de cores para os tipos de evasão
-        self.cores_forma_evasao = self._definir_cores_forma_evasao()
+        # Define uma paleta de cores para os tipos de evasão detalhada
+        self.cores_forma_evasao = self.config_cores.get_cores_forma_evasao()
 
-    def _definir_cores_forma_evasao(self):
-        """
-        Define uma paleta de cores para os diferentes tipos de evasão.
-        """
-        # Identifica todas as categorias únicas de evasão após simplificação
-        categorias = set()
-        for df in self.dataframes.values():
-            if 'STATUS_EVASAO' in df.columns:
-                categorias.update(
-                    df['STATUS_EVASAO'].dropna().apply(
-                        lambda x: 'DES' if 'Desistência' in x else (x.split()[0] if isinstance(x, str) and ' ' in x else 'DES')
-                    ).unique()
-                )
-
-        categorias = sorted(categorias)
-        # Define uma paleta com cores distintas
-        palette = sns.color_palette("Set2", n_colors=len(categorias))
-        return dict(zip(categorias, palette))
+        # Define uma paleta de cores para os status de evasão
+        self.cores_status_evasao = self.config_cores.get_cores_status_evasao()
 
     def plot_evasao_detalhada_unificada_countplot(self):
         """
-        Plota a distribuição das formas de evasão unificando todos os períodos,
+        Plota a distribuição das formas de evasão detalhada unificando todos os períodos,
         utilizando um countplot para mostrar a distribuição.
         """
         try:
@@ -65,17 +49,17 @@ class AnaliseIngressoEvasao:
 
             for periodo, df in self.dataframes.items():
                 # Verifica se as colunas necessárias existem
-                if 'STATUS_EVASAO' not in df.columns or 'FORMA_INGRESSO_SIMPLES' not in df.columns:
-                    print(Fore.RED + f"As colunas 'STATUS_EVASAO' ou 'FORMA_INGRESSO_SIMPLES' não estão presentes no DataFrame para o período {periodo}." + Style.RESET_ALL)
+                if 'FORMA_EVASAO_DETALHADA' not in df.columns or 'FORMA_INGRESSO_SIMPLES' not in df.columns:
+                    print(Fore.RED + f"As colunas necessárias não estão presentes no DataFrame para o período {periodo}." + Style.RESET_ALL)
                     continue
 
                 # Filtra as formas de evasão relevantes
-                evasao_filtrada = df[df['STATUS_EVASAO'].isin(['Desistência', 'Cancelamento', 'Jubilamento', 'Transferência Interna', 'Falecimento'])].copy()
-                evasao_filtrada = evasao_filtrada[['STATUS_EVASAO', 'FORMA_INGRESSO_SIMPLES']].copy()
+                evasao_filtrada = df[~df['FORMA_EVASAO_DETALHADA'].isin(['CON - Curso concluído', 'Sem evasão'])].copy()
+                evasao_filtrada = evasao_filtrada[['FORMA_EVASAO_DETALHADA', 'FORMA_INGRESSO_SIMPLES']].copy()
                 evasao_filtrada['Período'] = self._formatar_nome_periodo(periodo)
 
-                # Simplifica os tipos de evasão
-                evasao_filtrada['STATUS_EVASAO'] = evasao_filtrada['STATUS_EVASAO'].apply(
+                # Simplifica os tipos de evasão detalhada
+                evasao_filtrada['FORMA_EVASAO_DETALHADA'] = evasao_filtrada['FORMA_EVASAO_DETALHADA'].apply(
                     lambda x: 'DES' if 'Desistência' in x else (x.split()[0] if isinstance(x, str) and ' ' in x else 'DES')
                 )
                 evasao_data.append(evasao_filtrada)
@@ -85,12 +69,12 @@ class AnaliseIngressoEvasao:
                 return
 
             evasao_combined = pd.concat(evasao_data, ignore_index=True)
-            evasao_combined.dropna(subset=['STATUS_EVASAO', 'FORMA_INGRESSO_SIMPLES', 'Período'], inplace=True)
+            evasao_combined.dropna(subset=['FORMA_EVASAO_DETALHADA', 'FORMA_INGRESSO_SIMPLES', 'Período'], inplace=True)
 
-            # Define a ordem das categorias de evasão
-            ordem_evasao = sorted(evasao_combined['STATUS_EVASAO'].unique())
-            evasao_combined['STATUS_EVASAO'] = pd.Categorical(
-                evasao_combined['STATUS_EVASAO'],
+            # Define a ordem das categorias de evasão detalhada
+            ordem_evasao = ['DES', 'CAN', 'JUB', 'TIC', 'FAL', 'ABA']
+            evasao_combined['FORMA_EVASAO_DETALHADA'] = pd.Categorical(
+                evasao_combined['FORMA_EVASAO_DETALHADA'],
                 categories=ordem_evasao,
                 ordered=True
             )
@@ -102,12 +86,12 @@ class AnaliseIngressoEvasao:
             ax = sns.countplot(
                 data=evasao_combined,
                 x='Período',
-                hue='STATUS_EVASAO',
+                hue='FORMA_EVASAO_DETALHADA',
                 palette=self.cores_forma_evasao
             )
 
             # Ajusta títulos e labels
-            plt.title('Distribuição das Formas de Evasão por Período Temporal')
+            plt.title('Distribuição das Formas de Evasão Detalhada por Período Temporal')
             plt.xlabel('Período Temporal')
             plt.ylabel('Número de Alunos Evadidos')
 
@@ -115,7 +99,7 @@ class AnaliseIngressoEvasao:
             plt.legend(title='Tipo de Evasão', bbox_to_anchor=(1.15, 1), loc='upper left')
 
             # Adiciona texto explicativo sobre as siglas
-            plt.text(1.02, 0.6, "DES = Desistência \nCAN = Cancelamento \nJUB = Jubilamento \nTIC = Transferência Interna \nFAL = Falecimento",
+            plt.text(1.02, 0.6, "ABA = Abandono do Curso \nCAN = Cancelamento \nJUB = Jubilamento \nDES = Desistência \nTIC = Transferência Interna \nFAL = Falecimento do discente",
                      ha="left", fontsize=12, transform=plt.gca().transAxes)
 
             plt.tight_layout()
@@ -184,7 +168,7 @@ class AnaliseIngressoEvasao:
             plt.ylabel('Número Cumulativo de Evasões')
 
             # Ajusta os ticks do eixo X para mostrar de 1 em 1
-            plt.xticks(ticks=range(0, 13, 1))
+            plt.xticks(ticks=range(1, 13, 1))
 
             plt.legend(title='Período Temporal', bbox_to_anchor=(1.05, 1), loc='upper left')
 
@@ -258,12 +242,12 @@ class AnaliseIngressoEvasao:
         except Exception as e:
             print(Fore.RED + f"Ocorreu um erro inesperado em plot_media_cra_unificada: {e}" + Style.RESET_ALL)
 
-    def plot_porcentagem_evasao_simples_por_grupo_temporal(self):
+    def plot_porcentagem_evasao_status_por_grupo_temporal(self):
         """
         Plota a porcentagem de alunos agrupados por 'STATUS_EVASAO' de acordo com os grupos temporais.
         """
         try:
-            print(Fore.YELLOW + "Plotando Porcentagem de Evasão Simples por Grupo Temporal..." + Style.RESET_ALL)
+            print(Fore.YELLOW + "Plotando Porcentagem de Evasão por Status e Grupo Temporal..." + Style.RESET_ALL)
             evasao_data = []
 
             for periodo, df in self.dataframes.items():
@@ -271,15 +255,20 @@ class AnaliseIngressoEvasao:
                 print(Fore.BLUE + f"\nProcessando dados para o período: {periodo_nome}" + Style.RESET_ALL)
 
                 # Verifica se as colunas necessárias existem
-                if 'STATUS_EVASAO' not in df.columns or 'FORMA_INGRESSO_SIMPLES' not in df.columns:
-                    print(Fore.RED + f"As colunas 'STATUS_EVASAO' ou 'FORMA_INGRESSO_SIMPLES' não estão presentes no DataFrame para o período {periodo_nome}." + Style.RESET_ALL)
+                if 'STATUS_EVASAO' not in df.columns:
+                    print(Fore.RED + f"A coluna 'STATUS_EVASAO' não está presente no DataFrame para o período {periodo_nome}." + Style.RESET_ALL)
                     continue
 
-                # Filtra apenas os registros com evasão
-                evasao_filtrada = df[df['STATUS_EVASAO'] == 'Evasão'].copy()
+                # Filtra apenas os registros com evasão nas categorias relevantes
+                evasao_filtrada = df[df['STATUS_EVASAO'].isin(['Cursando', 'Evasão', 'Concluído'])].copy()
 
-                # Agrupa por 'STATUS_EVASAO' e calcula a contagem
-                contagem_evasao = evasao_filtrada.groupby('STATUS_EVASAO').size().reset_index(name='Contagem')
+                if evasao_filtrada.empty:
+                    print(Fore.RED + f"Não há registros de evasão para o período {periodo_nome}." + Style.RESET_ALL)
+                    continue
+
+                # Agrupa por 'STATUS_EVASao' e calcula a contagem
+                contagem_evasao = evasao_filtrada['STATUS_EVASAO'].value_counts().reset_index()
+                contagem_evasao.columns = ['STATUS_EVASAO', 'Contagem']
 
                 # Calcula o total de evasões no período
                 total_evasoes = contagem_evasao['Contagem'].sum()
@@ -291,14 +280,14 @@ class AnaliseIngressoEvasao:
                 evasao_data.append(contagem_evasao)
 
             if not evasao_data:
-                print(Fore.RED + "Nenhum dado de evasão encontrado para plotar a porcentagem de evasão simples." + Style.RESET_ALL)
+                print(Fore.RED + "Nenhum dado de evasão encontrado para plotar a porcentagem por status." + Style.RESET_ALL)
                 return
 
             # Concatena todos os dados
             evasao_combined = pd.concat(evasao_data, ignore_index=True)
 
-            # Opcional: Ordena as categorias de evasão
-            ordem_evasao = sorted(evasao_combined['STATUS_EVASAO'].unique())
+            # Define a ordem das categorias de evasão
+            ordem_evasao = ['Cursando', 'Evasão', 'Concluído']
             evasao_combined['STATUS_EVASAO'] = pd.Categorical(
                 evasao_combined['STATUS_EVASAO'],
                 categories=ordem_evasao,
@@ -314,24 +303,24 @@ class AnaliseIngressoEvasao:
                 x='Período',
                 y='Porcentagem',
                 hue='STATUS_EVASAO',
-                palette=self.cores_forma_evasao
+                palette=self.cores_status_evasao
             )
 
             # Adiciona valores percentuais nas barras
             adicionar_valores_barras(ax, exibir_percentual=True, fontsize=12, offset=1.5)
 
             # Ajusta títulos e labels
-            plt.title('Porcentagem de Alunos por Forma de Evasão Simples por Grupo Temporal')
+            plt.title('Porcentagem de Alunos por Status de Evasão por Grupo Temporal')
             plt.xlabel('Grupo Temporal')
             plt.ylabel('Porcentagem (%)')
 
             # Ajusta a legenda para evitar sobreposição
-            plt.legend(title='Forma de Evasão Simples', bbox_to_anchor=(1.05, 1), loc='upper left')
+            plt.legend(title='Status de Evasão', bbox_to_anchor=(1.05, 1), loc='upper left')
 
             plt.tight_layout()
-            salvar_grafico('porcentagem_evasao_simples_por_grupo_temporal', self.nome_pasta)
+            salvar_grafico('porcentagem_evasao_status_por_grupo_temporal', self.nome_pasta)
         except Exception as e:
-            print(Fore.RED + f"Ocorreu um erro inesperado em plot_porcentagem_evasao_simples_por_grupo_temporal: {e}" + Style.RESET_ALL)
+            print(Fore.RED + f"Ocorreu um erro inesperado em plot_porcentagem_evasao_status_por_grupo_temporal: {e}" + Style.RESET_ALL)
 
     def executar_analises(self):
         """
@@ -340,7 +329,7 @@ class AnaliseIngressoEvasao:
         self.plot_media_cra_unificada()
         self.plot_evasao_detalhada_unificada_countplot()
         self.plot_evasao_cumulativa_por_periodo()
-        self.plot_porcentagem_evasao_simples_por_grupo_temporal()  # Chamada do novo método
+        self.plot_porcentagem_evasao_status_por_grupo_temporal()  # Chamada do novo método
 
     @staticmethod
     def _formatar_nome_periodo(periodo):
