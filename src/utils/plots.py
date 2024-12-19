@@ -298,12 +298,12 @@ def ajustar_estilos_grafico(ax, title="", xlabel="", ylabel="",
 def adicionar_valores_barras(ax, exibir_percentual=True, total=None, fontsize=14, offset=8):
     """
     Adiciona valores exatos nas barras verticais.
-    Se `exibir_percentual` for True, adiciona o percentual em vez do valor absoluto.
+    Se `exibir_percentual` for True e `total` for fornecido, adiciona o percentual em vez do valor absoluto.
 
     Parâmetros:
     - ax: O objeto de eixos do matplotlib ou seaborn.
     - exibir_percentual: Exibe o percentual se True.
-    - total: O valor total para calcular o percentual.
+    - total: O valor total para calcular o percentual (necessário se exibir_percentual=True).
     - fontsize: Tamanho da fonte dos valores nas barras.
     - offset: Distância dos valores até a barra.
     """
@@ -311,23 +311,30 @@ def adicionar_valores_barras(ax, exibir_percentual=True, total=None, fontsize=14
         altura = p.get_height()
         if altura > 0:  # Apenas adiciona valores se a barra for maior que zero
             if exibir_percentual and total is not None:
-                percentual = altura / total * 100
-                ax.annotate(f'{percentual:.1f}%', (p.get_x() + p.get_width() / 2., altura),
-                            ha='center', va='bottom', fontsize=fontsize)
+                percentual = (altura / total) * 100
+                texto = f'{percentual:.1f}%'
             else:
-                ax.annotate(f'{altura:.1f}', (p.get_x() + p.get_width() / 2., altura),
-                            ha='center', va='bottom', fontsize=fontsize)
+                texto = f'{altura:.1f}'
+            ax.annotate(
+                texto,
+                (p.get_x() + p.get_width() / 2., altura),
+                ha='center',
+                va='bottom',
+                fontsize=fontsize,
+                xytext=(0, offset),
+                textcoords='offset points'
+            )
 
 
 def adicionar_valores_barras_laterais(ax, exibir_percentual=True, total=None, fontsize=12, offset=20):
     """
     Adiciona valores exatos nas barras horizontais (laterais).
-    Se `exibir_percentual` for True, adiciona o percentual em vez do valor absoluto.
+    Se `exibir_percentual` for True e `total` for fornecido, adiciona o percentual em vez do valor absoluto.
 
     Parâmetros:
     - ax: O objeto de eixos do matplotlib ou seaborn.
     - exibir_percentual: Exibe o percentual se True.
-    - total: O valor total para calcular o percentual.
+    - total: O valor total para calcular o percentual (necessário se exibir_percentual=True).
     - fontsize: Tamanho da fonte dos valores nas barras.
     - offset: Distância dos valores até a barra.
     """
@@ -335,14 +342,19 @@ def adicionar_valores_barras_laterais(ax, exibir_percentual=True, total=None, fo
         largura = p.get_width()
         if largura > 0:  # Apenas adiciona valores se a barra for maior que zero
             if exibir_percentual and total is not None:
-                percentual = largura / total * 100
-                ax.annotate(f'{percentual:.1f}%', (largura, p.get_y() + p.get_height() / 2),
-                            ha='center', va='center', xytext=(offset, 0), textcoords='offset points',
-                            fontsize=fontsize)
+                percentual = (largura / total) * 100
+                texto = f'{percentual:.1f}%'
             else:
-                ax.annotate(f'', (largura, p.get_y() + p.get_height() / 2),
-                            ha='center', va='center', xytext=(offset, 0), textcoords='offset points',
-                            fontsize=fontsize)
+                texto = f'{largura:.1f}'
+            ax.annotate(
+                texto,
+                (largura, p.get_y() + p.get_height() / 2.),
+                ha='left',
+                va='center',
+                fontsize=fontsize,
+                xytext=(offset, 0),
+                textcoords='offset points'
+            )
 
 
 def plotar_grafico_barras_laterais(data, x, y, title, xlabel, ylabel, ax=None, exibir_percentual=True):

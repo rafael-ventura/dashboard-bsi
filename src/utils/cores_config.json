@@ -1,0 +1,12 @@
+{
+  "cores_periodos": {
+    "Antes Cotas": "#1f77b4",
+    "Cotas 2014-2020": "#ff7f0e",
+    "Pandemia": "#2ca02c",
+    "Pos Pandemia": "#d62728"
+  },
+  "cores_forma_ingresso": {
+    "Ampla Concorrencia": "#9467bd",
+    "Cotas": "#8c564b"
+  }
+}

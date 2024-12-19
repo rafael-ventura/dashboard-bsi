@@ -1,13 +1,15 @@
+# src/scripts/main.py
+
 import os
 import pandas as pd
-
 from src.scripts.analise_geografica import analise_geografica
-from src.scripts.analise_ingresso_evasao import analise_ingresso_evasao
+from src.scripts.AnaliseIngressoEvasao import AnaliseIngressoEvasao
 from src.scripts.analise_desempenho_academico import analise_desempenho_academico
 from src.scripts.analise_resultados_gerais import analise_resultados_gerais
 from src.scripts.formatacao_dados import formatar_dados
 from src.utils.plots import criar_pasta_graficos
 from src.utils.utils import separar_por_periodo
+from src.utils.config_cores import ConfigCores
 from colorama import Fore, init, Style
 
 init(autoreset=True)
@@ -35,42 +37,56 @@ def main():
     """
     Função principal para execução das análises.
     """
-    init(autoreset=True)
-    print(Fore.CYAN + "Iniciando o processo de formatação de dados...")
+    try:
+        print(Fore.CYAN + "Iniciando o processo de formatação de dados..." + Style.RESET_ALL)
 
-    # Carregar os dados diretamente da planilha antes de qualquer formatação
-    caminho_planilha = r'C:\Dev\dashboard-bsi\dados\bruto\PlanilhaNova.xlsx'
-    df_original = pd.read_excel(caminho_planilha)
+        # Definir o caminho da planilha
+        caminho_planilha = r'R:\Dev\dashboard-bsi\dados\bruto\PlanilhaNova.xlsx'
 
-    # Chamar a função de formatação e obter os dados formatados
-    df_formatado = formatar_dados(caminho_planilha, incluir_outros=False, dados_anterior_2014=True)
+        # Verificar se o arquivo existe
+        if not os.path.exists(caminho_planilha):
+            raise FileNotFoundError(f"O arquivo '{caminho_planilha}' não foi encontrado.")
 
-    # Exibir informações gerais comparando o dataset original e o formatado
-    imprimir_informacoes_gerais(df_original, df_formatado)
+        # Carregar os dados
+        df_original = pd.read_excel(caminho_planilha)
 
-    # Separar os dados por período
-    periodos = separar_por_periodo(df_formatado)
+        # Chamar a função de formatação e obter os dados formatados
+        df_formatado = formatar_dados(caminho_planilha, incluir_outros=False, dados_anterior_2014=True)
 
-    for periodo, df_periodo in periodos.items():
-        # Atualizar a pasta de destino para os gráficos
-        nome_pasta = f'graficos/periodo_{periodo}'
+        # Exibir informações gerais comparando o dataset original e o formatado
+        imprimir_informacoes_gerais(df_original, df_formatado)
 
-        # Criar subpastas específicas para cada análise
-        pasta_geografico = criar_pasta_graficos(os.path.join(nome_pasta, 'geografico'))
-        pasta_performance = criar_pasta_graficos(os.path.join(nome_pasta, 'performance_academica'))
-        pasta_ingresso_evasao = criar_pasta_graficos(os.path.join(nome_pasta, 'ingresso_evasao'))
+        # Separar os dados por período
+        periodos = separar_por_periodo(df_formatado)
 
-        # Realizar as análises específicas para cada período
-        print(Fore.GREEN + f"\nAnálise de dados para o período: {periodo}")
-        analise_ingresso_evasao(df_periodo, pasta_ingresso_evasao, periodo)
-        # analise_desempenho_academico(df_periodo, pasta_performance, periodo)
-        # analise_geografica(df_periodo, pasta_geografico, periodo)
+        # Carregar as configurações de cores
+        config_cores = ConfigCores()
 
-    # Analisar os resultados gerais
-    pasta_resultados_gerais = criar_pasta_graficos('graficos/resultados_gerais')
-    # analise_resultados_gerais(df_formatado, pasta_resultados_gerais)
+        # Instanciar a classe de análise de ingresso e evasão
+        pasta_ingresso_evasao = criar_pasta_graficos('graficos/ingresso_evasao')
+        analise_ingresso_evasao = AnaliseIngressoEvasao(periodos, pasta_ingresso_evasao, config_cores=config_cores)
 
-    print(Fore.CYAN + "Processo de análise concluído!")
+        # Executar as análises unificadas
+        analise_ingresso_evasao.executar_analises()
+
+        # # Analisar desempenho acadêmico
+        # pasta_performance = criar_pasta_graficos('graficos/performance_academica')
+        # analise_desempenho_academico(periodos, pasta_performance)
+        #
+        # # Analisar geográfica
+        # pasta_geografico = criar_pasta_graficos('graficos/geografico')
+        # analise_geografica(periodos, pasta_geografico)
+        #
+        # # Analisar resultados gerais
+        # pasta_resultados_gerais = criar_pasta_graficos('graficos/resultados_gerais')
+        # analise_resultados_gerais(df_formatado, pasta_resultados_gerais)
+
+        print(Fore.CYAN + "Processo de análise concluído!" + Style.RESET_ALL)
+
+    except FileNotFoundError as e:
+        print(Fore.RED + str(e) + Style.RESET_ALL)
+    except Exception as e:
+        print(Fore.RED + f"Ocorreu um erro inesperado: {e}" + Style.RESET_ALL)
 
 
 if __name__ == "__main__":
