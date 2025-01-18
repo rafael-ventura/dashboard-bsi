@@ -1,76 +1,49 @@
-# src/scripts/main.py
-
 import os
-import pandas as pd
-from src.scripts.AnaliseIngressoEvasao import AnaliseIngressoEvasao
-from src.scripts.AnaliseDesempenhoAcademico import AnaliseDesempenhoAcademico
-from src.scripts.formatacao_dados import formatar_dados
+from src.ingresso.AnaliseTipoIngresso import AnaliseTipoIngresso  # Nova análise
+from src.formatacao.formatacao_dados import formatar_dados
 from src.utils.plots import criar_pasta_graficos
-from src.utils.utils import separar_por_periodo
-from src.utils.config_cores import ConfigCores
 from colorama import Fore, init, Style
+from src.utils.utils import carregar_dados
 
 init(autoreset=True)
 
 
-def imprimir_informacoes_gerais(df_original, df_formatado):
+def main(formatar_dados=True, considerar_curriculo_antigo=True):
     """
-    Imprime informações gerais sobre o número de registros antes e depois da formatação, incluindo descartes.
-    """
-    # Contagem de registros originais
-    total_original = len(df_original)
-
-    # Contagem de registros formatados
-    total_formatado = len(df_formatado)
-
-    # Calculando registros descartados
-    registros_descartados = total_original - total_formatado
-
-    print(Fore.CYAN + f"Total de alunos no dataset original: {total_original}" + Style.RESET_ALL)
-    print(Fore.GREEN + f"Total de alunos após a formatação: {total_formatado}" + Style.RESET_ALL)
-    print(Fore.RED + f"Total de registros descartados no geral: {registros_descartados}" + Style.RESET_ALL)
-
-
-def main():
-    """
-    Função principal para execução das análises.
+    Função principal para execução da análise de tipo de ingresso.
+    :param formatar_dados: Flag para decidir se os dados serão formatados ou carregados do arquivo processado.
+    :param considerar_curriculo_antigo: Flag para considerar alunos do currículo anterior a 2008/1 e posterior a 2023/2.
     """
     try:
-        print(Fore.CYAN + "Iniciando o processo de formatação de dados..." + Style.RESET_ALL)
-
-        # Definir o caminho da planilha
+        print(Fore.CYAN + "Iniciando o processo de análise..." + Style.RESET_ALL)
         caminho_planilha = r'R:\Dev\dashboard-bsi\dados\bruto\PlanilhaNova.xlsx'
-
-        # Verificar se o arquivo existe
         if not os.path.exists(caminho_planilha):
             raise FileNotFoundError(f"O arquivo '{caminho_planilha}' não foi encontrado.")
 
-        # Carregar os dados
-        df_original = pd.read_excel(caminho_planilha)
+        try:
+            if formatar_dados:
+                print(Fore.CYAN + "Formatando os dados..." + Style.RESET_ALL)
+                df_formatado = formatar_dados(caminho_planilha, incluir_outros=False, dados_anterior_2014=True)
+                print(Fore.GREEN + "Dados formatados com sucesso!" + Style.RESET_ALL)
+            else:
+                print(Fore.YELLOW + "Pulando a formatação de dados. Carregando arquivo processado..." + Style.RESET_ALL)
+                df_formatado = carregar_dados()
 
-        # Chamar a função de formatação e obter os dados formatados
-        df_formatado = formatar_dados(caminho_planilha, incluir_outros=False, dados_anterior_2014=True)
-        print(df_formatado.head().to_string())
-        # Exibir informações gerais comparando o dataset original e o formatado
-        # imprimir_informacoes_gerais(df_original, df_formatado)
+            # Filtro adicional: desconsiderar alunos do currículo antigo, se necessário
+            if not considerar_curriculo_antigo:
+                print(Fore.YELLOW + "Filtrando alunos do currículo antigo (antes de 2008/1 e depois de 2023/2)..." + Style.RESET_ALL)
+                df_formatado = df_formatado[df_formatado['NUM_VERSAO'].isin(["2008/1", "2023/2"])]
+                print(Fore.GREEN + f"Registros restantes após o filtro: {len(df_formatado)}" + Style.RESET_ALL)
 
-        # Separar os dados por período
-        periodos = separar_por_periodo(df_formatado)
+        except Exception as e:
+            print(Fore.RED + f"Erro ao formatar ou carregar os dados: {e}" + Style.RESET_ALL)
+            return
 
-        # Carregar as configurações de cores
-        config_cores = ConfigCores()
-
-        # Instanciar e executar a classe de análise de ingresso e evasão
-        pasta_ingresso_evasao = criar_pasta_graficos('graficos/ingresso_evasao')
-        analise_ingresso_evasao = AnaliseIngressoEvasao(periodos, pasta_ingresso_evasao, config_cores=config_cores)
-        analise_ingresso_evasao.executar_analises()
-
-        # Instanciar e executar a classe de análise de desempenho acadêmico
-        pasta_performance = criar_pasta_graficos('graficos/performance_academica')
-        analise_desempenho_academico = AnaliseDesempenhoAcademico(periodos, pasta_performance, config_cores=config_cores)
-        analise_desempenho_academico.executar_analises()
-
-        print(Fore.CYAN + "Processo de análise concluído!" + Style.RESET_ALL)
+        # Executar as análises de tipo de ingresso
+        pasta_tipo_ingresso = criar_pasta_graficos('graficos/tipo_ingresso')
+        analise_tipo_ingresso = AnaliseTipoIngresso(df_formatado, pasta_tipo_ingresso)
+        analise_tipo_ingresso.executar_analises()
+        print(Fore.CYAN + "Análise de tipo de ingresso concluída!" + Style.RESET_ALL)
 
     except FileNotFoundError as e:
         print(Fore.RED + str(e) + Style.RESET_ALL)
@@ -79,4 +52,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    main(formatar_dados=False, considerar_curriculo_antigo=False)

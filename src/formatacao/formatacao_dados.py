@@ -1,10 +1,10 @@
 import numpy as np
 import pandas as pd
-from src.utils.distancia import adicionar_distancia_ate_urca, inicializar_geolocator, salvar_bairros_falha, carregar_bairros_falha
-from src.utils.localizacao import correcoes_bairros, agrupar_por_zona, correcoes_cidades, adicionar_cidade_estado
-from src.utils.desempenho_academico import classificar_forma_ingresso, classificar_forma_evasao, arredondar_cra
-from src.utils.temporal import remover_alunos_anteriores_2014, classificar_idade, calcular_tempo_curso
-from src.utils.utils import carregar_dados, salvar_dados, pega_caminho_base, limpar_e_normalizar, corrigir_nomes_bairros, corrigir_nomes_cidades
+from src.formatacao.distancia import adicionar_distancia_ate_urca, inicializar_geolocator, salvar_bairros_falha, carregar_bairros_falha
+from src.formatacao.localizacao import correcoes_bairros, agrupar_por_zona, correcoes_cidades, adicionar_cidade_estado
+from src.formatacao.desempenho_academico import classificar_forma_ingresso, classificar_forma_evasao, arredondar_cra
+from src.formatacao.temporal import remover_alunos_anteriores_2014, classificar_idade, calcular_tempo_curso
+from src.utils.utils import carregar_dados, salvar_dados, pega_caminho_base, limpar_e_normalizar, corrigir_nomes
 
 
 def ler_dados_brutos(source):
@@ -117,14 +117,14 @@ def formatar_dados(source, incluir_outros=True, dados_anterior_2014=False):
     # Normalizar e corrigir bairros
     df = limpar_e_normalizar(df, 'BAIRRO', correcoes_bairros, case='title')
     df = limpar_e_normalizar(df, 'BAIRRO', correcoes_bairros, case='lower')
-    df = corrigir_nomes_bairros(df, correcoes_bairros)
+    df = corrigir_nomes(df, 'BAIRRO', correcoes_bairros)
     print(Fore.GREEN + f"Correção e normalização de bairros concluída." + Style.RESET_ALL)
     print(f"Total de registros após normalizar e corrigir bairros: {len(df)}")
 
     # Normalizar e corrigir cidades
     df = limpar_e_normalizar(df, 'CIDADE', correcoes_cidades, case='title')
     df = limpar_e_normalizar(df, 'CIDADE', correcoes_cidades, case='lower')
-    df = corrigir_nomes_cidades(df, correcoes_cidades)
+    df = corrigir_nomes(df, 'CIDADE', correcoes_cidades)
     print(Fore.GREEN + f"Correção e normalização de cidades concluída." + Style.RESET_ALL)
     print(f"Total de registros após normalizar e corrigir cidades: {len(df)}")
 

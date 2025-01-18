@@ -1,6 +1,6 @@
 import re
 import unidecode
-from src.utils.zonas_geograficas import *
+from src.formatacao.zonas_geograficas import *
 
 
 def adicionar_cidade_estado(df):

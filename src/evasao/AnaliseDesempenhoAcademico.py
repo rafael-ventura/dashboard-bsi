@@ -4,10 +4,11 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 from colorama import Fore, init, Style
-from src.utils.plots import (
+from src.utils.plot_utils import (
     salvar_grafico,
+    ajustar_estilos_grafico,
     adicionar_valores_barras,
-    ajustar_estilos_grafico
+    plotar_pareto
 )
 from src.utils.config_cores import ConfigCores
 
@@ -95,9 +96,9 @@ class AnaliseDesempenhoAcademico:
 
             # Ajustar os ticks do eixo x para evitar gaps
             plt.xticks(rotation=45)  # Rotaciona os labels para melhor visualização
-            plt.xlabel('Ano e Semestre de Ingresso')
-            plt.ylabel('CRA Médio')
-            plt.title('Oscilação do CRA Médio Geral ao Longo dos Anos de Ingresso')
+            plt.xlabel('Ano e Semestre de Ingresso', fontsize=14)
+            plt.ylabel('CRA Médio', fontsize=14)
+            plt.title('Oscilação do CRA Médio Geral ao Longo dos Anos de Ingresso', fontsize=16, weight='bold')
             plt.legend(title='Período Temporal', bbox_to_anchor=(1.05, 1), loc='upper left')
             plt.tight_layout()
 
@@ -165,9 +166,9 @@ class AnaliseDesempenhoAcademico:
 
             # Ajustar os ticks do eixo x para evitar gaps
             plt.xticks(rotation=45)  # Rotaciona os labels para melhor visualização
-            plt.xlabel('Ano e Semestre de Ingresso')
-            plt.ylabel('CRA Médio')
-            plt.title('Oscilação do CRA Médio por Sexo ao Longo dos Anos de Ingresso')
+            plt.xlabel('Ano e Semestre de Ingresso', fontsize=14)
+            plt.ylabel('CRA Médio', fontsize=14)
+            plt.title('Oscilação do CRA Médio por Sexo ao Longo dos Anos de Ingresso', fontsize=16, weight='bold')
             plt.legend(title='Período e Sexo', bbox_to_anchor=(1.05, 1), loc='upper left')
             plt.tight_layout()
 
@@ -235,9 +236,9 @@ class AnaliseDesempenhoAcademico:
 
             # Ajustar os ticks do eixo x para evitar gaps
             plt.xticks(rotation=45)  # Rotaciona os labels para melhor visualização
-            plt.xlabel('Ano e Semestre de Ingresso')
-            plt.ylabel('CRA Médio')
-            plt.title('Oscilação do CRA Médio por Forma de Ingresso ao Longo dos Anos de Ingresso')
+            plt.xlabel('Ano e Semestre de Ingresso', fontsize=14)
+            plt.ylabel('CRA Médio', fontsize=14)
+            plt.title('Oscilação do CRA Médio por Forma de Ingresso ao Longo dos Anos de Ingresso', fontsize=16, weight='bold')
             plt.legend(title='Período e Forma de Ingresso', bbox_to_anchor=(1.05, 1), loc='upper left')
             plt.tight_layout()
 
@@ -303,9 +304,9 @@ class AnaliseDesempenhoAcademico:
             )
 
             # Ajustar títulos e labels
-            plt.title('Correlação entre Média do CRA e Idade dos Alunos por Período Temporal')
-            plt.xlabel('Idade Média')
-            plt.ylabel('CRA Médio')
+            plt.title('Correlação entre Média do CRA e Idade dos Alunos por Período Temporal', fontsize=16, weight='bold')
+            plt.xlabel('Idade Média', fontsize=14)
+            plt.ylabel('CRA Médio', fontsize=14)
 
             # Ajustar a legenda para evitar sobreposição
             plt.legend(title='Período Temporal', bbox_to_anchor=(1.05, 1), loc='upper left')
@@ -329,7 +330,7 @@ class AnaliseDesempenhoAcademico:
                 print(Fore.BLUE + f"\nProcessando dados para o período: {periodo_nome}" + Style.RESET_ALL)
 
                 # Filtra os alunos que concluíram o curso
-                dataframe_filtrado = df[(df['STATUS_EVASAO'] == 'Concluído') & df['TEMPO_CURSO'].notnull()]
+                dataframe_filtrado = df[(df['STATUS_EVASOA'] == 'Concluído') & df['TEMPO_CURSO'].notnull()]
                 if dataframe_filtrado.empty:
                     print(Fore.RED + f"Sem dados válidos para plotar o tempo de término no período {periodo_nome}." + Style.RESET_ALL)
                     continue
@@ -447,18 +448,18 @@ class AnaliseDesempenhoAcademico:
                 periodo_nome = self._formatar_nome_periodo(periodo)
                 print(Fore.BLUE + f"\nProcessando dados para o período: {periodo_nome}" + Style.RESET_ALL)
 
-                if 'ZONA' not in df.columns or 'FORMA_INGRESSO_SIMPLES' not in df.columns:
-                    print(Fore.RED + f"As colunas 'ZONA' ou 'FORMA_INGRESSO_SIMPLES' não existem no DataFrame para o período {periodo_nome}." + Style.RESET_ALL)
+                if 'ZONA_GEOGRAFICA' not in df.columns or 'FORMA_INGRESSO_SIMPLES' not in df.columns:
+                    print(Fore.RED + f"As colunas 'ZONA_GEOGRAFICA' ou 'FORMA_INGRESSO_SIMPLES' não existem no DataFrame para o período {periodo_nome}." + Style.RESET_ALL)
                     continue
 
                 grupo_cotistas = df[df['FORMA_INGRESSO_SIMPLES'] == 'Cotas']
                 grupo_nao_cotistas = df[df['FORMA_INGRESSO_SIMPLES'] == 'Ampla Concorrencia']
 
-                zonas = df['ZONA'].unique()
+                zonas = df['ZONA_GEOGRAFICA'].unique()
 
                 for zona in zonas:
-                    total_cotistas_zona = grupo_cotistas[grupo_cotistas['ZONA'] == zona].shape[0]
-                    total_nao_cotistas_zona = grupo_nao_cotistas[grupo_nao_cotistas['ZONA'] == zona].shape[0]
+                    total_cotistas_zona = grupo_cotistas[grupo_cotistas['ZONA_GEOGRAFICA'] == zona].shape[0]
+                    total_nao_cotistas_zona = grupo_nao_cotistas[grupo_nao_cotistas['ZONA_GEOGRAFICA'] == zona].shape[0]
 
                     total_cotistas = grupo_cotistas.shape[0]
                     total_nao_cotistas = grupo_nao_cotistas.shape[0]
@@ -497,7 +498,7 @@ class AnaliseDesempenhoAcademico:
                 ci=None
             )
 
-            # Adiciona valores nas barras
+            # Adiciona valores percentuais nas barras
             adicionar_valores_barras(ax, exibir_percentual=True, fontsize=12, offset=8)
 
             # Ajusta estilos do gráfico
@@ -536,32 +537,6 @@ class AnaliseDesempenhoAcademico:
         """
         return df.groupby(['ANO_PERIODO_INGRESSO', 'FORMA_INGRESSO_SIMPLES'])['CRA'].mean().reset_index()
 
-    # -----------------------------------
-    # Método Principal para Executar Análises
-    # -----------------------------------
-
-    def executar_analises(self):
-        """
-        Executa todas as análises de desempenho acadêmico unificadas.
-        """
-        # Plotagem unificada do CRA médio geral
-        self.plot_cras_oscila_periodo_unificado()
-
-        # Plotagem unificada da oscilação do CRA por sexo
-        self.plot_cras_oscila_sexo_unificado()
-
-        # Plotagem unificada da oscilação do CRA por forma de ingresso
-        self.plot_cras_oscila_forma_ingresso_unificado()
-
-        # Plotagem unificada da correlação entre CRA e Idade
-        self.plot_correlacao_cra_idade_unificado()
-
-        # Plotagem unificada da média de tempo de término do curso
-        self.plot_media_tempo_termino_curso_unificado()
-
-        # Plotagem unificada da distribuição de alunos por zona geográfica
-        self.plot_distribuicao_alunos_por_zona_unificada()
-
     @staticmethod
     def _formatar_nome_periodo(periodo):
         """
@@ -576,3 +551,4 @@ class AnaliseDesempenhoAcademico:
             '4_pos_pandemia': 'Pos Pandemia'
         }
         return mapeamento.get(periodo, 'Outro')
+
