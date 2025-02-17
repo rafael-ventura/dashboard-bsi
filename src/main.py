@@ -42,7 +42,7 @@ def main(formatar_dados=True, considerar_curriculo_antigo=True):
         # Executar as análises de tipo de ingresso
         pasta_tipo_ingresso = criar_pasta_graficos('graficos/tipo_ingresso')
         analise_tipo_ingresso = AnaliseTipoIngresso(df_formatado, pasta_tipo_ingresso)
-        analise_tipo_ingresso.executar_analises()
+        analise_tipo_ingresso.__init__(df_formatado, pasta_tipo_ingresso)
         print(Fore.CYAN + "Análise de tipo de ingresso concluída!" + Style.RESET_ALL)
 
     except FileNotFoundError as e:
